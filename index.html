@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- social:start -->
+<meta name="description" content="Sixteen sessions on deciding what to work on next in a machine learning project, read from Andrew Ng's Machine Learning Yearning: dev sets, one metric, the error-analysis spreadsheet, bias and variance, and a bench that scores your order of work. Free, by Phoebe Fu.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Learn with Phoebe">
+<meta property="og:title" content="Learn ML Strategy with Phoebe">
+<meta property="og:description" content="Re-labelling the dev set: 1.62 points per week. The specialist model everybody wants: 0.21. The spreadsheet already knew.">
+<meta property="og:url" content="https://phoebefu6.github.io/learn-ml-strategy-with-phoebe/">
+<meta property="og:image" content="https://phoebefu6.github.io/learn-ml-strategy-with-phoebe/assets/og-cover.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Learn ML Strategy with Phoebe">
+<meta name="twitter:description" content="Re-labelling the dev set: 1.62 points per week. The specialist model everybody wants: 0.21. The spreadsheet already knew.">
+<meta name="twitter:image" content="https://phoebefu6.github.io/learn-ml-strategy-with-phoebe/assets/og-cover.png">
+<!-- social:end -->
+<title>Learn ML Strategy with Phoebe</title>
+<link rel="stylesheet" href="assets/style.css?v=1">
+<style>
+
+  .stats-row { display: flex; gap: 2.4rem; margin-top: 1.5rem; flex-wrap: wrap; }
+  .stat b { display: block; font-size: 2.1rem; font-weight: 800; line-height: 1.05; font-variant-numeric: tabular-nums; }
+  .stat span { font-size: .72rem; opacity: .85; text-transform: uppercase; letter-spacing: .09em; font-weight: 600; }
+
+  .course-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr)); gap: 1rem; margin-top: 1.5rem; }
+  .course-card {
+    border: 1px solid var(--hairline);
+    border-top: 4px solid var(--diff, var(--indigo));
+    border-radius: var(--radius);
+    padding: 1.2rem 1.3rem 1.1rem;
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
+    text-decoration: none;
+    color: var(--ink);
+    background: #fff;
+    transition: box-shadow .15s ease, border-color .15s ease, transform .15s ease;
+    position: relative;
+  }
+  .course-card:hover { border-color: var(--indigo-soft); border-top-color: var(--diff, var(--indigo)); box-shadow: 0 8px 28px rgba(161,98,7,.16); transform: translateY(-3px); }
+  .course-card .cicon { font-size: 1.7rem; line-height: 1; }
+  .course-card .cnum { font-size: .72rem; font-weight: 700; color: var(--indigo); text-transform: uppercase; letter-spacing: .1em; }
+  .course-card h3 { font-size: 1.05rem; font-weight: 800; line-height: 1.3; }
+  .course-card p { font-size: .85rem; color: var(--muted); flex: 1; }
+  .course-card .meta { display: flex; gap: .4rem; flex-wrap: wrap; }
+
+  .diff-legend { display: flex; gap: 1rem; margin-top: 1.6rem; font-size: .74rem; color: var(--muted); font-weight: 600; flex-wrap: wrap; }
+  .diff-legend i { display: inline-block; width: .85rem; height: .35rem; border-radius: 999px; margin-right: .35rem; vertical-align: middle; }
+
+  .paths { margin-top: 2.6rem; }
+  .paths h2 { font-size: 1.3rem; font-weight: 800; margin-bottom: .3rem; }
+  .paths .plede { color: var(--muted); font-size: .92rem; margin-bottom: .8rem; }
+  .path { display: flex; gap: .55rem; align-items: center; padding: .75rem 0; border-bottom: .5px solid var(--hairline); flex-wrap: wrap; }
+  .path:last-child { border-bottom: none; }
+  .path b { min-width: 15.5rem; font-size: .9rem; }
+  .path .pstep { background: var(--indigo-50); color: var(--indigo); border-radius: 999px; padding: .16rem .68rem; font-weight: 700; font-size: .8rem; text-decoration: none; transition: all .12s ease; }
+  .path .pstep:hover { background: var(--indigo); color: #fff; }
+  .path .parr { color: var(--faint); font-weight: 700; }
+
+  .mm-section { margin-top: 1.6rem; }
+  .mm-section h2 { font-size: 1.3rem; font-weight: 800; margin-bottom: .2rem; }
+  .mm-section .mm-lede { color: var(--muted); font-size: .92rem; margin-bottom: .4rem; }
+  .mm-wrap { border: 1px solid var(--hairline); border-radius: var(--radius); background: linear-gradient(180deg,#fff,#FEFCE8); padding: .6rem; overflow-x: auto; }
+  .mm-svg { width: 100%; height: auto; display: block; max-width: 60rem; margin: 0 auto; min-width: 34rem; }
+  .mm-link { cursor: pointer; text-decoration: none; }
+  .mm-node rect { transition: opacity .15s ease, filter .15s ease; }
+  .mm-node text { pointer-events: none; }
+  .mm-link:hover .mm-node rect { filter: brightness(1.06); }
+  .mm-edge { transition: opacity .15s ease; }
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <div class="wrap">
+    <div class="eyebrow">Learn with Phoebe · Data Science</div>
+    <h1>Learn <span class="accent">ML Strategy</span> with Phoebe</h1>
+    <p class="sub">Most machine learning teams do not lose months to the wrong model. They lose them to the wrong next step: a dev set that cannot see the improvement, a metric nobody can optimise, a fascinating project with a small ceiling funded ahead of a boring one with a large ceiling, and a dev set that got memorised because everybody looked at all of it. Andrew Ng wrote the discipline down in 58 short chapters. This course rebuilds it around one classifier: Lanternfish's trail-camera species model, 1,000 dev images, 120 wrong. Six leader sessions on the decisions, ten practitioner sessions on the mechanics, and a bench where you choose the order of work and watch both halves of the dev set answer.</p>
+    <div class="stats-row">
+      <div class="stat"><b data-count="16">16</b><span>sessions, two tracks</span></div>
+      <div class="stat"><b data-count="58">58</b><span>chapters of Machine Learning Yearning, read at source</span></div>
+      <div class="stat"><b data-count="120">120</b><span>errors in the dev set, each with its category</span></div>
+      <div class="stat"><b data-count="8">8</b><span>weeks the interesting project costs before anything ships</span></div>
+      <div class="stat"><b data-count="45">45</b><span>min per session</span></div>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <section class="section">
+    <div class="paths" style="margin-top:0">
+      <h2>Leader track 🧭 <span style="font-size:.85rem;font-weight:600;color:var(--muted)">· six sessions, no code</span></h2>
+      <p class="plede">For whoever funds the project and asks why it is slow. What decides velocity, which metric to insist on, how to read an error spreadsheet, and the one-page memo.</p>
+    </div>
+    <div class="course-grid">
+      <a class="course-card" href="courses/a1-strategy-is-deciding.html" style="--diff:#34D399">
+        <span class="cicon">🧭</span>
+        <span class="cnum">Leader session 1 · start here</span>
+        <h3>Strategy is deciding what not to try</h3>
+        <p>Why iteration speed decides projects more than model choice does, build the first system in a week, and the twelve percent that everybody at Lanternfish had an opinion about.</p>
+        <span class="meta"><span class="pill amber">▶ Start here</span></span>
+      </a>
+      <a class="course-card" href="courses/a2-one-number-or-two-kinds.html" style="--diff:#34D399">
+        <span class="cicon">1️⃣</span>
+        <span class="cnum">Leader session 2</span>
+        <h3>One number, or two kinds</h3>
+        <p>A single-number metric the team can optimise, optimizing against satisficing metrics, and when a metric has stopped measuring what you care about.</p>
+      </a>
+      <a class="course-card" href="courses/a3-look-at-100-mistakes.html" style="--diff:#FBBF24">
+        <span class="cicon">🔎</span>
+        <span class="cnum">Leader session 3</span>
+        <h3>Look at 100 mistakes</h3>
+        <p>Error analysis as a spreadsheet, the ceiling every project has, and the sheet that puts a one-week re-label job above an eight-week model.</p>
+      </a>
+      <a class="course-card" href="courses/a4-where-the-error-comes-from.html" style="--diff:#FBBF24">
+        <span class="cicon">⚖️</span>
+        <span class="cnum">Leader session 4</span>
+        <h3>Where the error comes from</h3>
+        <p>Unavoidable bias, avoidable bias and variance from three numbers, human-level performance as the yardstick, and one knob per problem.</p>
+      </a>
+      <a class="course-card" href="courses/a5-the-pipeline-hides-its-weakest-part.html" style="--diff:#FB923C">
+        <span class="cicon">🔗</span>
+        <span class="cnum">Leader session 5</span>
+        <h3>The pipeline that hides its weakest part</h3>
+        <p>Error analysis by parts: attributing the error to one stage so the team stops fixing the stage that is already fine.</p>
+      </a>
+      <a class="course-card" href="courses/a6-the-one-page-memo.html" style="--diff:#FB923C">
+        <span class="cicon">📄</span>
+        <span class="cnum">Leader session 6</span>
+        <h3>Get your teammates to read this</h3>
+        <p>The one-page ML strategy memo, and where this discipline lands when the model is a language model.</p>
+        <span class="meta"><span class="pill amber">the board version</span></span>
+      </a>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="paths" style="margin-top:0">
+      <h2>Practitioner track 🔧 <span style="font-size:.85rem;font-weight:600;color:var(--muted)">· ten sessions, one decision</span></h2>
+      <p class="plede">One classifier, Lanternfish's species model, taken from a dev set that tells the truth to a scored order of work. Session 10 runs the whole decision on the bench.</p>
+    </div>
+    <div class="course-grid">
+      <a class="course-card" href="courses/p1-dev-and-test-sets.html" style="--diff:#34D399">
+        <span class="cicon">🎯</span>
+        <span class="cnum">Practitioner session 1 · start here</span>
+        <h3>Dev and test sets that tell the truth</h3>
+        <p>Same distribution as the traffic you care about, sized for the difference you need to see: 100 examples cannot detect 0.1 percent, 10,000 can.</p>
+        <span class="meta"><span class="pill amber">▶ Start here</span></span>
+      </a>
+      <a class="course-card" href="courses/p2-first-system-in-a-week.html" style="--diff:#FBBF24">
+        <span class="cicon">⚡</span>
+        <span class="cnum">Practitioner session 2</span>
+        <h3>The first system in a week</h3>
+        <p>Build quickly, then iterate. The 12 percent baseline and why waiting for the right architecture costs more than shipping the wrong one.</p>
+      </a>
+      <a class="course-card" href="courses/p3-error-analysis-spreadsheet.html" style="--diff:#FBBF24">
+        <span class="cicon">📋</span>
+        <span class="cnum">Practitioner session 3</span>
+        <h3>The error-analysis spreadsheet</h3>
+        <p>Sixty-four real errors, five categories, a share column and a ceiling column. The order of work falls out of it.</p>
+      </a>
+      <a class="course-card" href="courses/p4-eyeball-and-blackbox.html" style="--diff:#FBBF24">
+        <span class="cicon">👁️</span>
+        <span class="cnum">Practitioner session 4</span>
+        <h3>Eyeball and Blackbox dev sets</h3>
+        <p>Ten percent you look at, ninety you never do. Hand rules against what you saw take one half to 3.8 percent and leave the other at 11.2.</p>
+      </a>
+      <a class="course-card" href="courses/p5-bias-and-variance.html" style="--diff:#FBBF24">
+        <span class="cicon">📐</span>
+        <span class="cnum">Practitioner session 5</span>
+        <h3>Bias and variance from three numbers</h3>
+        <p>Train 3, dev 12, human-level 2: avoidable bias 1, variance 9. Which project each diagnosis funds.</p>
+      </a>
+      <a class="course-card" href="courses/p6-learning-curves.html" style="--diff:#FB923C">
+        <span class="cicon">📈</span>
+        <span class="cnum">Practitioner session 6</span>
+        <h3>Learning curves, read honestly</h3>
+        <p>Plotting training and dev error against data size, and the two shapes that tell you more data will or will not help.</p>
+      </a>
+      <a class="course-card" href="courses/p7-different-distributions.html" style="--diff:#FB923C">
+        <span class="cicon">🌍</span>
+        <span class="cnum">Practitioner session 7</span>
+        <h3>Training and testing on different distributions</h3>
+        <p>When it is right, the training-dev set that separates variance from mismatch, and what to do about mismatch.</p>
+      </a>
+      <a class="course-card" href="courses/p8-optimization-verification.html" style="--diff:#FB923C">
+        <span class="cicon">🔬</span>
+        <span class="cnum">Practitioner session 8</span>
+        <h3>The Optimization Verification test</h3>
+        <p>Is the model scoring wrong, or the search failing to find the answer it would score highest? One test tells them apart.</p>
+      </a>
+      <a class="course-card" href="courses/p9-error-analysis-by-parts.html" style="--diff:#F87171">
+        <span class="cicon">🧩</span>
+        <span class="cnum">Practitioner session 9</span>
+        <h3>Error analysis by parts</h3>
+        <p>A detector then a classifier. Perfect inputs to each stage, and the error that belongs to only one of them.</p>
+      </a>
+      <a class="course-card" href="courses/p10-what-to-fix-next-bench.html" style="--diff:#F87171">
+        <span class="cicon">🎛️</span>
+        <span class="cnum">Practitioner session 10</span>
+        <h3>The what-to-fix-next bench</h3>
+        <p>Five projects, two halves of a dev set, your order. Points per week against the interesting project, and the rules that only fix what you looked at.</p>
+        <span class="meta"><span class="pill amber">🔒 the capstone</span></span>
+      </a>
+    </div>
+    <div class="diff-legend">
+      <span><i style="background:#34D399"></i>start here</span>
+      <span><i style="background:#FBBF24"></i>foundations</span>
+      <span><i style="background:#FB923C"></i>hands-on</span>
+      <span><i style="background:#F87171"></i>advanced and capstone</span>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="paths">
+      <h2>Choose your path 🗺️</h2>
+      <p class="plede">Three doors into the same decision. Both tracks start at their own session 1.</p>
+      <div class="path"><b>💼 I fund this and ask why it is slow</b>
+        <a class="pstep" href="courses/a1-strategy-is-deciding.html">L1</a>
+        <span class="parr">→</span>
+        <a class="pstep" href="courses/a3-look-at-100-mistakes.html">L3</a>
+        <span class="parr">→</span>
+        <a class="pstep" href="courses/a4-where-the-error-comes-from.html">L4</a>
+        <span class="parr">→</span>
+        <a class="pstep" href="courses/a6-the-one-page-memo.html">L6</a>
+        <span style="font-size:.82rem;color:var(--muted)">velocity, the spreadsheet, where the error comes from, the memo</span>
+      </div>
+      <div class="path"><b>🔧 I own the model</b>
+        <a class="pstep" href="courses/p1-dev-and-test-sets.html">P1</a>
+        <span class="parr">→</span>
+        <a class="pstep" href="courses/p3-error-analysis-spreadsheet.html">P3</a>
+        <span class="parr">→</span>
+        <a class="pstep" href="courses/p4-eyeball-and-blackbox.html">P4</a>
+        <span class="parr">→</span>
+        <a class="pstep" href="courses/p5-bias-and-variance.html">P5</a>
+        <span class="parr">→</span>
+        <a class="pstep" href="courses/p10-what-to-fix-next-bench.html">P10</a>
+        <span style="font-size:.82rem;color:var(--muted)">a truthful dev set, the sheet, the two halves, the diagnosis, then score your order</span>
+      </div>
+      <div class="path"><b>🎯 Everything, in order</b>
+        <a class="pstep" href="courses/a1-strategy-is-deciding.html">L1</a>
+        <span class="parr">→</span>
+        <a class="pstep" href="courses/a2-one-number-or-two-kinds.html">L2</a>
+        <span class="parr">→</span>
+        <a class="pstep" href="courses/p1-dev-and-test-sets.html">P1</a>
+        <span class="parr">→</span>
+        <a class="pstep" href="courses/p2-first-system-in-a-week.html">P2</a>
+        <span class="parr">→</span>
+        <a class="pstep" href="courses/p6-learning-curves.html">P6</a>
+        <span class="parr">→</span>
+        <a class="pstep" href="courses/p7-different-distributions.html">P7</a>
+        <span class="parr">→</span>
+        <a class="pstep" href="courses/p9-error-analysis-by-parts.html">P9</a>
+        <span class="parr">→</span>
+        <a class="pstep" href="courses/p10-what-to-fix-next-bench.html">P10</a>
+        <span style="font-size:.82rem;color:var(--muted)">from twelve percent and an argument to a scored order of work</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="paths" style="margin-top:0">
+      <h2>Your passport 🎫</h2>
+      <p class="plede">Clear all three quiz questions in a session and it gets stamped. Sixteen stamps across both tracks, and they live in this browser only.</p>
+    </div>
+    <div class="pp-strip"></div>
+  </section>
+
+  <section class="section">
+    <div class="paths" style="margin-top:0">
+      <h2>What is real here 🧾</h2>
+      <p class="plede">A course about looking at your errors honestly should be exact about its own numbers.</p>
+    </div>
+    <table class="clean">
+      <tr><th>Claim</th><th>Status</th></tr>
+      <tr><td>The 1,000 dev images and 120 errors</td><td>Generated once from a fixed seed, identical for every learner. Each error carries its spreadsheet category: night blur 42, deer-vs-elk 24, half out of frame 22, empty frame 18, wrong label 14</td></tr>
+      <tr><td>Eyeball 12.8 percent, Blackbox 11.2</td><td>The split is by index and the errors were placed at random, so the halves differ: 64 against 56. That difference is the reason to keep two</td></tr>
+      <tr><td>The spreadsheet and its points-per-week column</td><td>Counted on the 64 Eyeball errors. Ceiling per chapter 14: share of errors times the share the project removes. Re-label 1.62 per week, specialist model 0.21</td></tr>
+      <tr><td>Points-per-week order: 6.2 percent by week 6, 3.6 by week 18</td><td>Computed by the bench as each project removes its stated share of its category, earliest-indexed errors first, so the arithmetic is deterministic</td></tr>
+      <tr><td>Most interesting first: 11.2 at week 6, 9.2 at week 8, 3.6 at week 18</td><td>Same arithmetic, different order. Same destination</td></tr>
+      <tr><td>Hand rules: Eyeball 3.8, Blackbox 11.2</td><td>A construction, labelled as one on the bench: rules written against 60 specific examples fix only those examples. Everything else on the bench is counting</td></tr>
+      <tr><td>Nothing models a person</td><td>Unlike a simulator, there is no human behaviour to estimate. Every number is a count</td></tr>
+      <tr><td>Machine Learning Yearning</td><td>Read from the deeplearning.ai PDF; chapter titles and the quoted passages are in the course map with chapter numbers. Orthogonalization is from Ng's Structuring Machine Learning Projects course and is labelled as such</td></tr>
+      <tr><td>Lanternfish</td><td>A fictional wildlife-camera startup. The classifier is Ng's cat detector moved one step sideways</td></tr>
+    </table>
+  </section>
+
+  <section class="section mm-section">
+    <h2>The knowledge map 🧠</h2>
+    <p class="mm-lede">Both tracks at a glance - hover a session to spotlight its concepts, click any node to jump in.</p>
+    <div class="mm-wrap"><div id="mindmap"></div></div>
+  </section>
+
+  <footer class="pagefoot">
+    <span>learn-ml-strategy-with-phoebe · by Phoebe Fu &nbsp;·&nbsp; 📚 <a href="https://phoebefu6.github.io/learn-with-phoebe/">Learn with Phoebe ↗</a></span>
+    <span>Pairs with <a href="https://phoebefu6.github.io/learn-model-evaluation-with-phoebe/">Model Evaluation ↗</a> and <a href="https://phoebefu6.github.io/learn-intro-ml-with-phoebe/">Intro to ML ↗</a> · source map: <span class="mono">materials/official-course-map.md</span></span>
+  </footer>
+
+</main>
+
+<script>
+window.MINDMAP_DATA = {
+  "title": "ML Strategy",
+  "centerColor": "#713F12",
+  "sessions": [
+    {
+      "label": "Deciding what not to try",
+      "href": "courses/a1-strategy-is-deciding.html",
+      "concepts": [
+        {
+          "label": "Velocity",
+          "href": "courses/a1-strategy-is-deciding.html"
+        },
+        {
+          "label": "First system in a week",
+          "href": "courses/p2-first-system-in-a-week.html"
+        }
+      ]
+    },
+    {
+      "label": "One number",
+      "href": "courses/a2-one-number-or-two-kinds.html",
+      "concepts": [
+        {
+          "label": "Single-number metric",
+          "href": "courses/a2-one-number-or-two-kinds.html"
+        },
+        {
+          "label": "Optimizing vs satisficing",
+          "href": "courses/a2-one-number-or-two-kinds.html"
+        }
+      ]
+    },
+    {
+      "label": "100 mistakes",
+      "href": "courses/a3-look-at-100-mistakes.html",
+      "concepts": [
+        {
+          "label": "The spreadsheet",
+          "href": "courses/p3-error-analysis-spreadsheet.html"
+        },
+        {
+          "label": "The ceiling",
+          "href": "courses/p3-error-analysis-spreadsheet.html"
+        },
+        {
+          "label": "Points per week",
+          "href": "courses/p10-what-to-fix-next-bench.html"
+        }
+      ]
+    },
+    {
+      "label": "Where the error comes from",
+      "href": "courses/a4-where-the-error-comes-from.html",
+      "concepts": [
+        {
+          "label": "Avoidable bias",
+          "href": "courses/p5-bias-and-variance.html"
+        },
+        {
+          "label": "Variance",
+          "href": "courses/p5-bias-and-variance.html"
+        },
+        {
+          "label": "Human-level",
+          "href": "courses/a4-where-the-error-comes-from.html"
+        }
+      ]
+    },
+    {
+      "label": "By parts",
+      "href": "courses/a5-the-pipeline-hides-its-weakest-part.html",
+      "concepts": [
+        {
+          "label": "Attribute to one stage",
+          "href": "courses/p9-error-analysis-by-parts.html"
+        },
+        {
+          "label": "Flawed pipeline",
+          "href": "courses/p9-error-analysis-by-parts.html"
+        }
+      ]
+    },
+    {
+      "label": "The memo",
+      "href": "courses/a6-the-one-page-memo.html",
+      "concepts": [
+        {
+          "label": "Three eval levels",
+          "href": "courses/a6-the-one-page-memo.html"
+        }
+      ]
+    },
+    {
+      "label": "Dev and test sets",
+      "href": "courses/p1-dev-and-test-sets.html",
+      "concepts": [
+        {
+          "label": "Same distribution",
+          "href": "courses/p1-dev-and-test-sets.html"
+        },
+        {
+          "label": "100 vs 10,000",
+          "href": "courses/p1-dev-and-test-sets.html"
+        }
+      ]
+    },
+    {
+      "label": "Eyeball and Blackbox",
+      "href": "courses/p4-eyeball-and-blackbox.html",
+      "concepts": [
+        {
+          "label": "Look at 10 percent",
+          "href": "courses/p4-eyeball-and-blackbox.html"
+        },
+        {
+          "label": "3.8 vs 11.2",
+          "href": "courses/p10-what-to-fix-next-bench.html"
+        }
+      ]
+    },
+    {
+      "label": "Curves and mismatch",
+      "href": "courses/p6-learning-curves.html",
+      "concepts": [
+        {
+          "label": "Learning curves",
+          "href": "courses/p6-learning-curves.html"
+        },
+        {
+          "label": "Training-dev set",
+          "href": "courses/p7-different-distributions.html"
+        },
+        {
+          "label": "Optimization Verification",
+          "href": "courses/p8-optimization-verification.html"
+        }
+      ]
+    },
+    {
+      "label": "The bench",
+      "href": "courses/p10-what-to-fix-next-bench.html",
+      "concepts": [
+        {
+          "label": "6.2 by week 6",
+          "href": "courses/p10-what-to-fix-next-bench.html"
+        },
+        {
+          "label": "Interesting first: 9.2 at wk 8",
+          "href": "courses/p10-what-to-fix-next-bench.html"
+        }
+      ]
+    }
+  ]
+};
+</script>
+<script src="assets/app.js?v=1"></script>
+<script src="assets/mindmap.js?v=1"></script>
+</body>
+</html>

@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- social:start -->
+<meta name="description" content="Leader session 1 of 6. Machine learning progress is a loop with a speed, and the team that turns it faster wins whoever picked the better architecture. Lanternfish spent six months on the proper one while a web-photo dev set said 94 percent and the field said 78. Two numbers price a project before it starts: what it could fix, and what it costs in weeks.">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Learn with Phoebe">
+<meta property="og:title" content="Strategy is deciding what not to try - learn ml strategy with phoebe">
+<meta property="og:description" content="Leader session 1 of 6. Velocity, not model choice, decides where a team is after a quarter. Price the five projects before funding one.">
+<meta property="og:url" content="https://phoebefu6.github.io/learn-ml-strategy-with-phoebe/courses/a1-strategy-is-deciding.html">
+<meta property="og:image" content="https://phoebefu6.github.io/learn-ml-strategy-with-phoebe/assets/og-cover.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Strategy is deciding what not to try - learn ml strategy with phoebe">
+<meta name="twitter:description" content="1.62 points per week against 0.21. Same destination at week 18; the interesting project first leaves the field at 11.2 percent error through week 6.">
+<meta name="twitter:image" content="https://phoebefu6.github.io/learn-ml-strategy-with-phoebe/assets/og-cover.png">
+<!-- social:end -->
+<title>Leader session 1 · Strategy is deciding what not to try - learn ml strategy with phoebe</title>
+<link rel="stylesheet" href="../assets/style.css?v=1">
+</head>
+<body>
+
+<div class="toolbar">
+  <div class="wrap">
+    <span class="crumb"><a href="../index.html">learn-ml-strategy-with-phoebe</a> / Leader session 1 of 6</span>
+    <button class="btn" id="toggle-all" type="button">Expand all</button>
+    <button class="btn primary" id="zoom-toggle" type="button">Projector zoom: off</button>
+  </div>
+</div>
+
+<header class="masthead">
+  <div class="wrap">
+    <div class="eyebrow">Learn ML Strategy with Phoebe · Leader session 1 of 6</div>
+    <h1>Strategy is deciding <span class="accent">what not to try</span></h1>
+    <p class="sub">Lanternfish spent six months building the architecture everybody agreed was the proper one. The dev set said 94 percent the whole time, the field said 78, and when the dev set was finally rebuilt from real camera frames the honest number was 88: 120 wrong images out of 1,000. That is where the project actually started. Tonight is about why the six months happened, why it happens to most teams, and the two numbers that stop it: what a project could fix, and what it costs in weeks. Nothing here needs a keyboard. The output is a priced list of the projects your team is arguing about.</p>
+    <div class="chip-row">
+      <span class="chip level">🟢 Foundational</span>
+      <span class="chip audience">Data and product leaders</span>
+      <span class="chip audience">Anyone who has asked why the model is late</span>
+      <span class="chip time">45 min</span>
+    </div>
+    <div class="agenda">
+      <span class="a1" style="flex:1">0-3 · Welcome</span>
+      <span class="a2" style="flex:5">3-20 · Velocity, not model choice</span>
+      <span class="a3" style="flex:4">20-40 · Build-along: the project list, priced</span>
+      <span class="a4" style="flex:1">40-45 · Q&amp;A</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ============ INTRO ============ -->
+  <section class="section" id="intro">
+    <div class="section-kicker">
+      <span class="klabel">Part 0</span>
+      <h2>How the leader track works</h2>
+    </div>
+    <p class="lede">Six sessions, 45 minutes each, for whoever funds the machine learning project and asks why it is slow. Tonight, why velocity decides projects. Session 2, one number or two kinds: the metric as a leadership decision. Session 3, look at 100 mistakes: the spreadsheet that ranks projects by what they could fix. Session 4, where the error comes from: bias and variance as a diagnosis from three numbers. Session 5, the pipeline that hides its weakest part. Session 6, the one-page memo that gets the whole team reading the same page. The classifier throughout belongs to <strong>Lanternfish</strong>, a wildlife-camera startup whose species model is wrong on 120 of its 1,000 dev images and whose team has five opinions about why.</p>
+
+    <div class="legend">
+      <span class="pill">Live = presented in the 45 minutes</span>
+      <span class="pill">Self-study = the full depth, after class</span>
+      <span class="pill">🔍 Every diagram zooms</span>
+    </div>
+
+    <div class="callout win">
+      <p><strong>★ What you walk out with tonight.</strong> A way of seeing a machine learning project as a loop with a speed, so that "why is it late" becomes "how many times has the loop turned". The rule that most teams break in the name of doing it properly: build the first system quickly, then iterate. And two numbers that price any project before a week is spent on it, with Lanternfish's five projects priced as the worked example: 1.62 points of error per week for the dull one, 0.21 for the one everybody wanted.</p>
+    </div>
+
+    <details class="card" open>
+      <summary><span class="mode live">Live</span>Why velocity is the funder's problem, not the engineer's<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>The engineers on a machine learning team decide how to build. The person who funds the team decides what gets built, in what order, and how long each thing is allowed to take before somebody asks whether it is working. Those three decisions set the speed of the loop, and the speed of the loop sets how much the team learns per quarter. A leader who approves one large project for the quarter has, without meaning to, decided that the team will learn once.</p>
+        <p>The uncomfortable part is that the slow version usually looks like rigour. A clean architecture, a proper data pipeline, a launch when it is ready. The fast version looks scrappy: a baseline in a week, a dev set that is good enough, six things tried and five dropped. Over a quarter the scrappy team has six readings of reality and the rigorous team has one, and the six readings win almost every time.</p>
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <p>Lanternfish's founder approved "the proper species model" as the quarter's project, twice. Nobody asked how many times the team would find out whether it was working. The answer turned out to be once, in the field, at 78 percent.</p>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>The vocabulary for the whole track<span class="mini">4 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <ul>
+          <li><strong>Dev set</strong> - the sample of real traffic that every model change is measured on. If it is drawn from the wrong traffic, every decision is about the wrong problem. Practitioner session 1 builds one.</li>
+          <li><strong>Dev error</strong> - the share of the dev set the model gets wrong. Lanternfish: 120 of 1,000, 12 percent.</li>
+          <li><strong>The loop</strong> - idea, code, experiment, read the dev set, decide. One turn of the loop is one thing learned.</li>
+          <li><strong>Baseline</strong> - the first system, built quickly, whose only job is to make the loop start turning. Chapter 13.</li>
+          <li><strong>Ceiling</strong> - the most a project could possibly improve the error rate, which is the share of current errors in the category it fixes. Chapter 14. Session 3 computes it from a spreadsheet.</li>
+          <li><strong>Points per week</strong> - ceiling divided by cost in weeks. The one column that ranks projects honestly.</li>
+          <li><strong>Eyeball and Blackbox halves</strong> - the half of the dev set the team looks at, and the half it never does, so the second half can still tell the truth. Session 3 explains why; the numbers tonight come from the Blackbox half.</li>
+        </ul>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 1 ============ -->
+  <section class="section" id="part-1">
+    <div class="section-kicker">
+      <span class="klabel">Part 1 · covers iteration speed and build-first</span>
+      <h2>Machine learning progress is a loop, and the loop has a speed</h2>
+      <span class="tag concept">9 min live</span>
+    </div>
+    <p class="lede">Nobody knows in advance which idea will work on a real dataset. That is not a failing of the team; it is the nature of the work. So a machine learning project is a loop: have an idea, code it, run the experiment, read the dev set, keep or drop the idea. The book's opening argument is that the team that turns this loop faster learns faster, and after a quarter it is ahead of the team that started with the better idea and turned the loop once.</p>
+
+    <figure class="zoomable">
+      <svg viewBox="0 0 880 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="The four-step loop of idea, code, experiment, read the dev set, drawn once. Below it a twelve-week quarter: a fast team completes six turns of the loop, a slow team is still inside its first turn at week twelve. A side panel counts what each team knows after the quarter: six readings against one.">
+        <style>
+          .a1aT { font: 800 12px Inter, sans-serif; fill: #fff; }
+          .a1aH { font: 800 12px Inter, sans-serif; fill: #1C1917; }
+          .a1aB { font: 400 11px Inter, sans-serif; fill: #1C1917; }
+          .a1aM { font: 400 11px Inter, sans-serif; fill: #6B6259; }
+          .a1aN { font: 700 11px Inter, sans-serif; fill: #1C1917; }
+          .a1aR { font: 700 11px Inter, sans-serif; fill: #991B1B; }
+          .a1aG { font: 800 12px Inter, sans-serif; fill: #713F12; }
+        </style>
+        <defs>
+          <marker id="a1aAr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#D9D2C5"></path></marker>
+        </defs>
+
+        <text class="a1aH" x="14" y="30">One turn of the loop</text>
+        <rect x="14" y="44" width="120" height="44" rx="9" fill="#FEF08A"></rect>
+        <text class="a1aH" x="74" y="70" text-anchor="middle">Idea</text>
+        <rect x="146" y="44" width="120" height="44" rx="9" fill="#FACC15"></rect>
+        <text class="a1aH" x="206" y="70" text-anchor="middle">Code</text>
+        <rect x="278" y="44" width="120" height="44" rx="9" fill="#A16207"></rect>
+        <text class="a1aT" x="338" y="70" text-anchor="middle">Experiment</text>
+        <rect x="410" y="44" width="120" height="44" rx="9" fill="#713F12"></rect>
+        <text class="a1aT" x="470" y="70" text-anchor="middle">Read the dev set</text>
+        <line x1="136" y1="66" x2="144" y2="66" stroke="#D9D2C5" stroke-width="1.5" marker-end="url(#a1aAr)"></line>
+        <line x1="268" y1="66" x2="276" y2="66" stroke="#D9D2C5" stroke-width="1.5" marker-end="url(#a1aAr)"></line>
+        <line x1="400" y1="66" x2="408" y2="66" stroke="#D9D2C5" stroke-width="1.5" marker-end="url(#a1aAr)"></line>
+        <polyline points="470,90 470,106 74,106 74,92" fill="none" stroke="#D9D2C5" stroke-width="1.5" marker-end="url(#a1aAr)"></polyline>
+        <text class="a1aM" x="272" y="122" text-anchor="middle">keep the idea or drop it, then go again</text>
+        <text class="a1aM" x="548" y="60">one turn =</text>
+        <text class="a1aM" x="548" y="76">one thing learned</text>
+
+        <text class="a1aH" x="14" y="160">One quarter, two teams</text>
+        <line x1="14" y1="172" x2="590" y2="172" stroke="#D9D2C5" stroke-width="1.5"></line>
+        <text class="a1aM" x="14" y="186">week 0</text>
+        <text class="a1aM" x="302" y="186" text-anchor="middle">week 6</text>
+        <text class="a1aM" x="590" y="186" text-anchor="end">week 12</text>
+
+        <text class="a1aN" x="14" y="210">Fast team: one turn every two weeks</text>
+        <rect x="14" y="218" width="90" height="30" rx="6" fill="#FACC15"></rect>
+        <text class="a1aB" x="59" y="238" text-anchor="middle">turn 1</text>
+        <rect x="111" y="218" width="90" height="30" rx="6" fill="#FACC15"></rect>
+        <text class="a1aB" x="156" y="238" text-anchor="middle">turn 2</text>
+        <rect x="208" y="218" width="90" height="30" rx="6" fill="#FACC15"></rect>
+        <text class="a1aB" x="253" y="238" text-anchor="middle">turn 3</text>
+        <rect x="305" y="218" width="90" height="30" rx="6" fill="#FACC15"></rect>
+        <text class="a1aB" x="350" y="238" text-anchor="middle">turn 4</text>
+        <rect x="402" y="218" width="90" height="30" rx="6" fill="#FACC15"></rect>
+        <text class="a1aB" x="447" y="238" text-anchor="middle">turn 5</text>
+        <rect x="499" y="218" width="91" height="30" rx="6" fill="#FACC15"></rect>
+        <text class="a1aB" x="544" y="238" text-anchor="middle">turn 6</text>
+
+        <text class="a1aN" x="14" y="272">Slow team: one turn, the proper architecture</text>
+        <rect x="14" y="280" width="576" height="30" rx="6" fill="#FEFCE8" stroke="#991B1B" stroke-width="1.5"></rect>
+        <text class="a1aR" x="302" y="300" text-anchor="middle">turn 1, still running at week 12, nothing read yet</text>
+
+        <rect x="620" y="150" width="246" height="160" rx="10" fill="#FEFCE8" stroke="#D9D2C5"></rect>
+        <text class="a1aH" x="636" y="174">After the quarter</text>
+        <text class="a1aG" x="636" y="200">Fast team</text>
+        <text class="a1aB" x="636" y="218">6 readings of the dev set</text>
+        <text class="a1aB" x="636" y="234">5 ideas dropped, 1 kept</text>
+        <text class="a1aR" x="636" y="262">Slow team</text>
+        <text class="a1aB" x="636" y="280">0 readings so far</text>
+        <text class="a1aM" x="636" y="296">first one arrives in the field</text>
+
+        <rect x="14" y="322" width="14" height="14" rx="3" fill="#60A5FA"></rect>
+        <text class="a1aN" x="38" y="334">Loop speed, not the starting idea, decides where each team is after a quarter.</text>
+      </svg>
+      <figcaption>🔍 Click to zoom - one loop, two speeds, and what each team knows at week twelve.</figcaption>
+    </figure>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>The faster loop wins, whoever picked the better architecture<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Two teams start the same problem on the same day. One picks a better architecture and builds it carefully over the quarter. The other picks something ordinary, has it scoring on a dev set in a week, and then tries an idea every fortnight. At the end of the quarter the second team has read the dev set six times, has dropped five ideas that sounded good and did not work, and has kept one that did. The first team has read it once, on launch day.</p>
+        <p>The second team is ahead, and not because its people are better. It knows six things about the problem that the first team does not, and the sixth thing it learned was only visible because of the first five. Ideas in machine learning compound through readings, and readings only happen when the loop closes.</p>
+        <p>The consequence for whoever funds the work: the question to ask about a project is not "is this the right idea" but "how many times will we find out". A quarter that answers "once" is a bet, not a plan.</p>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Build your first system quickly, then iterate<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Chapter 13 of Machine Learning Yearning has a title that is also the whole instruction: "Build your first system quickly, then iterate." The first system is not the product. Its only job is to make the loop start turning, so that the team's next idea is chosen from what the dev set says rather than from what the team believed before it had any evidence.</p>
+        <p>Most teams violate this rule for a reason that sounds responsible: they want to do it properly. Properly means a clean pipeline, the right architecture, labels reviewed, a launch when it is ready. Each of those is a good thing. Together they push the first reading of reality to the end of the quarter, which is the one place it cannot help anybody.</p>
+        <ul>
+          <li><strong>A first system in a week</strong> is a deliberate choice of an ordinary model on the data to hand, scored on a dev set that reflects the field. Practitioner session 2 does it.</li>
+          <li><strong>The first number will be disappointing.</strong> That is the point. A disappointing number in week one is the cheapest information the project will ever buy.</li>
+          <li><strong>Everything after that is iteration,</strong> and iteration is what the rest of the track is about: which of the many possible next steps to fund.</li>
+        </ul>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>The Lanternfish six months, and where the real project started<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Lanternfish sells trail cameras to conservation groups, and the cameras are supposed to say which species walked past. The team spent six months on a species classifier with the architecture everybody agreed was right. Throughout, the dev set said 94 percent. The dev set was 400 photos scraped from the web: daytime, sharp, animal in the centre of the frame. The cameras shoot night infrared with animals half out of shot. In the field the classifier scored 78.</p>
+        <p>The fix was not a better model. The team rebuilt the dev set from 1,000 real camera frames, scored the same model, and got 88 percent: 120 wrong. Six months of work had produced a number that was true, and the number was 12 percent error. That is where the project started. Every session after this one is about what to do with those 120 mistakes.</p>
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <p>The 94 was not a lie. It was an honest measurement of the wrong thing, and it had been read six times before anybody asked what it was measuring. A fast loop with the wrong instrument is a slow loop with extra steps; speed only counts when the dev set reflects the field. That is why the practitioner track opens with the dev set and this one opens with velocity: the two are the same argument from two chairs.</p>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>Four things that stretch a loop, and who controls each<span class="mini">4 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <ul>
+          <li><strong>No dev set from the field.</strong> Without one, an experiment cannot be read, so the loop never closes. Owner: the team, in week one, with the funder asking for it by name.</li>
+          <li><strong>A metric the team argues about.</strong> Two numbers is a debate every sprint. Owner: the funder, session 2.</li>
+          <li><strong>Projects sized by the quarter.</strong> A project that takes twelve weeks turns the loop once. Owner: the funder, who approves the size.</li>
+          <li><strong>Approval between turns.</strong> If each idea needs a meeting, the meeting cadence is the loop speed. Owner: the funder, who can pre-approve the quarter's list and ask only for the readings.</li>
+        </ul>
+        <p>Three of the four are the funder's. Engineers can shorten a training run; they cannot shorten a governance cycle they do not own.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 2 ============ -->
+  <section class="section" id="part-2">
+    <div class="section-kicker">
+      <span class="klabel">Part 2 · covers ceiling, cost, and the order of work</span>
+      <h2>The list of ideas is always longer than the quarter</h2>
+      <span class="tag concept">8 min live</span>
+    </div>
+    <p class="lede">Once the loop is turning, the problem changes shape. There are always more plausible ideas than there is quarter, and every one of them has a sponsor. Lanternfish has five. The question is no longer "will we iterate" but "in what order", and order turns out to be worth eight weeks of double-digit error.</p>
+
+    <table class="clean">
+      <thead><tr><th>Project</th><th>Error category it fixes</th><th>Share of errors</th><th>Weeks</th><th>Ceiling</th><th>Points per week</th></tr></thead>
+      <tbody>
+        <tr><td>Re-label the dev set</td><td>Label was wrong</td><td>14 percent</td><td>1</td><td>1.6</td><td><strong>1.62</strong></td></tr>
+        <tr><td>Infrared denoising pass</td><td>Night infrared blur</td><td>33 percent</td><td>3</td><td>2.5</td><td>0.84</td></tr>
+        <tr><td>Motion-trigger filter</td><td>Empty frame called animal</td><td>16 percent</td><td>2</td><td>1.6</td><td>0.80</td></tr>
+        <tr><td>Occlusion augmentation</td><td>Animal half out of frame</td><td>19 percent</td><td>4</td><td>1.2</td><td>0.30</td></tr>
+        <tr><td>Deer-vs-elk specialist model</td><td>Deer mistaken for elk</td><td>19 percent</td><td>8</td><td>1.7</td><td><strong>0.21</strong></td></tr>
+      </tbody>
+    </table>
+
+    <figure class="zoomable">
+      <svg viewBox="0 0 880 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Five Lanternfish projects as a ranked strip by points per week: re-label the dev set 1.62, infrared denoising 0.84, motion-trigger filter 0.80, occlusion augmentation 0.30, deer-versus-elk specialist model 0.21. Under each, its ceiling in points and its cost in weeks. The specialist model, the one everybody wanted, ranks last.">
+        <style>
+          .a1bT { font: 800 11px Inter, sans-serif; fill: #fff; }
+          .a1bH { font: 800 11px Inter, sans-serif; fill: #1C1917; }
+          .a1bK { font: 800 12px Inter, sans-serif; fill: #1C1917; }
+          .a1bB { font: 400 11px Inter, sans-serif; fill: #1C1917; }
+          .a1bM { font: 400 11px Inter, sans-serif; fill: #6B6259; }
+          .a1bN { font: 700 11px Inter, sans-serif; fill: #1C1917; }
+          .a1bX { font: 800 26px Inter, sans-serif; fill: #713F12; }
+          .a1bR { font: 800 26px Inter, sans-serif; fill: #991B1B; }
+          .a1bQ { font: 700 11px Inter, sans-serif; fill: #991B1B; }
+        </style>
+
+        <text class="a1bK" x="14" y="30">Five projects, ranked by points of dev error per week</text>
+
+        <rect x="14" y="44" width="160" height="196" rx="10" fill="#FEFCE8" stroke="#D9D2C5"></rect>
+        <rect x="14" y="44" width="160" height="34" rx="10" fill="#713F12"></rect>
+        <text class="a1bT" x="94" y="66" text-anchor="middle">Re-label the dev set</text>
+        <text class="a1bX" x="94" y="124" text-anchor="middle">1.62</text>
+        <text class="a1bM" x="94" y="142" text-anchor="middle">points per week</text>
+        <text class="a1bB" x="94" y="176" text-anchor="middle">ceiling 1.6 points</text>
+        <text class="a1bB" x="94" y="194" text-anchor="middle">1 week</text>
+        <text class="a1bM" x="94" y="224" text-anchor="middle">1st · the dull one</text>
+
+        <rect x="186" y="44" width="160" height="196" rx="10" fill="#FEFCE8" stroke="#D9D2C5"></rect>
+        <rect x="186" y="44" width="160" height="34" rx="10" fill="#A16207"></rect>
+        <text class="a1bT" x="266" y="66" text-anchor="middle">Infrared denoising</text>
+        <text class="a1bX" x="266" y="124" text-anchor="middle">0.84</text>
+        <text class="a1bM" x="266" y="142" text-anchor="middle">points per week</text>
+        <text class="a1bB" x="266" y="176" text-anchor="middle">ceiling 2.5 points</text>
+        <text class="a1bB" x="266" y="194" text-anchor="middle">3 weeks</text>
+        <text class="a1bM" x="266" y="224" text-anchor="middle">2nd · biggest ceiling</text>
+
+        <rect x="358" y="44" width="160" height="196" rx="10" fill="#FEFCE8" stroke="#D9D2C5"></rect>
+        <rect x="358" y="44" width="160" height="34" rx="10" fill="#FACC15"></rect>
+        <text class="a1bH" x="438" y="66" text-anchor="middle">Motion-trigger filter</text>
+        <text class="a1bX" x="438" y="124" text-anchor="middle">0.80</text>
+        <text class="a1bM" x="438" y="142" text-anchor="middle">points per week</text>
+        <text class="a1bB" x="438" y="176" text-anchor="middle">ceiling 1.6 points</text>
+        <text class="a1bB" x="438" y="194" text-anchor="middle">2 weeks</text>
+        <text class="a1bM" x="438" y="224" text-anchor="middle">3rd</text>
+
+        <rect x="530" y="44" width="160" height="196" rx="10" fill="#FEFCE8" stroke="#D9D2C5"></rect>
+        <rect x="530" y="44" width="160" height="34" rx="10" fill="#FEF08A"></rect>
+        <text class="a1bH" x="610" y="66" text-anchor="middle">Occlusion augmentation</text>
+        <text class="a1bX" x="610" y="124" text-anchor="middle">0.30</text>
+        <text class="a1bM" x="610" y="142" text-anchor="middle">points per week</text>
+        <text class="a1bB" x="610" y="176" text-anchor="middle">ceiling 1.2 points</text>
+        <text class="a1bB" x="610" y="194" text-anchor="middle">4 weeks</text>
+        <text class="a1bM" x="610" y="224" text-anchor="middle">4th</text>
+
+        <rect x="702" y="44" width="160" height="196" rx="10" fill="#FEFCE8" stroke="#991B1B" stroke-width="2"></rect>
+        <rect x="702" y="44" width="160" height="34" rx="10" fill="#FEF08A"></rect>
+        <text class="a1bH" x="782" y="66" text-anchor="middle">Deer-vs-elk specialist</text>
+        <text class="a1bR" x="782" y="124" text-anchor="middle">0.21</text>
+        <text class="a1bM" x="782" y="142" text-anchor="middle">points per week</text>
+        <text class="a1bB" x="782" y="176" text-anchor="middle">ceiling 1.7 points</text>
+        <text class="a1bB" x="782" y="194" text-anchor="middle">8 weeks</text>
+        <text class="a1bQ" x="782" y="224" text-anchor="middle">5th · the favourite</text>
+
+        <rect x="14" y="266" width="14" height="14" rx="3" fill="#60A5FA"></rect>
+        <text class="a1bN" x="38" y="278">Ceiling alone ranks the specialist model second. Points per week ranks it last.</text>
+      </svg>
+      <figcaption>🔍 Click to zoom - the five projects priced, with ceiling and weeks under each.</figcaption>
+    </figure>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Five plausible projects, funded by conviction<span class="mini">2 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Every machine learning team has roughly five projects it could do next, and every one of them is plausible. That is what makes the decision hard: none of the five is stupid. The denoising pass attacks the biggest category of errors. The specialist model attacks the hardest and most interesting one. Re-labelling the dev set is admitting the labels were wrong, which nobody enjoys. The motion filter is somebody else's team. The augmentation is what the last conference talk recommended.</p>
+        <p>In the absence of a sheet, the one that gets funded is the one with the most convincing sponsor, and the most convincing sponsor is usually the most senior engineer arguing for the most interesting problem. That is not a character flaw; it is what happens when the only inputs are opinions. The remedy is to give the decision two numbers it did not have.</p>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Two numbers price a project before it starts<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p><strong>The first number is the ceiling.</strong> Chapter 14 puts it plainly: if 5 percent of the errors fall in the category a project fixes, then "5% is a 'ceiling' (meaning maximum possible amount) for how much the proposed project could help", and a 90 percent accurate system improves "at best" to 90.5 percent. A project cannot fix errors that are not in its category, however well it is built. Session 3 shows how the share comes out of a spreadsheet of 100 mistakes; tonight the shares are given.</p>
+        <p><strong>The second number is the cost in weeks.</strong> Engineers can estimate this to within a factor of two, which is all the ranking needs. Divide ceiling by weeks and the five projects fall into an order that has nothing to do with who is sponsoring them.</p>
+        <ul>
+          <li><strong>Re-labelling the dev set</strong> fixes the smallest category, 14 percent of errors, but costs one week: 1.6 points of ceiling, <strong>1.62 points per week</strong>.</li>
+          <li><strong>The deer-versus-elk specialist model</strong> fixes 19 percent of errors at 70 percent effectiveness, 1.7 points of ceiling, and costs eight weeks: <strong>0.21 points per week</strong>.</li>
+          <li>The two ceilings are close. The costs differ eightfold. Nobody who computed both numbers would fund the specialist first; everybody who computed only the first would.</li>
+        </ul>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>What the order costs the field<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Order does not change where the team finishes. The same five projects remove the same errors, so both honest orders land at 3.6 percent Blackbox error after eighteen weeks. What order changes is how long the field lives with the mistakes on the way there.</p>
+        <ul>
+          <li><strong>Points-per-week order</strong> (re-label, motion filter, denoise, occlusion, specialist): Blackbox error 11.2 at the start, <strong>6.2 percent by week 6</strong>, 3.6 at week 18.</li>
+          <li><strong>Most interesting first</strong> (the specialist model, then the rest): <strong>still 11.2 percent at week 6</strong>, 9.2 at week 8 when the specialist finally ships, 3.6 at week 18.</li>
+          <li><strong>The difference</strong> is eight weeks during which every camera in the field was wrong on more than one frame in ten, for a project that ended up in exactly the same place.</li>
+        </ul>
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <p>Lanternfish's most senior engineer wanted the deer-versus-elk model, and it was genuinely good work. It shipped in week 8 to a dev set that was still 11.2 percent wrong, when a one-week re-labelling job and a two-week motion filter would have had the team at 9.0 percent by week 3. The conservation groups paying for the cameras did not experience "interesting". They experienced eight extra weeks of misidentified animals.</p>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>Strategy is the four you will not do, shown on a sheet<span class="mini">4 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Choosing one project is easy; every team does it. Strategy is being able to say which four of the five you will not do this quarter, and being able to show why with a sheet rather than a hunch. The sheet matters because the sponsors of the four are still in the room, and "I have a feeling" does not survive the meeting. "Yours is 0.21 points per week and this one is 1.62; yours is fourth in the queue and starts in week 10" does.</p>
+        <ul>
+          <li><strong>The sheet is the decision, not the justification.</strong> Compute it first, then decide. A sheet built after the choice is a press release.</li>
+          <li><strong>A no with a date is not a no.</strong> The specialist model is not cancelled; it is fifth, and week 10 is written next to it. Sponsors accept a queue far more readily than a rejection.</li>
+          <li><strong>The sheet will be wrong in the details</strong> and right in the order. Estimates of weeks are rough; the gap between 1.62 and 0.21 survives any estimate being off by half.</li>
+          <li><strong>Every error counts the same on this sheet.</strong> A mislabelled protected species is not a blurry deer, and a real sheet would add a severity column. It reorders the middle and does not rescue the interesting project.</li>
+        </ul>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ DEMO ============ -->
+  <section class="section" id="demo-1">
+    <div class="section-kicker">
+      <span class="klabel">Build-along</span>
+      <h2>The project list, priced</h2>
+      <span class="tag demo">★ 20 min · everyone builds</span>
+    </div>
+    <p class="lede">Bring the list of things your team is currently arguing about doing next. If you have nothing to hand, use Lanternfish's five. A sheet of paper is enough; the arithmetic is one division per row.</p>
+
+    <div class="steps">
+      <div class="step">
+        <p><strong>List the five projects your team is arguing about.</strong> Write them as the sponsor would, in one line each. Do not filter yet; the point is that all five are plausible and only one can go first.</p>
+      </div>
+      <div class="step">
+        <p><strong>For each, write the error category it fixes and a guess at that category's share of current errors.</strong> If nobody has looked at the mistakes, the guess will be rough, and session 3 replaces it with a count. Lanternfish: night blur 33 percent, deer-versus-elk 19, half out of frame 19, empty frame 16, wrong label 14.</p>
+      </div>
+      <div class="step">
+        <p><strong>Write its cost in weeks.</strong> Ask the engineer who would do it, accept the first answer, and do not negotiate it down. A factor of two either way does not change the order.</p>
+      </div>
+      <div class="step">
+        <p><strong>Compute rough points per week.</strong> Share of errors, times how much of that category the project would actually fix, times the current error rate, divided by weeks. Lanternfish's re-label job: 14 percent of errors, 90 percent fixed, on 12.8 points of error, in one week, is 1.62. The specialist: 19 percent, 70 percent fixed, eight weeks, is 0.21.</p>
+      </div>
+      <div class="step">
+        <p><strong>Circle the project with a big ceiling and the lowest points per week.</strong> That is the one somebody is passionate about. At Lanternfish it is the specialist model, second-highest ceiling on the sheet and last by points per week. Write the week it would start under the honest order next to it, and take that sentence to its sponsor.</p>
+      </div>
+    </div>
+
+    <div class="prompt-box good">
+      <span class="label">★ The priced list, as it goes to the team</span>
+Lanternfish species classifier, dev error 12 percent (120 of 1,000). Order of work for the quarter:
+
+  1. Re-label the dev set          wrong labels, 14 pct of errors   1 week    1.62 pts/week   starts week 1
+  2. Motion-trigger filter         empty frames, 16 pct             2 weeks   0.80 pts/week   starts week 2
+  3. Infrared denoising pass       night blur, 33 pct               3 weeks   0.84 pts/week   starts week 4
+  4. Occlusion augmentation        half out of frame, 19 pct        4 weeks   0.30 pts/week   starts week 7
+  5. Deer-vs-elk specialist model  deer called elk, 19 pct          8 weeks   0.21 pts/week   starts week 11
+
+Expected Blackbox error: 6.2 percent at week 6, 3.6 percent at week 18.
+Not doing this quarter: items 4 and 5 unless items 1 to 3 finish early. Both have a start date, neither is cancelled.
+    </div>
+
+    <div class="callout tip">
+      <p><strong>The second and third rows can swap and the sheet is still right.</strong> 0.84 and 0.80 are within any estimate's error, so the motion filter goes first because it is two weeks rather than three and gets a reading sooner. What the sheet cannot be argued out of is the top row and the bottom row, and those are the two the room was fighting about.</p>
+    </div>
+  </section>
+
+  <!-- ============ HOMEWORK ============ -->
+  <section class="section" id="exercise">
+    <div class="section-kicker">
+      <span class="klabel">Homework</span>
+      <h2>Before session 2</h2>
+      <span class="tag exercise">30 min</span>
+    </div>
+    <ol>
+      <li>For one machine learning project you fund, count how many times the dev set was read last quarter. If the answer is one or zero, write down which of the four loop-stretchers is responsible and who owns it.</li>
+      <li>Find out whether that project's dev set is drawn from the traffic the field will judge. Ask the one question: if the model scored perfectly on the dev set, would the users be happy? Write down the answer and who gave it.</li>
+      <li>Take the priced list from the build-along to the sponsor of the project that came last. Say the points-per-week number and the start week out loud. Note what they push back on; it is almost always the weeks estimate, and the order survives it.</li>
+      <li>Before session 2, write down the number your team currently optimises. If it takes more than one number to say, session 2 is about exactly that.</li>
+    </ol>
+  </section>
+
+  <!-- ============ QUIZ ============ -->
+  <section class="section" id="quiz">
+    <div class="section-kicker">
+      <span class="klabel">Check yourself</span>
+      <h2>Three questions</h2>
+    </div>
+
+    <div class="quiz-q" data-answer="1">
+      <p class="qtext">Two teams start the same problem. One picks a better architecture and builds it over the quarter; the other builds an ordinary model in a week and tries an idea every fortnight. Who is ahead at the end of the quarter, and why?</p>
+      <button class="qopt" type="button">A · The first team, because the better architecture has a higher ceiling</button>
+      <button class="qopt" type="button">B · The second team, because it has read the dev set six times and the first team once, and readings are where a team learns what actually works</button>
+      <button class="qopt" type="button">C · Neither, because both reach the same place eventually</button>
+      <p class="qwhy">Loop speed, not the starting idea, decides where each team is after a quarter. Ideas compound through readings, and readings only happen when the loop closes.</p>
+    </div>
+
+    <div class="quiz-q" data-answer="2">
+      <p class="qtext">Re-labelling the dev set fixes the smallest category of errors on Lanternfish's sheet, 14 percent, yet ranks first. Why?</p>
+      <button class="qopt" type="button">A · Because wrong labels are always the most important category</button>
+      <button class="qopt" type="button">B · Because it has the largest ceiling on the sheet</button>
+      <button class="qopt" type="button">C · Because it costs one week, so its 1.6 points of ceiling are 1.62 points per week, against 0.21 for the eight-week specialist model</button>
+      <p class="qwhy">Ceiling and cost are two numbers. Ranking on ceiling alone puts the specialist model second; ranking on points per week puts it last.</p>
+    </div>
+
+    <div class="quiz-q" data-answer="0">
+      <p class="qtext">Both honest orders of work end at 3.6 percent Blackbox error after eighteen weeks. What did the order change?</p>
+      <button class="qopt" type="button">A · How long the field lived with the error: 6.2 percent by week 6 in one order, still 11.2 in the other</button>
+      <button class="qopt" type="button">B · The final error rate, by a small amount</button>
+      <button class="qopt" type="button">C · Nothing, which is why order does not matter</button>
+      <p class="qwhy">The same five projects reach the same place. Order decides whether the team spends eight weeks at double-digit error waiting for the interesting project to ship.</p>
+    </div>
+
+    <p class="quiz-score"></p>
+  </section>
+
+  <!-- ============ COVERAGE ============ -->
+  <section class="section" id="official">
+    <div class="section-kicker">
+      <span class="klabel">Sources covered</span>
+      <h2>What tonight maps to</h2>
+    </div>
+    <div class="covered">
+      <div class="covered-row">
+        <span class="status pill solid">✓</span>
+        <span class="name">Machine Learning Yearning, chapter 13</span>
+        <span class="note">Build your first system quickly, then iterate: the rule, why it is broken in the name of rigour, and the Lanternfish six months as the cost.</span>
+      </div>
+      <div class="covered-row">
+        <span class="status pill solid">✓</span>
+        <span class="name">Machine Learning Yearning, the opening argument</span>
+        <span class="note">Why iteration speed decides projects: the team that turns the loop faster learns faster, whoever picked the better idea.</span>
+      </div>
+      <div class="covered-row">
+        <span class="status pill solid">✓</span>
+        <span class="name">The 12-percent starting point</span>
+        <span class="note">120 of 1,000 dev images wrong once the dev set reflected the field; the baseline every later session measures against.</span>
+      </div>
+      <div class="covered-row">
+        <span class="status pill light">◐</span>
+        <span class="name">Machine Learning Yearning, chapter 14</span>
+        <span class="note">The ceiling of a project, named tonight with the book's 5 percent example. Session 3 computes it from a spreadsheet of 100 mistakes.</span>
+      </div>
+      <div class="covered-row">
+        <span class="status pill light">◐</span>
+        <span class="name">Machine Learning Yearning, chapters 5 to 7</span>
+        <span class="note">Why the web-photo dev set lied. Practitioner session 1 builds the honest one; tonight takes it as given.</span>
+      </div>
+      <div class="covered-row">
+        <span class="status pill inkpill">·</span>
+        <span class="name">Metric definitions, thresholds, calibration</span>
+        <span class="note">Not covered by design. The model-evaluation course owns how to score; tonight assumes accuracy and session 2 asks whether it should.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ CHEAT SHEET ============ -->
+  <section class="cheat" id="cheatsheet">
+    <h3>Session 1 cheat sheet</h3>
+    <div class="grid-2">
+      <div class="cheat-item"><b>Progress is a loop with a speed</b><span>Idea, code, experiment, read the dev set. One turn is one thing learned.</span></div>
+      <div class="cheat-item"><b>The faster loop wins</b><span>Six readings beat one, whoever picked the better architecture.</span></div>
+      <div class="cheat-item"><b>Build first, then iterate</b><span>Chapter 13. A disappointing number in week one is the cheapest information the project will buy.</span></div>
+      <div class="cheat-item"><b>Ask "how many times will we find out"</b><span>Not "is this the right idea". A quarter that answers once is a bet.</span></div>
+      <div class="cheat-item"><b>Two numbers price a project</b><span>Ceiling: the share of errors it could remove. Cost: weeks. Divide.</span></div>
+      <div class="cheat-item"><b>1.62 against 0.21</b><span>Re-label the dev set against the specialist model. Close ceilings, eight times the cost.</span></div>
+      <div class="cheat-item"><b>Order is eight weeks</b><span>6.2 percent by week 6, or 11.2. Both orders reach 3.6 at week 18.</span></div>
+      <div class="cheat-item"><b>Strategy is the four you will not do</b><span>Shown on a sheet, each with a start week, none cancelled.</span></div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="pagefoot">
+  <div class="wrap">
+    <p>Leader session 1 of 6 · learn-ml-strategy-with-phoebe · by Phoebe Fu</p>
+    <nav class="pagenav">
+      <a href="../index.html">← All sessions</a>
+      <a href="a2-one-number-or-two-kinds.html">Leader session 2 · One number, or two kinds →</a>
+    </nav>
+  </div>
+</footer>
+
+<script src="../assets/app.js?v=1"></script>
+</body>
+</html>

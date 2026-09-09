@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- social:start -->
+<meta name="description" content="Practitioner session 1 of 10. A dev set drawn from the traffic you care about and sized for the difference you need to see: 100 examples cannot detect 0.1 percent, 10,000 can. Lanternfish's first dev set was neither, and every decision made on it was wrong.">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Learn with Phoebe">
+<meta property="og:title" content="Dev and test sets that tell the truth - learn ml strategy with phoebe">
+<meta property="og:description" content="Practitioner session 1 of 10. Same distribution, sized for the difference you need to see. Everything downstream is measured on this.">
+<meta property="og:url" content="https://phoebefu6.github.io/learn-ml-strategy-with-phoebe/courses/p1-dev-and-test-sets.html">
+<meta property="og:image" content="https://phoebefu6.github.io/learn-ml-strategy-with-phoebe/assets/og-cover.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Dev and test sets that tell the truth - learn ml strategy with phoebe">
+<meta name="twitter:description" content="Same distribution as production, sized for the difference you need to see. The whole discipline stands on this.">
+<meta name="twitter:image" content="https://phoebefu6.github.io/learn-ml-strategy-with-phoebe/assets/og-cover.png">
+<!-- social:end -->
+<title>Practitioner session 1 · Dev and test sets that tell the truth - learn ml strategy with phoebe</title>
+<link rel="stylesheet" href="../assets/style.css?v=1">
+</head>
+<body>
+
+<div class="toolbar">
+  <div class="wrap">
+    <span class="crumb"><a href="../index.html">learn-ml-strategy-with-phoebe</a> / Practitioner session 1 of 10</span>
+    <button class="btn" id="toggle-all" type="button">Expand all</button>
+    <button class="btn primary" id="zoom-toggle" type="button">Projector zoom: off</button>
+  </div>
+</div>
+
+<header class="masthead">
+  <div class="wrap">
+    <div class="eyebrow">Learn ML Strategy with Phoebe · Practitioner session 1 of 10</div>
+    <h1>Dev and test sets that <span class="accent">tell the truth</span></h1>
+    <p class="sub">Every number in the next nine sessions is measured on the dev set. If the dev set is drawn from the wrong traffic, every decision made on it is a decision about the wrong problem. If it is too small, improvements you actually made will be invisible and noise will look like progress. Lanternfish's first dev set was 400 daytime photos scraped from the web, for a classifier that runs on night infrared trail cameras. Tonight you build the one that replaces it, and learn the two questions that decide whether a dev set can be trusted at all.</p>
+    <div class="chip-row">
+      <span class="chip level">🟢 Foundational</span>
+      <span class="chip audience">Data scientists and ML engineers</span>
+      <span class="chip audience">Anyone who has argued about whether a model got better</span>
+      <span class="chip time">45 min</span>
+    </div>
+    <div class="agenda">
+      <span class="a1" style="flex:1">0-3 · Welcome</span>
+      <span class="a2" style="flex:5">3-22 · Distribution and size</span>
+      <span class="a3" style="flex:4">22-40 · Build-along: the Lanternfish dev set</span>
+      <span class="a4" style="flex:1">40-45 · Q&amp;A</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ============ INTRO ============ -->
+  <section class="section" id="intro">
+    <div class="section-kicker">
+      <span class="klabel">Part 0</span>
+      <h2>How the practitioner track works</h2>
+    </div>
+    <p class="lede">Ten sessions, 45 minutes each, one decision: <strong>what to work on next</strong> for one classifier. Tonight the dev set it is all measured on. Then the first system in session 2, the error-analysis spreadsheet in 3, the Eyeball and Blackbox halves in 4, bias and variance in 5, learning curves in 6, data mismatch in 7, the Optimization Verification test in 8, error analysis by parts in 9, and in session 10 the whole decision is scored on a bench. The classifier throughout belongs to <strong>Lanternfish</strong>, a wildlife-camera startup whose species model is wrong on 12 percent of its dev set and whose team has five opinions about why.</p>
+
+    <div class="legend">
+      <span class="pill">Live = presented in the 45 minutes</span>
+      <span class="pill">Self-study = the full depth, after class</span>
+      <span class="pill">🔍 Every diagram zooms</span>
+    </div>
+
+    <div class="callout win">
+      <p><strong>★ What you walk out with tonight.</strong> A dev set drawn from the distribution you will be judged on, not the one that was convenient. A size chosen from the smallest improvement you need to see, with the arithmetic that says 100 examples cannot detect a 0.1 percent change and 10,000 can. And the rule that saves the most months: when the dev set stops reflecting what you care about, change the dev set, not your opinion of the model.</p>
+    </div>
+
+    <details class="card" open>
+      <summary><span class="mode live">Live</span>Why the dev set comes before the model<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>A machine learning project is a loop: try an idea, measure it on the dev set, keep it or drop it. The dev set is the only instrument in that loop. A team with a good dev set and a mediocre model will iterate its way to a good model; a team with a bad dev set and a brilliant model will iterate its way somewhere it did not mean to go, because every reading was of the wrong thing.</p>
+        <p>That is why the discipline starts here rather than with architecture. The two properties that make a dev set trustworthy are cheap to check and expensive to skip: it has to come from the distribution you will be judged on, and it has to be large enough to show the size of improvement you are going to be making.</p>
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <p>Lanternfish's classifier scored 94 percent on its first dev set and 78 percent in the field. The dev set was 400 web photos, daytime, centred, sharp. The cameras produce night infrared frames with animals half out of shot. Every one of the six model changes accepted in the first quarter had been accepted because it moved the wrong number.</p>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>The vocabulary for the whole track<span class="mini">4 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <ul>
+          <li><strong>Training set</strong> - what the model learns from. Can come from anywhere, as long as you know it did.</li>
+          <li><strong>Dev set</strong> - what you tune and choose on. Must come from the distribution you care about. Also called the validation or hold-out set.</li>
+          <li><strong>Test set</strong> - what you report on, once, at the end. Same distribution as the dev set, never tuned on.</li>
+          <li><strong>Eyeball dev set</strong> - the part of the dev set you look at by hand, about 10 percent. Session 4.</li>
+          <li><strong>Blackbox dev set</strong> - the rest, which you never look at, so it can still tell you the truth after you have tuned to what you saw. Session 4.</li>
+          <li><strong>Single-number evaluation metric</strong> - one number the team optimises. Two numbers is a debate; one is a decision. Leader session 2.</li>
+          <li><strong>Error analysis</strong> - looking at misclassified dev examples and categorising them, so the next project is chosen by ceiling rather than by interest. Session 3.</li>
+        </ul>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 1 ============ -->
+  <section class="section" id="part-1">
+    <div class="section-kicker">
+      <span class="klabel">Part 1 · covers the distribution rule and its consequences</span>
+      <h2>Dev and test come from the traffic you will be judged on</h2>
+      <span class="tag concept">9 min live</span>
+    </div>
+    <p class="lede">The rule is one sentence: choose dev and test sets to reflect the data you expect to get in the future and want to do well on. The training set is allowed to be different; the dev and test sets are not. Almost every violation comes from convenience, and almost every violation is discovered in production.</p>
+
+    <figure class="zoomable">
+      <svg viewBox="0 0 880 330" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Three data sources for Lanternfish: web photos, the camera archive, and next month's camera traffic. The training set may draw from all of them. The dev and test sets are drawn only from the camera traffic, sized differently, and the test set is touched once at the end.">
+        <style>
+          .p1aT { font: 800 12px Inter, sans-serif; fill: #fff; }
+          .p1aH { font: 800 12px Inter, sans-serif; fill: #1C1917; }
+          .p1aB { font: 400 11px Inter, sans-serif; fill: #1C1917; }
+          .p1aM { font: 400 11px Inter, sans-serif; fill: #6B6259; }
+          .p1aN { font: 700 11px Inter, sans-serif; fill: #1C1917; }
+          .p1aR { font: 700 11px Inter, sans-serif; fill: #991B1B; }
+        </style>
+        <defs>
+          <marker id="p1aAr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#D9D2C5"></path></marker>
+        </defs>
+
+        <text class="p1aH" x="14" y="30">Where the data comes from</text>
+        <rect x="14" y="44" width="200" height="54" rx="9" fill="#FEF08A"></rect>
+        <text class="p1aH" x="114" y="66" text-anchor="middle">Web photos</text>
+        <text class="p1aB" x="114" y="84" text-anchor="middle">daytime, sharp, centred</text>
+        <rect x="14" y="110" width="200" height="54" rx="9" fill="#FACC15"></rect>
+        <text class="p1aH" x="114" y="132" text-anchor="middle">Camera archive</text>
+        <text class="p1aB" x="114" y="150" text-anchor="middle">last year, 40 cameras</text>
+        <rect x="14" y="176" width="200" height="54" rx="9" fill="#A16207"></rect>
+        <text class="p1aT" x="114" y="198" text-anchor="middle">Live camera traffic</text>
+        <text class="p1aB" x="114" y="216" text-anchor="middle" fill="#FEF9C3">what the field will judge</text>
+
+        <text class="p1aH" x="330" y="30">What each set may draw from</text>
+        <rect x="330" y="44" width="220" height="54" rx="9" fill="#FEFCE8" stroke="#FACC15"></rect>
+        <text class="p1aH" x="440" y="66" text-anchor="middle">Training set</text>
+        <text class="p1aB" x="440" y="84" text-anchor="middle">anything, if you know what</text>
+        <rect x="330" y="120" width="220" height="54" rx="9" fill="#FEFCE8" stroke="#A16207" stroke-width="2"></rect>
+        <text class="p1aH" x="440" y="142" text-anchor="middle">Dev set</text>
+        <text class="p1aB" x="440" y="160" text-anchor="middle">live traffic only, 1,000+</text>
+        <rect x="330" y="196" width="220" height="54" rx="9" fill="#FEFCE8" stroke="#A16207" stroke-width="2"></rect>
+        <text class="p1aH" x="440" y="218" text-anchor="middle">Test set</text>
+        <text class="p1aB" x="440" y="236" text-anchor="middle">live traffic only, touched once</text>
+
+        <line x1="216" y1="71" x2="326" y2="66" stroke="#D9D2C5" stroke-width="1.5" marker-end="url(#p1aAr)"></line>
+        <line x1="216" y1="137" x2="326" y2="74" stroke="#D9D2C5" stroke-width="1.5" marker-end="url(#p1aAr)"></line>
+        <line x1="216" y1="203" x2="326" y2="82" stroke="#D9D2C5" stroke-width="1.5" marker-end="url(#p1aAr)"></line>
+        <line x1="216" y1="207" x2="326" y2="147" stroke="#A16207" stroke-width="2" marker-end="url(#p1aAr)"></line>
+        <line x1="216" y1="211" x2="326" y2="223" stroke="#A16207" stroke-width="2" marker-end="url(#p1aAr)"></line>
+
+        <rect x="600" y="44" width="266" height="206" rx="10" fill="#FEFCE8" stroke="#D9D2C5"></rect>
+        <text class="p1aH" x="616" y="70">What went wrong last quarter</text>
+        <text class="p1aB" x="616" y="96">dev set: 400 web photos</text>
+        <text class="p1aB" x="616" y="114">dev accuracy: 94 percent</text>
+        <text class="p1aR" x="616" y="132">field accuracy: 78 percent</text>
+        <text class="p1aM" x="616" y="160">six model changes accepted,</text>
+        <text class="p1aM" x="616" y="176">each because it moved a</text>
+        <text class="p1aM" x="616" y="192">number about the wrong data</text>
+        <text class="p1aM" x="616" y="220">the model was never the problem</text>
+
+        <rect x="14" y="290" width="14" height="14" rx="3" fill="#60A5FA"></rect>
+        <text class="p1aN" x="38" y="302">Training may come from anywhere. Dev and test come only from what the field will judge.</text>
+      </svg>
+      <figcaption>🔍 Click to zoom - three sources, and which sets are allowed to draw from each.</figcaption>
+    </figure>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Training can differ, dev and test cannot<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>The asymmetry surprises people. Training data is allowed to come from anywhere useful: web photos, a public dataset, last year's archive, synthetic augmentation. More of it usually helps, and session 7 covers what to do when it differs from production. Dev and test data are not allowed that freedom, because they are the definition of "doing well". A dev set from the wrong distribution does not measure your model badly; it measures a different problem precisely.</p>
+        <p>The practical test is a question: if the model scored perfectly on this dev set, would the field be happy? For Lanternfish's web-photo dev set the answer was obviously no, and nobody had asked.</p>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Dev and test come from the same distribution as each other<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>A second, quieter rule: the dev set and the test set must match each other. If the team tunes for months on a dev set from cameras in one region and the test set is cameras from another, the final number will disappoint and nobody will know which of two things happened: the model overfit the dev set, or the test set is simply a different problem. Drawing both from one pool and splitting at random removes the second explanation, so a gap between dev and test means exactly one thing.</p>
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <p>Lanternfish's second attempt built a dev set from the northern cameras because that archive was labelled, and a test set from the southern ones because those were the paying customer. Dev went to 91, test came in at 84, and the team spent three weeks arguing about overfitting before anybody compared the two distributions. The model was fine. The sets were from different forests.</p>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>When to change the dev set<span class="mini">4 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Three signals that the dev set, not the model, is the thing to change:</p>
+        <ul>
+          <li><strong>The field disagrees with the dev set.</strong> Users or downstream systems complain about a model the dev set says is good. The dev set no longer reflects the traffic. Rebuild it from current production data.</li>
+          <li><strong>The model has overfit the dev set.</strong> Dev keeps improving, test does not. Too many decisions were made on the same examples. Get a fresh dev set, and adopt the Eyeball and Blackbox split from session 4 so it cannot happen again.</li>
+          <li><strong>The metric rewards the wrong thing.</strong> A classifier that ranks a rare protected species below a common one might score well on accuracy and badly on the job. That is a metric change, leader session 2, and it usually comes with a dev set change because the examples you weight have to be present.</li>
+        </ul>
+        <p>What is not a signal: a number you dislike. A dev set that says the model is worse than you hoped is doing its job.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 2 ============ -->
+  <section class="section" id="part-2">
+    <div class="section-kicker">
+      <span class="klabel">Part 2 · covers dev set size</span>
+      <h2>Large enough to see the improvement you are going to make</h2>
+      <span class="tag concept">8 min live</span>
+    </div>
+    <p class="lede">The size question has a clean answer once it is asked properly. Not "how much data do we have" but "how small an improvement do we need to detect". A dev set of 100 examples cannot tell a 90.0 percent classifier from a 90.1 percent one: the difference is a tenth of an example. Dev sets of 1,000 to 10,000 are common for exactly this reason, and at 10,000 a 0.1 percent improvement becomes visible.</p>
+
+    <figure class="zoomable">
+      <svg viewBox="0 0 880 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Three dev set sizes compared: 100 examples where a 0.1 percent improvement is a tenth of an example and invisible, 1,000 where a one percent improvement is ten examples and visible, and 10,000 where 0.1 percent is ten examples and visible.">
+        <style>
+          .p1bT { font: 800 12px Inter, sans-serif; fill: #fff; }
+          .p1bH { font: 800 12px Inter, sans-serif; fill: #1C1917; }
+          .p1bB { font: 400 11px Inter, sans-serif; fill: #1C1917; }
+          .p1bM { font: 400 11px Inter, sans-serif; fill: #6B6259; }
+          .p1bN { font: 700 11px Inter, sans-serif; fill: #1C1917; }
+          .p1bR { font: 800 12px Inter, sans-serif; fill: #991B1B; }
+          .p1bG { font: 800 12px Inter, sans-serif; fill: #713F12; }
+        </style>
+
+        <rect x="14" y="30" width="270" height="200" rx="10" fill="#FEFCE8" stroke="#D9D2C5"></rect>
+        <rect x="14" y="30" width="270" height="36" rx="10" fill="#FEF08A"></rect>
+        <text class="p1bH" x="149" y="54" text-anchor="middle">100 examples</text>
+        <text class="p1bB" x="30" y="94">1 percent = 1 example</text>
+        <text class="p1bB" x="30" y="112">0.1 percent = a tenth of one</text>
+        <text class="p1bR" x="30" y="146">cannot see 90.0 vs 90.1</text>
+        <text class="p1bM" x="30" y="176">noise the size of the change</text>
+        <text class="p1bM" x="30" y="194">you are trying to make</text>
+        <text class="p1bM" x="30" y="216">Lanternfish's first set: 400</text>
+
+        <rect x="305" y="30" width="270" height="200" rx="10" fill="#FEFCE8" stroke="#D9D2C5"></rect>
+        <rect x="305" y="30" width="270" height="36" rx="10" fill="#FACC15"></rect>
+        <text class="p1bH" x="440" y="54" text-anchor="middle">1,000 examples</text>
+        <text class="p1bB" x="321" y="94">1 percent = 10 examples</text>
+        <text class="p1bB" x="321" y="112">0.1 percent = 1 example</text>
+        <text class="p1bG" x="321" y="146">sees a 1 point change</text>
+        <text class="p1bM" x="321" y="176">the common size, and enough</text>
+        <text class="p1bM" x="321" y="194">for a 12 percent error rate</text>
+        <text class="p1bM" x="321" y="216">Lanternfish's new set: 1,000</text>
+
+        <rect x="596" y="30" width="270" height="200" rx="10" fill="#FEFCE8" stroke="#D9D2C5"></rect>
+        <rect x="596" y="30" width="270" height="36" rx="10" fill="#A16207"></rect>
+        <text class="p1bT" x="731" y="54" text-anchor="middle">10,000 examples</text>
+        <text class="p1bB" x="612" y="94">1 percent = 100 examples</text>
+        <text class="p1bB" x="612" y="112">0.1 percent = 10 examples</text>
+        <text class="p1bG" x="612" y="146">sees a 0.1 point change</text>
+        <text class="p1bM" x="612" y="176">for mature systems where</text>
+        <text class="p1bM" x="612" y="194">tenths of a point are the game</text>
+        <text class="p1bM" x="612" y="216">search, ads, recommendations</text>
+
+        <rect x="14" y="262" width="14" height="14" rx="3" fill="#60A5FA"></rect>
+        <text class="p1bN" x="38" y="274">Size the dev set from the smallest improvement you need to see, not from the data you happen to have.</text>
+      </svg>
+      <figcaption>🔍 Click to zoom - what each size can and cannot see.</figcaption>
+    </figure>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Counting the examples an improvement is worth<span class="mini">4 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>The arithmetic is one multiplication. An improvement of one point on a dev set of 1,000 is ten examples going from wrong to right. On a set of 100 it is one example, and one example flips for reasons that have nothing to do with the model. So before choosing a size, write down the smallest improvement a project is expected to deliver, and make that improvement worth at least a handful of examples.</p>
+        <p>For Lanternfish at 12 percent error, the projects in session 3 promise between one and three points each. A thousand examples makes a one-point change ten examples and a three-point change thirty, both clearly visible. Ten thousand would be nicer and would cost ten times the labelling; a thousand is enough for the decisions this team is about to make.</p>
+        <div class="prompt-box good">
+          <span class="label">★ Try it now</span>
+-- how many examples does each candidate improvement move, at each dev set size?
+with sizes as (select unnest(array[100, 400, 1000, 10000]) as n),
+     gains as (select unnest(array[0.001, 0.01, 0.03]) as gain)
+select n, gain, round(n * gain, 1) as examples_moved,
+       case when n * gain &lt; 3 then 'invisible' else 'visible' end as verdict
+from sizes cross join gains
+order by n, gain;
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>The test set, and how not to spend it<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <ul>
+          <li><strong>Size it to the confidence you need in the final number,</strong> not to a fraction of the data. The old 70/30 habit made sense when data was scarce; with a million examples, 30 percent held out is waste.</li>
+          <li><strong>Touch it once.</strong> Every decision made on the test set turns it into another dev set. If the test number is disappointing, the answer is a new test set, not a second look.</li>
+          <li><strong>Keep it from the same pool as the dev set,</strong> so a dev-to-test gap can only mean one thing.</li>
+          <li><strong>Report it with the dev number beside it.</strong> A test result on its own hides whether the team overfit the dev set, which is the failure session 4 is built to prevent.</li>
+        </ul>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ DEMO ============ -->
+  <section class="section" id="demo-1">
+    <div class="section-kicker">
+      <span class="klabel">Build-along</span>
+      <h2>Build the Lanternfish dev set</h2>
+      <span class="tag demo">★ 18 min · everyone builds</span>
+    </div>
+    <p class="lede">Bring a classifier you own and the traffic it serves. If you have nothing to hand, use the Lanternfish frame log: 40 cameras, eleven months, 2.1 million frames, of which 38,000 have a species label from the field team.</p>
+
+    <div class="steps">
+      <div class="step">
+        <p><strong>Write down what the field will judge.</strong> One sentence: "night and day frames from the deployed cameras, as they arrive, including empty frames". Everything that follows samples from that sentence and nothing else.</p>
+      </div>
+      <div class="step">
+        <p><strong>Pull from production, not from the archive of convenience.</strong> Sample labelled frames from the last three months of live cameras, stratified by camera and by day-versus-night in the proportions the cameras actually produce. Lanternfish's cameras are 61 percent night frames; the old dev set was 3 percent.</p>
+      </div>
+      <div class="step">
+        <p><strong>Decide the smallest improvement you need to see.</strong> The candidate projects promise one to three points. Make one point worth at least ten examples: 1,000 for the dev set. Draw a second 1,000 from the same pool for the test set and lock it.</p>
+      </div>
+      <div class="step">
+        <p><strong>Check the two sets against each other.</strong> Camera mix, night share, species mix. If any differs by more than a few points, the split was not random enough. Redraw before anybody trains anything.</p>
+      </div>
+      <div class="step">
+        <p><strong>Score the current model on the new dev set.</strong> Lanternfish's 94 percent becomes 88 percent: 120 of 1,000 wrong. Write that number down. It is the baseline every later session measures against, and it is the first honest number the project has had.</p>
+      </div>
+      <div class="step">
+        <p><strong>Split the dev set in half and put one half away.</strong> Five hundred you will look at, five hundred you will not. Session 4 explains why, and the bench in session 10 shows what happens to a team that skips this step.</p>
+      </div>
+    </div>
+
+    <div class="prompt-box good">
+      <span class="label">★ The dev set, drawn from what the field will judge</span>
+with pool as (
+  select frame_id, camera_id, is_night, species_label
+  from cams.frames
+  where labelled_at is not null
+    and captured_at &gt;= dateadd('month', -3, current_date)
+),
+draw as (
+  select *, row_number() over (order by hash(frame_id)) as rn from pool
+)
+select frame_id, camera_id, is_night, species_label,
+       case when rn &lt;= 1000 then 'dev' else 'test' end as split,
+       case when rn &lt;= 1000 and rn % 2 = 0 then 'eyeball'
+            when rn &lt;= 1000 then 'blackbox' end as dev_half
+from draw
+where rn &lt;= 2000;
+-- then compare camera mix and night share across dev and test before training anything
+    </div>
+
+    <div class="callout tip">
+      <p><strong>The number went down and that is the good outcome.</strong> 94 to 88 is not the model getting worse. It is the instrument getting honest, and every project funded from here is funded against a real problem.</p>
+    </div>
+  </section>
+
+  <!-- ============ HOMEWORK ============ -->
+  <section class="section" id="exercise">
+    <div class="section-kicker">
+      <span class="klabel">Homework</span>
+      <h2>Before session 2</h2>
+      <span class="tag exercise">30 min</span>
+    </div>
+    <ol>
+      <li>For one model you own, write the one-sentence description of what the field will judge, and check whether the current dev set matches it. Most do not.</li>
+      <li>Count your dev set and compute what one point of improvement is worth in examples. If it is under ten, the set is too small for the decisions being made on it.</li>
+      <li>Compare your dev and test sets on three obvious dimensions. Write down any gap over a few points.</li>
+      <li>Find out how many times the test set has been looked at this year. Be honest. If the answer is more than once, it is a dev set now.</li>
+    </ol>
+  </section>
+
+  <!-- ============ QUIZ ============ -->
+  <section class="section" id="quiz">
+    <div class="section-kicker">
+      <span class="klabel">Check yourself</span>
+      <h2>Three questions</h2>
+    </div>
+
+    <div class="quiz-q" data-answer="1">
+      <p class="qtext">Lanternfish's classifier scored 94 percent on a dev set of web photos and 78 percent in the field. What was wrong?</p>
+      <button class="qopt" type="button">A · The model overfit the training data</button>
+      <button class="qopt" type="button">B · The dev set came from a different distribution than the field, so it measured a different problem precisely</button>
+      <button class="qopt" type="button">C · The dev set was too small to see the difference</button>
+      <p class="qwhy">Dev and test sets have to come from the traffic you will be judged on. A dev set from the wrong distribution does not measure the model badly; it measures the wrong thing well.</p>
+    </div>
+
+    <div class="quiz-q" data-answer="2">
+      <p class="qtext">Classifier A is 90.0 percent accurate and classifier B is 90.1 percent. Why can a dev set of 100 examples not tell them apart?</p>
+      <button class="qopt" type="button">A · Because 100 examples is below the minimum for any classifier</button>
+      <button class="qopt" type="button">B · Because accuracy needs at least 1,000 examples to be defined</button>
+      <button class="qopt" type="button">C · Because the difference is a tenth of one example, smaller than the noise of which single example happens to be in the set</button>
+      <p class="qwhy">Size the dev set from the smallest improvement you need to see. At 10,000 examples the same 0.1 percent is ten examples and becomes visible.</p>
+    </div>
+
+    <div class="quiz-q" data-answer="0">
+      <p class="qtext">Dev accuracy climbed to 91 percent over a quarter; the test set came in at 84. Dev and test were drawn from different camera regions. What can you conclude?</p>
+      <button class="qopt" type="button">A · Nothing yet: the gap could be overfitting to the dev set or simply two different distributions, and the design cannot separate them</button>
+      <button class="qopt" type="button">B · The model overfit the dev set</button>
+      <button class="qopt" type="button">C · The test set is wrong and should be replaced</button>
+      <p class="qwhy">Dev and test must come from the same pool so a gap between them can only mean one thing. Two forests, two explanations, three weeks of argument.</p>
+    </div>
+
+    <p class="quiz-score"></p>
+  </section>
+
+  <!-- ============ COVERAGE ============ -->
+  <section class="section" id="official">
+    <div class="section-kicker">
+      <span class="klabel">Sources covered</span>
+      <h2>What tonight maps to</h2>
+    </div>
+    <div class="covered">
+      <div class="covered-row">
+        <span class="status pill solid">✓</span>
+        <span class="name">Machine Learning Yearning, chapters 5 to 7</span>
+        <span class="note">Your development and test sets; same distribution; how large they need to be, with the 100-versus-10,000 arithmetic quoted from the text.</span>
+      </div>
+      <div class="covered-row">
+        <span class="status pill solid">✓</span>
+        <span class="name">Machine Learning Yearning, chapter 11</span>
+        <span class="note">When to change dev/test sets and metrics: the three signals.</span>
+      </div>
+      <div class="covered-row">
+        <span class="status pill light">◐</span>
+        <span class="name">Machine Learning Yearning, chapters 17 to 18</span>
+        <span class="note">The Eyeball and Blackbox split is done tonight and explained in session 4.</span>
+      </div>
+      <div class="covered-row">
+        <span class="status pill light">◐</span>
+        <span class="name">Choosing the metric</span>
+        <span class="note">Leader session 2. Tonight assumes accuracy and says so.</span>
+      </div>
+      <div class="covered-row">
+        <span class="status pill inkpill">·</span>
+        <span class="name">Train/test split mechanics, cross-validation, leakage</span>
+        <span class="note">Not covered by design. The intro ML course owns the mechanics; this track owns the distribution and size decisions.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ CHEAT SHEET ============ -->
+  <section class="cheat" id="cheatsheet">
+    <h3>Session 1 cheat sheet</h3>
+    <div class="grid-2">
+      <div class="cheat-item"><b>The dev set is the instrument</b><span>Every decision in the loop is a reading of it. Fix the instrument before the model.</span></div>
+      <div class="cheat-item"><b>Dev and test: the field's distribution</b><span>Training may come from anywhere. Dev and test only from what you will be judged on.</span></div>
+      <div class="cheat-item"><b>Dev and test: the same pool</b><span>So a gap between them means exactly one thing.</span></div>
+      <div class="cheat-item"><b>Size from the improvement</b><span>Make one point worth at least ten examples. 100 cannot see 0.1 percent; 10,000 can.</span></div>
+      <div class="cheat-item"><b>The test set is touched once</b><span>A second look makes it a dev set.</span></div>
+      <div class="cheat-item"><b>Change the dev set when</b><span>The field disagrees, dev improves and test does not, or the metric rewards the wrong thing.</span></div>
+      <div class="cheat-item"><b>A number that goes down</b><span>94 to 88 was the instrument getting honest, not the model getting worse.</span></div>
+      <div class="cheat-item"><b>Put half away</b><span>Eyeball and Blackbox. Session 4 says why; session 10 shows the cost of skipping it.</span></div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="pagefoot">
+  <div class="wrap">
+    <p>Practitioner session 1 of 10 · learn-ml-strategy-with-phoebe · by Phoebe Fu</p>
+    <nav class="pagenav">
+      <a href="../index.html">← All sessions</a>
+      <a href="p2-first-system-in-a-week.html">Practitioner session 2 · The first system in a week →</a>
+    </nav>
+  </div>
+</footer>
+
+<script src="../assets/app.js?v=1"></script>
+</body>
+</html>

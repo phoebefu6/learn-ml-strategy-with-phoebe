@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- social:start -->
+<meta name="description" content="Leader session 3 of 6. An afternoon with about 100 misclassified examples and a spreadsheet puts a ceiling on every project on the list. Two columns most sheets leave off, weeks and points per week, turn the sheet into an order of work: 6.2 percent error by week 6 against 11.2 for the order the team wanted.">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Learn with Phoebe">
+<meta property="og:title" content="Look at 100 mistakes - learn ml strategy with phoebe">
+<meta property="og:description" content="Leader session 3 of 6. One spreadsheet, one afternoon, a ceiling on every project and an order of work a sprint plan can be checked against.">
+<meta property="og:url" content="https://phoebefu6.github.io/learn-ml-strategy-with-phoebe/courses/a3-look-at-100-mistakes.html">
+<meta property="og:image" content="https://phoebefu6.github.io/learn-ml-strategy-with-phoebe/assets/og-cover.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Look at 100 mistakes - learn ml strategy with phoebe">
+<meta name="twitter:description" content="The senior engineer's favourite category is rarely the biggest one, and the sheet says so in an afternoon.">
+<meta name="twitter:image" content="https://phoebefu6.github.io/learn-ml-strategy-with-phoebe/assets/og-cover.png">
+<!-- social:end -->
+<title>Leader session 3 · Look at 100 mistakes - learn ml strategy with phoebe</title>
+<link rel="stylesheet" href="../assets/style.css?v=1">
+</head>
+<body>
+
+<div class="toolbar">
+  <div class="wrap">
+    <span class="crumb"><a href="../index.html">learn-ml-strategy-with-phoebe</a> / Leader session 3 of 6</span>
+    <button class="btn" id="toggle-all" type="button">Expand all</button>
+    <button class="btn primary" id="zoom-toggle" type="button">Projector zoom: off</button>
+  </div>
+</div>
+
+<header class="masthead">
+  <div class="wrap">
+    <div class="eyebrow">Learn ML Strategy with Phoebe · Leader session 3 of 6</div>
+    <h1>Look at <span class="accent">100 mistakes</span></h1>
+    <p class="sub">Lanternfish's species classifier is wrong on 120 of its 1,000 dev images, and the team has five opinions about why. The most senior engineer wants to build a deer-versus-elk model. The product lead wants the night-blur problem fixed. The field team thinks half the labels are wrong. Nobody has sat down with the mistakes. One afternoon with about a hundred of them and a spreadsheet ends the argument, puts a ceiling on every project on the list, and with two columns most sheets leave off produces an order of work that the current sprint plan can be held against.</p>
+    <div class="chip-row">
+      <span class="chip level">🟡 Core</span>
+      <span class="chip audience">Data and product leaders</span>
+      <span class="chip time">45 min</span>
+    </div>
+    <div class="agenda">
+      <span class="a1" style="flex:1">0-3 · Welcome</span>
+      <span class="a2" style="flex:5">3-22 · The spreadsheet and the ceiling</span>
+      <span class="a3" style="flex:4">22-40 · Build-along: read one spreadsheet</span>
+      <span class="a4" style="flex:1">40-45 · Q&amp;A</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ============ INTRO ============ -->
+  <section class="section" id="intro">
+    <div class="section-kicker">
+      <span class="klabel">Part 0</span>
+      <h2>Where session 3 sits in the leader track</h2>
+    </div>
+    <p class="lede">Six sessions, 45 minutes each, no code, one decision: <strong>what to work on next</strong> for one classifier. Session 1 was why iteration speed decides projects. Session 2 was the single number the team optimises. Tonight is the cheapest, most under-used instrument in the discipline: a spreadsheet filled in while looking at the model's actual mistakes. Session 4 splits the error into its sources, session 5 finds the weak stage in a pipeline, and session 6 is the one-page memo that gets the team to act on all of it. The classifier throughout belongs to <strong>Lanternfish</strong>, a wildlife-camera startup whose model is wrong on 12 percent of its dev set.</p>
+
+    <div class="legend">
+      <span class="pill">Live = presented in the 45 minutes</span>
+      <span class="pill">Self-study = the full depth, after class</span>
+      <span class="pill">🔍 Every diagram zooms</span>
+    </div>
+
+    <div class="callout win">
+      <p><strong>★ What you walk out with tonight.</strong> The habit of asking "how many of the mistakes does this project actually touch" before funding it, and the one-line arithmetic that answers it: a category holding 5 percent of the errors caps the project at 5 percent of the error, so 90 percent accurate becomes at best 90.5. Two columns to add to any error sheet, weeks and points per week, that turn a list of causes into an order of work. And the measured cost of ignoring that order: 11.2 percent error through week 6 instead of 6.2.</p>
+    </div>
+
+    <details class="card" open>
+      <summary><span class="mode live">Live</span>Why looking at mistakes comes before choosing a project<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Every project proposal in machine learning is an implicit claim about the errors: "the model is wrong because of X, and fixing X will help". Almost nobody checks the claim, because checking it means sitting with the wrong answers one at a time, and that feels like clerical work next to building a model. It is the opposite. It is the only step in the whole loop where a person learns what the model is actually getting wrong, rather than what they assumed it would.</p>
+        <p>The instrument is deliberately humble: a spreadsheet, a person, about a hundred misclassified examples, an afternoon. Its output is a share per suspected cause, and that share is a hard ceiling on what any project aimed at that cause can deliver. A team that reads the sheet before the sprint plan funds projects by ceiling; a team that does not funds them by who argued best.</p>
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <p>Lanternfish's most senior engineer had spent three weeks scoping a deer-versus-elk specialist model before anyone opened the misclassified images. When the sheet was filled in, deer mistaken for elk was 19 percent of the errors. Night infrared blur was 33 percent. Wrong labels, which nobody had listed as a cause at all, were 14 percent and fixable in a week.</p>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>The vocabulary for tonight<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <ul>
+          <li><strong>Dev set</strong> - the examples the team tunes and chooses on, drawn from the traffic the field will judge. Lanternfish's has 1,000 images and the model is wrong on 120.</li>
+          <li><strong>Misclassified example</strong> - one dev set item the model got wrong. The raw material of the afternoon.</li>
+          <li><strong>Error analysis</strong> - looking through misclassified examples and categorising them by suspected cause, so projects can be compared by how many errors each one touches.</li>
+          <li><strong>Category share</strong> - the fraction of the looked-at errors that tick a given cause. The bottom row of the sheet.</li>
+          <li><strong>Ceiling</strong> - the most a project can improve the error rate, which is the share of the errors it addresses. A project that fixes a 5 percent category can improve a 90 percent system to 90.5 at best.</li>
+          <li><strong>Points per week</strong> - a project's ceiling, in points of error, divided by the weeks it takes. The column that ranks projects.</li>
+          <li><strong>Eyeball dev set</strong> - the part of the dev set a person actually looks at. Lanternfish's is 500 images holding 64 of the 120 errors, which is why the shares below are shares of 64. The other half stays unseen for reasons practitioner session 4 owns.</li>
+        </ul>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 1 ============ -->
+  <section class="section" id="part-1">
+    <div class="section-kicker">
+      <span class="klabel">Part 1 · covers chapters 14 and 15</span>
+      <h2>Error analysis: look at dev set examples to evaluate ideas</h2>
+      <span class="tag concept">10 min live</span>
+    </div>
+    <p class="lede">Chapter 14 of Machine Learning Yearning is titled "Error analysis: Look at dev set examples to evaluate ideas", and the whole method is in the title. Before a project is funded, somebody looks at the examples the model gets wrong and counts how many of them the project would touch. The count is a ceiling. The senior engineer's favourite category is rarely the biggest one, and the sheet says so in an afternoon.</p>
+
+    <figure class="zoomable">
+      <svg viewBox="0 0 880 360" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="An error-analysis spreadsheet as a grid. Each row is one misclassified image with a tick under the suspected cause and a short comment. Five cause columns: night blur, deer versus elk, half in frame, empty frame, wrong label. The bottom row gives each column's share of the 64 errors: 33, 19, 19, 16 and 14 percent. The wrong-label share cell is highlighted as the ceiling of any re-label project.">
+        <style>
+          .a3aH { font: 800 12px Inter, sans-serif; fill: #1C1917; }
+          .a3aT { font: 800 12px Inter, sans-serif; fill: #fff; }
+          .a3aB { font: 400 11px Inter, sans-serif; fill: #1C1917; }
+          .a3aM { font: 400 11px Inter, sans-serif; fill: #6B6259; }
+          .a3aN { font: 700 11px Inter, sans-serif; fill: #1C1917; }
+          .a3aK { font: 800 14px Inter, sans-serif; fill: #1C1917; }
+          .a3aG { font: 800 11px Inter, sans-serif; fill: #713F12; }
+        </style>
+        <defs>
+          <marker id="a3aAr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#A16207"></path></marker>
+        </defs>
+
+        <text class="a3aH" x="14" y="24">The error-analysis spreadsheet: one row per misclassified image, one column per suspected cause</text>
+
+        <rect x="14" y="36" width="96" height="28" fill="#A16207"></rect>
+        <rect x="110" y="36" width="118" height="28" fill="#A16207"></rect>
+        <rect x="228" y="36" width="118" height="28" fill="#A16207"></rect>
+        <rect x="346" y="36" width="118" height="28" fill="#A16207"></rect>
+        <rect x="464" y="36" width="118" height="28" fill="#A16207"></rect>
+        <rect x="582" y="36" width="118" height="28" fill="#A16207"></rect>
+        <rect x="700" y="36" width="166" height="28" fill="#A16207"></rect>
+        <text class="a3aT" x="62" y="55" text-anchor="middle">Image</text>
+        <text class="a3aT" x="169" y="55" text-anchor="middle">Night blur</text>
+        <text class="a3aT" x="287" y="55" text-anchor="middle">Deer vs elk</text>
+        <text class="a3aT" x="405" y="55" text-anchor="middle">Half in frame</text>
+        <text class="a3aT" x="523" y="55" text-anchor="middle">Empty frame</text>
+        <text class="a3aT" x="641" y="55" text-anchor="middle">Wrong label</text>
+        <text class="a3aT" x="783" y="55" text-anchor="middle">Comments</text>
+
+        <rect x="14" y="64" width="852" height="26" fill="#FEFCE8" stroke="#D9D2C5"></rect>
+        <text class="a3aB" x="22" y="81">img 0417</text>
+        <text class="a3aK" x="169" y="82" text-anchor="middle">✓</text>
+        <text class="a3aM" x="708" y="81">very dark, grainy</text>
+
+        <rect x="14" y="90" width="852" height="26" fill="#FEFCE8" stroke="#D9D2C5"></rect>
+        <text class="a3aB" x="22" y="107">img 0088</text>
+        <text class="a3aK" x="287" y="108" text-anchor="middle">✓</text>
+        <text class="a3aM" x="708" y="107">antlers hidden</text>
+
+        <rect x="14" y="116" width="852" height="26" fill="#FEFCE8" stroke="#D9D2C5"></rect>
+        <text class="a3aB" x="22" y="133">img 0231</text>
+        <text class="a3aK" x="169" y="134" text-anchor="middle">✓</text>
+        <text class="a3aK" x="405" y="134" text-anchor="middle">✓</text>
+        <text class="a3aM" x="708" y="133">dark and cut off</text>
+
+        <rect x="14" y="142" width="852" height="26" fill="#FEFCE8" stroke="#D9D2C5"></rect>
+        <text class="a3aB" x="22" y="159">img 0502</text>
+        <text class="a3aK" x="523" y="160" text-anchor="middle">✓</text>
+        <text class="a3aM" x="708" y="159">a branch moved</text>
+
+        <rect x="14" y="168" width="852" height="26" fill="#FEFCE8" stroke="#D9D2C5"></rect>
+        <text class="a3aB" x="22" y="185">img 0655</text>
+        <text class="a3aK" x="641" y="186" text-anchor="middle">✓</text>
+        <text class="a3aM" x="708" y="185">label says fox</text>
+
+        <rect x="14" y="194" width="852" height="26" fill="#FEFCE8" stroke="#D9D2C5"></rect>
+        <text class="a3aB" x="22" y="211">img 0719</text>
+        <text class="a3aK" x="405" y="212" text-anchor="middle">✓</text>
+        <text class="a3aM" x="708" y="211">tail only</text>
+
+        <rect x="14" y="220" width="852" height="22" fill="#FEFCE8" stroke="#D9D2C5"></rect>
+        <text class="a3aM" x="22" y="235">58 more rows, the same drill</text>
+
+        <rect x="14" y="242" width="852" height="28" fill="#FEF08A" stroke="#D9D2C5"></rect>
+        <text class="a3aN" x="22" y="261">Share of 64</text>
+        <text class="a3aN" x="169" y="261" text-anchor="middle">33 percent</text>
+        <text class="a3aN" x="287" y="261" text-anchor="middle">19 percent</text>
+        <text class="a3aN" x="405" y="261" text-anchor="middle">19 percent</text>
+        <text class="a3aN" x="523" y="261" text-anchor="middle">16 percent</text>
+        <text class="a3aN" x="641" y="261" text-anchor="middle">14 percent</text>
+        <text class="a3aM" x="708" y="261">one image may tick two</text>
+
+        <rect x="582" y="242" width="118" height="28" fill="none" stroke="#A16207" stroke-width="2.5"></rect>
+        <line x1="641" y1="272" x2="641" y2="290" stroke="#A16207" stroke-width="2" marker-end="url(#a3aAr)"></line>
+        <text class="a3aG" x="641" y="306" text-anchor="middle">The ceiling of any re-label project is this cell:</text>
+        <text class="a3aG" x="641" y="322" text-anchor="middle">14 percent of the errors, and not one more</text>
+
+        <rect x="14" y="338" width="14" height="14" rx="3" fill="#60A5FA"></rect>
+        <text class="a3aN" x="38" y="350">Fill the sheet, read the bottom row. No project can help more than its column's share.</text>
+      </svg>
+      <figcaption>🔍 Click to zoom - the sheet, the share row, and the ceiling one column puts on one project.</figcaption>
+    </figure>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>The practice: about 100 mistakes, one spreadsheet, one afternoon<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Chapter 15 describes the mechanics in a sentence: "I usually create a spreadsheet and fill it out while looking through ~100 misclassified dev set images." One row per wrong image. One column per suspected cause, written down before starting, from whatever the team already believes is going wrong. A comments column for whatever does not fit. The person looks at the image, ticks the columns that apply, jots a phrase, moves on. When a comment repeats three times, it becomes a new column and the earlier rows get a second pass.</p>
+        <p>The bottom row is the point of the exercise: the share of the looked-at errors that tick each column. Lanternfish's afternoon, over the 64 errors in the half of the dev set the team looks at, produced night infrared blur 33 percent, deer mistaken for elk 19, animal half out of frame 19, empty frame called animal 16, and a column nobody had proposed, wrong label, 14.</p>
+        <p>About a hundred is the right size for a reason. Fewer and the shares wobble with which particular examples happened to be wrong; more and the afternoon becomes a week, and the point of the exercise is that it is cheap enough to repeat every time the model changes.</p>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>The ceiling: the most a project can possibly do<span class="mini">4 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Chapter 14 makes the arithmetic explicit. If 5 percent of the misclassified examples fall in the category a project would fix, then "5% is a 'ceiling' (meaning maximum possible amount) for how much the proposed project could help". A system that is 90 percent accurate has 10 percent error; removing 5 percent of that error takes it to 9.5 percent error, so the system improves "at best" from 90 percent to 90.5. That is the outcome if the project works perfectly, and projects do not work perfectly.</p>
+        <p>The ceiling is what turns a proposal into a number. "Build a deer-versus-elk model" is an argument. "Build a deer-versus-elk model, which touches 19 percent of the errors, and if it removed 70 percent of those it would take at most 1.7 points off the error rate" is a bid, with a maximum written on the front.</p>
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <p>The night-blur column at 33 percent means no denoising project, however brilliant, can remove more than a third of Lanternfish's errors. The wrong-label column at 14 percent means re-labelling cannot fix more than a seventh. Both statements were news to the team, and neither took more than the afternoon to establish.</p>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Why the sheet beats intuition<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Intuition about errors is intuition about the errors a person happens to remember, and people remember the interesting ones. A deer that looks exactly like an elk is a story. A frame that is too dark to see anything is not. The sheet counts both the same, which is exactly what intuition cannot do.</p>
+        <ul>
+          <li><strong>The favourite category is rarely the biggest.</strong> It is usually the hardest, because hard problems are what senior people enjoy. Hard and large are different properties, and only the sheet distinguishes them.</li>
+          <li><strong>Causes nobody proposed show up.</strong> Wrong labels were not on Lanternfish's list. They were 14 percent of the errors and the cheapest thing on the eventual sheet to fix.</li>
+          <li><strong>The argument ends.</strong> Five opinions about why the model is wrong become five columns with a share under each. What remains to argue about is cost, and that is the next part.</li>
+        </ul>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>How to run the afternoon well<span class="mini">4 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <ul>
+          <li><strong>One person, not a committee.</strong> A single pair of eyes ticks consistently. Two people in a room negotiate every borderline case and the afternoon becomes a day.</li>
+          <li><strong>Someone who knows the domain.</strong> Whoever can tell a deer from an elk in infrared should be the one looking, not whoever wrote the model. At Lanternfish that was a field biologist, and she is the one who found the wrong labels.</li>
+          <li><strong>Start the columns from the team's beliefs</strong> and let the comments column add the rest. The sheet is allowed to disagree with the people who designed it.</li>
+          <li><strong>Let a row tick more than one column.</strong> A dark image with the animal half out of frame is both. Forcing one cause per row hides the overlap that decides whether two projects compete for the same errors.</li>
+          <li><strong>Keep the sheet.</strong> After the next model change, redo it. The columns that shrink tell you the change worked; the ones that do not tell you what it did not touch.</li>
+          <li><strong>Look only at the half meant for looking.</strong> Lanternfish looks at 500 of its 1,000 dev images and keeps the other 500 unseen, so that after a quarter of tuning to what it saw there is still an honest number left. Practitioner session 4 owns the why; the leader's job is to insist the unseen half exists.</li>
+        </ul>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 2 ============ -->
+  <section class="section" id="part-2">
+    <div class="section-kicker">
+      <span class="klabel">Part 2 · covers the two extra columns and the order they produce</span>
+      <h2>The two columns most sheets leave off</h2>
+      <span class="tag concept">9 min live</span>
+    </div>
+    <p class="lede">The share row ranks causes by size. It does not rank projects, because projects cost different amounts. Add a column for how many weeks each project takes and a column for its ceiling in points of error divided by those weeks, and the sheet produces an order of work. It is rarely the order the team wanted, and the cost of the difference can be counted.</p>
+
+    <table class="clean">
+      <thead><tr><th>Category</th><th>Eyeball errors</th><th>Share</th><th>Project</th><th>Weeks</th><th>Ceiling</th><th>Points per week</th></tr></thead>
+      <tbody>
+        <tr><td>Night infrared blur</td><td>21</td><td>33 percent</td><td>Infrared denoising pass</td><td>3</td><td>2.5</td><td>0.84</td></tr>
+        <tr><td>Deer mistaken for elk</td><td>12</td><td>19 percent</td><td>Deer-vs-elk specialist model</td><td>8</td><td>1.7</td><td><strong>0.21</strong></td></tr>
+        <tr><td>Animal half out of frame</td><td>12</td><td>19 percent</td><td>Occlusion augmentation</td><td>4</td><td>1.2</td><td>0.30</td></tr>
+        <tr><td>Empty frame called animal</td><td>10</td><td>16 percent</td><td>Motion-trigger filter</td><td>2</td><td>1.6</td><td>0.80</td></tr>
+        <tr><td>Label was wrong</td><td>9</td><td>14 percent</td><td>Re-label the dev set</td><td>1</td><td>1.6</td><td><strong>1.62</strong></td></tr>
+      </tbody>
+    </table>
+
+    <figure class="zoomable">
+      <svg viewBox="0 0 880 348" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Five projects as bars ranked by points of dev error per week: re-label the dev set 1.62, infrared denoising 0.84, motion-trigger filter 0.80, occlusion augmentation 0.30, deer-versus-elk specialist 0.21. Under each bar its weeks and ceiling. The specialist model, the project the team wanted, is marked and sits last.">
+        <style>
+          .a3bH { font: 800 12px Inter, sans-serif; fill: #1C1917; }
+          .a3bT { font: 800 12px Inter, sans-serif; fill: #fff; }
+          .a3bB { font: 400 11px Inter, sans-serif; fill: #1C1917; }
+          .a3bM { font: 400 11px Inter, sans-serif; fill: #6B6259; }
+          .a3bN { font: 700 11px Inter, sans-serif; fill: #1C1917; }
+          .a3bG { font: 800 12px Inter, sans-serif; fill: #713F12; }
+          .a3bR { font: 800 11px Inter, sans-serif; fill: #991B1B; }
+        </style>
+
+        <text class="a3bH" x="14" y="24">Five projects ranked by points of dev error per week, from the same sheet</text>
+        <line x1="40" y1="236" x2="860" y2="236" stroke="#D9D2C5" stroke-width="1.5"></line>
+
+        <rect x="62" y="74" width="96" height="162" rx="4" fill="#A16207"></rect>
+        <text class="a3bG" x="110" y="66" text-anchor="middle">1.62 per week</text>
+        <text class="a3bB" x="110" y="256" text-anchor="middle">Re-label the dev set</text>
+        <text class="a3bM" x="110" y="272" text-anchor="middle">1 wk · ceiling 1.6 pts</text>
+        <text class="a3bM" x="110" y="288" text-anchor="middle">the smallest column</text>
+
+        <rect x="222" y="152" width="96" height="84" rx="4" fill="#A16207"></rect>
+        <text class="a3bG" x="270" y="144" text-anchor="middle">0.84 per week</text>
+        <text class="a3bB" x="270" y="256" text-anchor="middle">Infrared denoising pass</text>
+        <text class="a3bM" x="270" y="272" text-anchor="middle">3 wk · ceiling 2.5 pts</text>
+        <text class="a3bM" x="270" y="288" text-anchor="middle">the biggest column, 33 percent</text>
+
+        <rect x="382" y="156" width="96" height="80" rx="4" fill="#A16207"></rect>
+        <text class="a3bG" x="430" y="148" text-anchor="middle">0.80 per week</text>
+        <text class="a3bB" x="430" y="256" text-anchor="middle">Motion-trigger filter</text>
+        <text class="a3bM" x="430" y="272" text-anchor="middle">2 wk · ceiling 1.6 pts</text>
+
+        <rect x="542" y="206" width="96" height="30" rx="4" fill="#FACC15"></rect>
+        <text class="a3bG" x="590" y="198" text-anchor="middle">0.30 per week</text>
+        <text class="a3bB" x="590" y="256" text-anchor="middle">Occlusion augmentation</text>
+        <text class="a3bM" x="590" y="272" text-anchor="middle">4 wk · ceiling 1.2 pts</text>
+
+        <rect x="702" y="215" width="96" height="21" rx="4" fill="#FACC15" stroke="#991B1B" stroke-width="2.5"></rect>
+        <text class="a3bR" x="750" y="207" text-anchor="middle">0.21 per week</text>
+        <text class="a3bB" x="750" y="256" text-anchor="middle">Deer-vs-elk specialist</text>
+        <text class="a3bM" x="750" y="272" text-anchor="middle">8 wk · ceiling 1.7 pts</text>
+        <text class="a3bR" x="750" y="288" text-anchor="middle">the project the team wanted</text>
+
+        <rect x="40" y="316" width="14" height="14" rx="3" fill="#60A5FA"></rect>
+        <text class="a3bN" x="64" y="328">Ceiling alone puts the specialist model near the top. Dividing by weeks makes it the last project on the list.</text>
+      </svg>
+      <figcaption>🔍 Click to zoom - the same five projects, ranked by what they return per week of the team's time.</figcaption>
+    </figure>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Add weeks, then divide<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>The ceiling column is the share of errors times the fraction the project would actually remove, expressed in points of dev error. Wrong labels are 14 percent of the errors; re-labelling catches about 90 percent of those; at 12.8 percent error on the looked-at half that is 1.6 points. The deer-versus-elk specialist touches 19 percent, would remove perhaps 70 percent of those, and comes to 1.7 points. On ceiling alone the two projects are neighbours.</p>
+        <p>The weeks column is the estimate the team already has, because it is the same estimate they put in the sprint plan. Re-labelling is one week. The specialist model is eight. Divide, and the neighbours are 1.62 points per week against 0.21. The whole disagreement about what to do first was a disagreement about a number nobody had computed.</p>
+        <p>Sorted, the sheet reads re-label, denoise, motion filter, occlusion, specialist. The middle two are 0.84 and 0.80, near enough that the two-week job goes ahead of the three-week one so its points land earlier; the timeline below follows that order.</p>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>The order the sheet produces against the order the team wanted<span class="mini">4 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Both orders do the same five projects, so both finish in the same place: 3.6 percent error on the unseen half of the dev set at week 18. What differs is everything before that. Measured on the half of the dev set the team never looks at, so that the number is honest:</p>
+        <ul>
+          <li><strong>Sheet order</strong> (re-label, motion filter, denoise, occlusion, specialist): 11.2 percent to 10.2 after week 1, 9.0 after week 3, <strong>6.2 by week 6</strong>, 3.6 at week 18.</li>
+          <li><strong>Team order</strong> (specialist model first, then the rest): <strong>still 11.2 through week 6</strong>, 9.2 at week 8 when the specialist ships, 3.6 at week 18.</li>
+        </ul>
+        <p>Order does not change where a team finishes. It changes how long the field lives with the error. In the team's order, the cameras ran at double-digit error for eight weeks longer than they needed to, and the product built on top of them inherited every one of those weeks.</p>
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <p>The specialist model was genuinely good work when it shipped in week 8. It shipped to a system that was still 11.2 percent wrong, when a one-week re-label and a two-week motion filter would have had the same system at 9.0 percent by week 3. Nobody had funded the eight-week project because they had computed 0.21 points per week. They had funded it because it was interesting, and the column is what makes interesting visible as a cost.</p>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>The honest limits of the sheet<span class="mini">4 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <ul>
+          <li><strong>Every error counts the same.</strong> A rare protected species mislabelled as a common one is one tick, and a blurry deer is one tick. The sheet does not know the difference unless a severity column is added, with a weight per row, and the shares recomputed with it. A real deployment adds that column first; it reorders the middle of the sheet and does not rescue either wrong order.</li>
+          <li><strong>One example can tick several columns.</strong> A dark frame with the animal half out of shot is both night blur and occlusion, so the shares can sum past 100 and two projects can compete for the same errors. Fixing one shrinks the other's ceiling. Re-run the sheet after each project rather than trusting the original shares to the end.</li>
+          <li><strong>The shares are of the errors you looked at.</strong> 64 errors give shares that would move by a few points on a different 64. Ranking on a two-point difference in share is ranking on noise; ranking 33 against 14 is not.</li>
+          <li><strong>The ceiling assumes the project works.</strong> A 90 percent removal rate is a hope until it is measured. The sheet ranks bids, and a bid can still lose.</li>
+          <li><strong>Weeks are estimates.</strong> The same estimates the sprint plan already runs on, no better and no worse. If the team's week estimates are off by half, so is the points-per-week column, in the same proportion for every row.</li>
+        </ul>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ DEMO ============ -->
+  <section class="section" id="demo-1">
+    <div class="section-kicker">
+      <span class="klabel">Build-along</span>
+      <h2>Read one spreadsheet</h2>
+      <span class="tag demo">★ 18 min · everyone builds</span>
+    </div>
+    <p class="lede">Bring the error spreadsheet for one model your team owns, or the nearest thing to one: a bug list, a triage log, a folder of screenshots someone kept. If you have nothing, use the Lanternfish sheet above. The exercise is reading and sorting, not building; the point is to see your own sprint plan next to the order the sheet produces.</p>
+
+    <div class="steps">
+      <div class="step">
+        <p><strong>Get the team's actual error spreadsheet, or the nearest thing to it.</strong> If nobody has one, that is the first finding of the session, and the homework is to have someone sit with a hundred mistakes before the next sprint planning. Do not accept a summary; ask for the rows.</p>
+      </div>
+      <div class="step">
+        <p><strong>Add the share column if it is missing.</strong> Count the ticks in each cause column and divide by the number of rows. Write the shares along the bottom. This row is the ceiling of every project on the list, and most sheets stop before it.</p>
+      </div>
+      <div class="step">
+        <p><strong>Add weeks per project, then points per week.</strong> Take the week estimates from the sprint plan as they stand. For each project, ceiling in points divided by weeks. Use the team's own removal estimate for the ceiling; if there is none, use the share itself and say so.</p>
+      </div>
+      <div class="step">
+        <p><strong>Sort by points per week.</strong> Read the order aloud. Note where the biggest category landed and where the most interesting project landed. They are rarely in the same place, and neither is usually first.</p>
+      </div>
+      <div class="step">
+        <p><strong>Put the sorted sheet next to the current sprint plan.</strong> Mark every project that sits in a different position on the two lists. Each mark is a conversation to have this week, with a number on each side of it, and the sorted sheet is the artifact you bring to that conversation.</p>
+      </div>
+    </div>
+
+    <div class="prompt-box good">
+      <span class="label">★ The sorted sheet, as the one-page artifact to bring to sprint planning</span>
+Lanternfish species classifier - error sheet, 64 looked-at errors, 12.8 percent on the looked-at half
+
+rank  project                       category                 share  weeks  ceiling  pts/wk   sprint slot
+1     Re-label the dev set          Label was wrong           14%      1     1.6     1.62    not planned
+2     Infrared denoising pass       Night infrared blur       33%      3     2.5     0.84    slot 2
+3     Motion-trigger filter         Empty frame called animal 16%      2     1.6     0.80    slot 4
+4     Occlusion augmentation        Animal half out of frame  19%      4     1.2     0.30    slot 3
+5     Deer-vs-elk specialist model  Deer mistaken for elk     19%      8     1.7     0.21    slot 1
+
+marked: rank 1 (absent from the plan), rank 5 (planned first, ranks last)
+expected on the unseen half: 6.2 percent by week 6 in sheet order, 11.2 in plan order, 3.6 at week 18 either way
+    </div>
+
+    <div class="callout tip">
+      <p><strong>The sheet is not the decision, it is the floor under it.</strong> A team can still choose the specialist model first, for a reason the sheet does not hold: a customer commitment, a hire who needs the project, a dependency. The difference is that they now choose it knowing it costs eight weeks at 11.2 percent, and that sentence goes in the plan.</p>
+    </div>
+  </section>
+
+  <!-- ============ HOMEWORK ============ -->
+  <section class="section" id="exercise">
+    <div class="section-kicker">
+      <span class="klabel">Homework</span>
+      <h2>Before session 4</h2>
+      <span class="tag exercise">30 min plus one afternoon</span>
+    </div>
+    <ol>
+      <li>For one model your team owns, arrange for one domain-literate person to sit with about a hundred of its mistakes and fill a sheet with a column per suspected cause. Book the afternoon in a calendar; it does not happen otherwise.</li>
+      <li>Read the share row and write down the biggest column. Compare it with the project at the top of the current sprint. If they differ, write one sentence on why.</li>
+      <li>Add weeks and points per week, sort, and put the two orders side by side. Count the projects that moved more than one position.</li>
+      <li>Add a severity weight per row, recompute the shares, and note which rows changed order. Then bring the three numbers session 4 needs: training error, dev error, and the team's best estimate of how well a person does the same task.</li>
+    </ol>
+  </section>
+
+  <!-- ============ QUIZ ============ -->
+  <section class="section" id="quiz">
+    <div class="section-kicker">
+      <span class="klabel">Check yourself</span>
+      <h2>Three questions</h2>
+    </div>
+
+    <div class="quiz-q" data-answer="1">
+      <p class="qtext">A system is 90 percent accurate. The error sheet shows 5 percent of its mistakes fall in the category a proposed project would fix. If the project works perfectly, where does accuracy end up?</p>
+      <button class="qopt" type="button">A · 95 percent, because the project removes a 5 percent problem</button>
+      <button class="qopt" type="button">B · 90.5 percent at best, because 5 percent of a 10 percent error rate is half a point</button>
+      <button class="qopt" type="button">C · It cannot be estimated until the project is built</button>
+      <p class="qwhy">The share of errors in a category is a ceiling on how much a project aimed at it can help. Five percent of the errors is half a point of a 10 percent error rate, and that is the best case.</p>
+    </div>
+
+    <div class="quiz-q" data-answer="0">
+      <p class="qtext">Re-labelling the dev set touches the smallest column on Lanternfish's sheet, 14 percent, yet ranks first. Why?</p>
+      <button class="qopt" type="button">A · It costs one week, so its 1.6 points of ceiling are 1.62 points per week, against 0.21 for the eight-week specialist model</button>
+      <button class="qopt" type="button">B · Wrong labels are always the most important category to fix</button>
+      <button class="qopt" type="button">C · It has the largest ceiling on the sheet</button>
+      <p class="qwhy">Ceiling and weeks are two columns, and the ranking needs both. On ceiling alone re-label and the specialist model are neighbours at 1.6 and 1.7; divided by weeks they are first and last.</p>
+    </div>
+
+    <div class="quiz-q" data-answer="2">
+      <p class="qtext">A rare protected species mislabelled as a common one and a blurry deer each appear as one tick on the sheet. What does the sheet need before its shares reflect what the field cares about?</p>
+      <button class="qopt" type="button">A · More rows, so the rare species appears more often</button>
+      <button class="qopt" type="button">B · A separate sheet for protected species</button>
+      <button class="qopt" type="button">C · A severity column with a weight per row, and the shares recomputed with it</button>
+      <p class="qwhy">Every error counts the same on a plain sheet. A severity weight per row is the first extension a real deployment adds, and it reorders the middle of the sheet without rescuing either wrong order of work.</p>
+    </div>
+
+    <p class="quiz-score"></p>
+  </section>
+
+  <!-- ============ COVERAGE ============ -->
+  <section class="section" id="official">
+    <div class="section-kicker">
+      <span class="klabel">Sources covered</span>
+      <h2>What tonight maps to</h2>
+    </div>
+    <div class="covered">
+      <div class="covered-row">
+        <span class="status pill solid">✓</span>
+        <span class="name">Machine Learning Yearning, chapter 14</span>
+        <span class="note">Error analysis: look at dev set examples to evaluate ideas. The ceiling, with the 5 percent and 90-to-90.5 arithmetic quoted from the text.</span>
+      </div>
+      <div class="covered-row">
+        <span class="status pill solid">✓</span>
+        <span class="name">Machine Learning Yearning, chapter 15</span>
+        <span class="note">Evaluating multiple ideas in parallel: the spreadsheet with about 100 misclassified dev images, a column per cause, a share row at the bottom, and rows that may tick several columns.</span>
+      </div>
+      <div class="covered-row">
+        <span class="status pill solid">✓</span>
+        <span class="name">The points-per-week order, from the Lanternfish bench</span>
+        <span class="note">The weeks and points-per-week columns and the 6.2-versus-11.2 timeline, computed on the bench that practitioner session 10 runs live.</span>
+      </div>
+      <div class="covered-row">
+        <span class="status pill light">◐</span>
+        <span class="name">Machine Learning Yearning, chapters 17 to 18</span>
+        <span class="note">Why the 64 errors are the looked-at half of the dev set and the other half stays unseen. Practitioner session 4 owns it.</span>
+      </div>
+      <div class="covered-row">
+        <span class="status pill light">◐</span>
+        <span class="name">Severity weighting of error categories</span>
+        <span class="note">Named as the first extension. Every error counts the same on the sheet as shown.</span>
+      </div>
+      <div class="covered-row">
+        <span class="status pill inkpill">·</span>
+        <span class="name">Metric definitions, thresholds, calibration</span>
+        <span class="note">Not covered by design. The model-evaluation course owns how to score; the sheet takes the score as given.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ CHEAT SHEET ============ -->
+  <section class="cheat" id="cheatsheet">
+    <h3>Session 3 cheat sheet</h3>
+    <div class="grid-2">
+      <div class="cheat-item"><b>About 100 mistakes, one afternoon</b><span>One row per wrong example, one column per suspected cause, a share row at the bottom.</span></div>
+      <div class="cheat-item"><b>Share is a ceiling</b><span>A 5 percent category caps its project at 5 percent of the error: 90 becomes at best 90.5.</span></div>
+      <div class="cheat-item"><b>Favourite is rarely biggest</b><span>Hard and large are different properties. Only the sheet tells them apart.</span></div>
+      <div class="cheat-item"><b>Two more columns</b><span>Weeks and points per week. Ceiling alone funds the wrong thing.</span></div>
+      <div class="cheat-item"><b>1.62 against 0.21</b><span>Re-label the dev set against the specialist model. Neighbours on ceiling, first and last on points per week.</span></div>
+      <div class="cheat-item"><b>6.2 by week 6, or 11.2</b><span>Same five projects, same 3.6 at week 18. Order decides how long the field waits.</span></div>
+      <div class="cheat-item"><b>Every tick counts the same</b><span>Add a severity column before trusting the shares on anything the field weights differently.</span></div>
+      <div class="cheat-item"><b>Sheet next to sprint plan</b><span>Every project in a different position on the two lists is a conversation with a number on each side.</span></div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="pagefoot">
+  <div class="wrap">
+    <p>Leader session 3 of 6 · learn-ml-strategy-with-phoebe · by Phoebe Fu</p>
+    <nav class="pagenav">
+      <a href="a2-one-number-or-two-kinds.html">← Leader session 2 · One number, or two kinds</a>
+      <a href="a4-where-the-error-comes-from.html">Leader session 4 · Where the error comes from →</a>
+    </nav>
+  </div>
+</footer>
+
+<script src="../assets/app.js?v=1"></script>
+</body>
+</html>

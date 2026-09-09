@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- social:start -->
+<meta name="description" content="Practitioner session 2 of 10. The first system exists to produce errors you can analyse, not to be good. A pretrained backbone, default hyperparameters and one week gives Lanternfish 88 percent on the honest dev set, 120 errors in a table, and the first real argument about what to fix.">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Learn with Phoebe">
+<meta property="og:title" content="The first system in a week - learn ml strategy with phoebe">
+<meta property="og:description" content="Practitioner session 2 of 10. Build quickly, measure on the real dev set, write the errors down. The baseline is the number everything else is priced against.">
+<meta property="og:url" content="https://phoebefu6.github.io/learn-ml-strategy-with-phoebe/courses/p2-first-system-in-a-week.html">
+<meta property="og:image" content="https://phoebefu6.github.io/learn-ml-strategy-with-phoebe/assets/og-cover.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="The first system in a week - learn ml strategy with phoebe">
+<meta name="twitter:description" content="Until there is a dev set with mistakes on it, every design argument is speculation. One week to 120 errors in a table.">
+<meta name="twitter:image" content="https://phoebefu6.github.io/learn-ml-strategy-with-phoebe/assets/og-cover.png">
+<!-- social:end -->
+<title>Practitioner session 2 · The first system in a week - learn ml strategy with phoebe</title>
+<link rel="stylesheet" href="../assets/style.css?v=1">
+</head>
+<body>
+
+<div class="toolbar">
+  <div class="wrap">
+    <span class="crumb"><a href="../index.html">learn-ml-strategy-with-phoebe</a> / Practitioner session 2 of 10</span>
+    <button class="btn" id="toggle-all" type="button">Expand all</button>
+    <button class="btn primary" id="zoom-toggle" type="button">Projector zoom: off</button>
+  </div>
+</div>
+
+<header class="masthead">
+  <div class="wrap">
+    <div class="eyebrow">Learn ML Strategy with Phoebe · Practitioner session 2 of 10</div>
+    <h1>The first system <span class="accent">in a week</span></h1>
+    <p class="sub">The first version of a classifier has one job, and it is not to be good. It exists to produce a dev set full of mistakes that a human can look at, because until those mistakes exist every argument about architecture, data and features is a guess dressed as a plan. Lanternfish spent six months on the proper architecture before anybody looked at a single dev-set error. Tonight you build the version that takes a week: a pretrained backbone, default everything, scored on the honest dev set from session 1, with every wrong frame written to a table that session 3 will turn into an order of work.</p>
+    <div class="chip-row">
+      <span class="chip level">🟡 Core</span>
+      <span class="chip audience">Data scientists and ML engineers</span>
+      <span class="chip time">45 min</span>
+    </div>
+    <div class="agenda">
+      <span class="a1" style="flex:1">0-3 · Welcome</span>
+      <span class="a2" style="flex:5">3-20 · Build quickly, then iterate</span>
+      <span class="a3" style="flex:4">20-40 · Build-along: the baseline in an afternoon</span>
+      <span class="a4" style="flex:1">40-45 · Q&amp;A</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ============ INTRO ============ -->
+  <section class="section" id="intro">
+    <div class="section-kicker">
+      <span class="klabel">Part 0</span>
+      <h2>Where tonight sits in the track</h2>
+    </div>
+    <p class="lede">Session 1 built the instrument: 1,000 frames drawn from the live cameras, split into an Eyeball half and a Blackbox half. Tonight builds the first thing that instrument measures. Not the best classifier the team can imagine, the fastest one that runs end to end, so that by the end of the week there are <strong>120 real mistakes</strong> in a table and the team can stop speculating about what is wrong with a model that does not exist yet.</p>
+
+    <div class="legend">
+      <span class="pill">Live = presented in the 45 minutes</span>
+      <span class="pill">Self-study = the full depth, after class</span>
+      <span class="pill">🔍 Every diagram zooms</span>
+    </div>
+
+    <div class="callout win">
+      <p><strong>★ What you walk out with tonight.</strong> A baseline built in an afternoon with a pretrained backbone and default hyperparameters. A <code class="mono">dev_errors</code> table with one row per wrong dev frame, its prediction, its label and an empty category column. The number every later project is priced against: 88 percent on the honest dev set, 120 errors, 12.8 percent on the Eyeball half and 11.2 on the Blackbox. And the habit of looking at ten wrong frames before forming a single opinion about the fix.</p>
+    </div>
+
+    <details class="card" open>
+      <summary><span class="mode live">Live</span>The first system exists to produce errors<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>A team starting a new classifier knows almost nothing about where it will fail. Will night frames be the problem, or two species that look alike, or empty frames, or labels the field team got wrong? Every one of those is plausible before the first model runs, and every one of them has a champion on the team. The only thing that settles the argument is a dev set with mistakes on it, and the only way to get one is to build something, anything, and score it.</p>
+        <p>So the first system is optimised for one property: it finishes. It is measured on the real dev set from day one, and its errors are written down as it makes them. Whether it is good is almost beside the point. Its 120 mistakes are the first evidence the project has ever had, and the value of the week is that evidence, not the model.</p>
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <p>Lanternfish's founding engineer wanted to get the architecture right first: a custom two-stage detector with a species head, a bespoke augmentation pipeline, a training loop written from scratch. Six months later it was elegant, it trained, and nobody could say which kind of frame it got wrong, because nobody had looked. Scored on the honest dev set in session 1 it came in at 88 percent. A fine-tuned pretrained backbone gets there in an afternoon.</p>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>Why speed of iteration decides projects<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <ul>
+          <li><strong>Every idea is a loop iteration.</strong> Build, measure on the dev set, decide. A team that closes the loop weekly tries fifty ideas in a year; a team that closes it quarterly tries four.</li>
+          <li><strong>The first iteration is the slowest.</strong> Data pipeline, training loop, scoring script, error table all have to exist before the loop turns once. Everything that follows reuses them.</li>
+          <li><strong>Most first ideas are wrong.</strong> Not the team's fault; nobody can know the error distribution before seeing it. A fast first system makes being wrong cheap.</li>
+          <li><strong>Speculation compounds.</strong> A design chosen without dev-set evidence is a design whose flaws will also be discovered without evidence, later, at higher cost.</li>
+          <li><strong>The exception is real but rare.</strong> A domain the team has shipped in many times, where the error categories are already known from the last project, can justify a longer first build. New domain, new camera, new species list: build fast.</li>
+        </ul>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 1 ============ -->
+  <section class="section" id="part-1">
+    <div class="section-kicker">
+      <span class="klabel">Part 1 · covers chapter 13 as a build discipline</span>
+      <h2>Build your first system quickly, then iterate</h2>
+      <span class="tag concept">9 min live</span>
+    </div>
+    <p class="lede">Chapter 13 of Machine Learning Yearning is titled "Build your first system quickly, then iterate", and the title is the whole instruction. The reasoning underneath it is about information: until there is a dev set with mistakes on it, every design argument is speculation, and the fastest way to replace speculation with evidence is to ship something that makes mistakes on the real dev set.</p>
+
+    <figure class="zoomable">
+      <svg viewBox="0 0 880 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Two timelines. The top one spends six months on a proper architecture and looks at no dev-set errors; at week 6 the team knows its training loss and nothing about where the model fails. The bottom one builds a baseline in one week and has 120 errors in a table; at week 6 it knows five categories, their shares, and has shipped the cheap fixes first.">
+        <style>
+          .p2aT { font: 800 12px Inter, sans-serif; fill: #fff; }
+          .p2aH { font: 800 12px Inter, sans-serif; fill: #1C1917; }
+          .p2aB { font: 400 11px Inter, sans-serif; fill: #1C1917; }
+          .p2aM { font: 400 11px Inter, sans-serif; fill: #6B6259; }
+          .p2aN { font: 700 11px Inter, sans-serif; fill: #1C1917; }
+          .p2aR { font: 700 11px Inter, sans-serif; fill: #991B1B; }
+          .p2aG { font: 700 11px Inter, sans-serif; fill: #713F12; }
+        </style>
+        <defs>
+          <marker id="p2aAr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#D9D2C5"></path></marker>
+        </defs>
+
+        <text class="p2aH" x="14" y="28">Two ways to spend the first six months</text>
+        <line x1="150" y1="44" x2="620" y2="44" stroke="#D9D2C5" stroke-width="1.5" marker-end="url(#p2aAr)"></line>
+        <text class="p2aM" x="150" y="60">week 0</text>
+        <text class="p2aM" x="240" y="60">week 6</text>
+        <text class="p2aM" x="580" y="60">week 26</text>
+        <line x1="258" y1="66" x2="258" y2="250" stroke="#D9D2C5" stroke-width="1.5" stroke-dasharray="4 4"></line>
+
+        <text class="p2aR" x="14" y="100">The proper architecture</text>
+        <text class="p2aM" x="14" y="116">six months, then a score</text>
+        <rect x="150" y="80" width="460" height="40" rx="8" fill="#FEF08A"></rect>
+        <text class="p2aB" x="380" y="105" text-anchor="middle">custom detector, bespoke pipeline, training loop from scratch</text>
+        <rect x="612" y="80" width="8" height="40" rx="2" fill="#991B1B"></rect>
+
+        <rect x="640" y="72" width="226" height="60" rx="9" fill="#FEFCE8" stroke="#D9D2C5"></rect>
+        <text class="p2aH" x="652" y="92">Knows at week 6</text>
+        <text class="p2aB" x="652" y="110">a training loss curve</text>
+        <text class="p2aR" x="652" y="126">dev-set errors looked at: 0</text>
+
+        <text class="p2aG" x="14" y="184">The baseline</text>
+        <text class="p2aM" x="14" y="200">one week, then iterate</text>
+        <rect x="150" y="164" width="18" height="40" rx="6" fill="#A16207"></rect>
+        <rect x="172" y="164" width="18" height="40" rx="6" fill="#FACC15"></rect>
+        <rect x="194" y="164" width="60" height="40" rx="6" fill="#FEF08A"></rect>
+        <text class="p2aB" x="262" y="182">wk 1 baseline, 120 errors in a table</text>
+        <text class="p2aB" x="262" y="198">wk 2 spreadsheet, then the cheapest fix first</text>
+
+        <rect x="640" y="156" width="226" height="60" rx="9" fill="#FEFCE8" stroke="#D9D2C5"></rect>
+        <text class="p2aH" x="652" y="176">Knows at week 6</text>
+        <text class="p2aB" x="652" y="194">five categories, with shares</text>
+        <text class="p2aG" x="652" y="210">cheapest two fixes shipped</text>
+
+        <rect x="150" y="232" width="18" height="12" rx="3" fill="#A16207"></rect>
+        <text class="p2aM" x="176" y="242">build</text>
+        <rect x="220" y="232" width="18" height="12" rx="3" fill="#FACC15"></rect>
+        <text class="p2aM" x="246" y="242">categorise</text>
+        <rect x="320" y="232" width="18" height="12" rx="3" fill="#FEF08A"></rect>
+        <text class="p2aM" x="346" y="242">fix, in ceiling order</text>
+
+        <rect x="14" y="300" width="14" height="14" rx="3" fill="#60A5FA"></rect>
+        <text class="p2aN" x="38" y="312">Both teams reach a working model. Only one of them knew what was wrong with it before summer.</text>
+      </svg>
+      <figcaption>🔍 Click to zoom - six months to an architecture against one week to a table of errors, and what each team knows at week 6.</figcaption>
+    </figure>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Until there are errors, every design argument is speculation<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Consider the five opinions on the Lanternfish team about why the classifier is wrong: night blur, deer that look like elk, animals half out of frame, empty frames read as animals, wrong labels. Before a dev set exists with mistakes on it, all five are equally defensible, and the loudest one wins. After the first system runs, they are counts: 42, 24, 22, 18 and 14 out of 120. The argument does not end because someone was persuasive; it ends because someone looked.</p>
+        <p>This is why the baseline is measured on the real dev set from its first run rather than on a training-set holdout or a demo folder. A mistake on the dev set is evidence about the field. A mistake anywhere else is evidence about somewhere else.</p>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>What "quickly" means in practice<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Quickly is not sloppy; it is a set of decisions made in favour of finishing:</p>
+        <ul>
+          <li><strong>A pretrained backbone,</strong> fine-tuned, not an architecture designed for the problem. The backbone already knows what fur and antlers look like.</li>
+          <li><strong>Default hyperparameters.</strong> The library defaults were chosen by people who ran thousands of experiments. Tuning them before knowing what the model gets wrong is tuning blind.</li>
+          <li><strong>The simplest data pipeline that runs.</strong> Resize, normalise, done. Augmentation is a project with a ceiling, chosen in session 3, not a default.</li>
+          <li><strong>One week at most.</strong> If the first system is not scoring on the dev set by the end of the week, the plan was too ambitious for a first system. Cut scope until it finishes.</li>
+          <li><strong>Errors written to a table on the first scoring run.</strong> Not a log file, not a notebook cell. A table the next session can query.</li>
+        </ul>
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <p>The Lanternfish baseline that replaced the six-month architecture was under forty lines: a ResNet from a model zoo, three epochs of fine-tuning on the labelled camera frames, a scoring loop over the 1,000 dev frames. It ran on a laptop overnight. The next morning the team had 120 rows to disagree about instead of five theories.</p>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>The baseline is the number everything else is priced against<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Once the first system has scored, one set of numbers becomes the reference for the rest of the project:</p>
+        <table class="clean">
+          <thead><tr><th>Number</th><th>Lanternfish baseline</th><th>What it is used for</th></tr></thead>
+          <tbody>
+            <tr><td>Dev accuracy</td><td>88 percent, 1,000 frames</td><td>The headline. Every project promises to move it.</td></tr>
+            <tr><td>Dev errors</td><td>120</td><td>The rows of the session 3 spreadsheet.</td></tr>
+            <tr><td>Eyeball half</td><td>64 of 500 wrong, 12.8 percent</td><td>The half you look at. The ceilings are computed on it.</td></tr>
+            <tr><td>Blackbox half</td><td>56 of 500 wrong, 11.2 percent</td><td>The half you never look at. The number you report.</td></tr>
+          </tbody>
+        </table>
+        <p>A project's ceiling in session 3 is a share of these errors. Its cost is weeks. Its points per week is ceiling divided by cost. None of that arithmetic can start until the baseline exists, which is another way of saying that a slow first system delays every good decision after it by exactly as long as it took.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 2 ============ -->
+  <section class="section" id="part-2">
+    <div class="section-kicker">
+      <span class="klabel">Part 2 · covers what a baseline is and is not</span>
+      <h2>What the first system is allowed to be bad at</h2>
+      <span class="tag concept">8 min live</span>
+    </div>
+    <p class="lede">A baseline is allowed to be embarrassing. It is not allowed to be unmeasured, and it is not allowed to have been fixed before anyone counted what was wrong with it. The difference between a baseline and a prototype is entirely about what it is measured on.</p>
+
+    <figure class="zoomable">
+      <svg viewBox="0 0 880 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="The dev_errors table as a strip of five columns: frame_id, half, predicted, actual and category. Five sample rows are filled in for the first four columns and the category column is empty in every row, waiting for session 3. A footer shows 120 rows, 64 eyeball and 56 blackbox.">
+        <style>
+          .p2bT { font: 800 12px Inter, sans-serif; fill: #fff; }
+          .p2bH { font: 800 12px Inter, sans-serif; fill: #1C1917; }
+          .p2bB { font: 400 11px Inter, sans-serif; fill: #1C1917; }
+          .p2bC { font: 500 11px ui-monospace, Menlo, monospace; fill: #292524; }
+          .p2bM { font: 400 11px Inter, sans-serif; fill: #6B6259; }
+          .p2bN { font: 700 11px Inter, sans-serif; fill: #1C1917; }
+          .p2bG { font: 700 11px Inter, sans-serif; fill: #713F12; }
+        </style>
+
+        <text class="p2bH" x="14" y="28">dev_errors, written by the first scoring run</text>
+
+        <rect x="14" y="44" width="150" height="30" rx="6" fill="#A16207"></rect>
+        <text class="p2bT" x="89" y="64" text-anchor="middle">frame_id</text>
+        <rect x="170" y="44" width="130" height="30" rx="6" fill="#A16207"></rect>
+        <text class="p2bT" x="235" y="64" text-anchor="middle">half</text>
+        <rect x="306" y="44" width="150" height="30" rx="6" fill="#A16207"></rect>
+        <text class="p2bT" x="381" y="64" text-anchor="middle">predicted</text>
+        <rect x="462" y="44" width="150" height="30" rx="6" fill="#A16207"></rect>
+        <text class="p2bT" x="537" y="64" text-anchor="middle">actual</text>
+        <rect x="618" y="44" width="248" height="30" rx="6" fill="#FACC15"></rect>
+        <text class="p2bH" x="742" y="64" text-anchor="middle">category</text>
+
+        <rect x="14" y="80" width="598" height="26" rx="4" fill="#FEFCE8"></rect>
+        <text class="p2bC" x="24" y="98">c07_000217</text>
+        <text class="p2bC" x="180" y="98">eyeball</text>
+        <text class="p2bC" x="316" y="98">elk</text>
+        <text class="p2bC" x="472" y="98">deer</text>
+        <rect x="14" y="110" width="598" height="26" rx="4" fill="#FEFCE8"></rect>
+        <text class="p2bC" x="24" y="128">c12_004481</text>
+        <text class="p2bC" x="180" y="128">blackbox</text>
+        <text class="p2bC" x="316" y="128">raccoon</text>
+        <text class="p2bC" x="472" y="128">fox</text>
+        <rect x="14" y="140" width="598" height="26" rx="4" fill="#FEFCE8"></rect>
+        <text class="p2bC" x="24" y="158">c03_001902</text>
+        <text class="p2bC" x="180" y="158">eyeball</text>
+        <text class="p2bC" x="316" y="158">boar</text>
+        <text class="p2bC" x="472" y="158">empty</text>
+        <rect x="14" y="170" width="598" height="26" rx="4" fill="#FEFCE8"></rect>
+        <text class="p2bC" x="24" y="188">c21_000058</text>
+        <text class="p2bC" x="180" y="188">eyeball</text>
+        <text class="p2bC" x="316" y="188">deer</text>
+        <text class="p2bC" x="472" y="188">elk</text>
+        <rect x="14" y="200" width="598" height="26" rx="4" fill="#FEFCE8"></rect>
+        <text class="p2bC" x="24" y="218">c09_003377</text>
+        <text class="p2bC" x="180" y="218">blackbox</text>
+        <text class="p2bC" x="316" y="218">fox</text>
+        <text class="p2bC" x="472" y="218">badger</text>
+
+        <rect x="618" y="80" width="248" height="146" rx="6" fill="#FEFCE8" stroke="#FACC15" stroke-width="2" stroke-dasharray="6 4"></rect>
+        <text class="p2bG" x="742" y="140" text-anchor="middle">null in every row</text>
+        <text class="p2bM" x="742" y="158" text-anchor="middle">filled by a human in session 3</text>
+        <text class="p2bM" x="742" y="176" text-anchor="middle">Eyeball rows only</text>
+
+        <text class="p2bM" x="24" y="248">120 rows · 64 eyeball · 56 blackbox · 12.8 and 11.2 percent</text>
+
+        <rect x="14" y="270" width="14" height="14" rx="3" fill="#60A5FA"></rect>
+        <text class="p2bN" x="38" y="282">The table is the deliverable. The model is how you got it.</text>
+      </svg>
+      <figcaption>🔍 Click to zoom - the dev_errors table with its category column empty, waiting for session 3.</figcaption>
+    </figure>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>A baseline is not a prototype<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Both are built fast. The difference is the audience. A prototype is built to be shown: a demo folder of good-looking frames, a stakeholder, a confidence threshold nudged until the output looks right. A baseline is built to be measured: scored on the real dev set from session 1 on its first run, with every mistake recorded, and never tuned to look good on the frames someone happened to be watching.</p>
+        <p>The failure mode is a prototype that gets promoted to a baseline. Its number was produced on frames chosen to flatter it, so every later project is priced against a fiction, and the first honest dev-set score arrives as a shock months later. Lanternfish's 94-percent web-photo number was exactly this.</p>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Fixes made before measuring are fixes chosen by conviction<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>The first scoring run makes the temptation acute. Ten wrong frames are on screen, three of them are night blur, and someone already knows a denoising trick. Two days later the denoiser is in and the baseline has never been recorded. The problem is not the denoiser; it may well be a good project. The problem is that it was chosen on three frames by the person who happened to know a trick, and nobody can now say whether night blur was 33 percent of the errors or 5.</p>
+        <p>The discipline is simple and slightly painful: record the baseline, write the errors to the table, and make no fix until session 3's spreadsheet has put a share and a ceiling on every category. Every fix made before that point is a fix chosen by conviction rather than by count, and conviction is what the whole spreadsheet exists to replace.</p>
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <p>Lanternfish's team wanted the deer-versus-elk specialist model the moment they saw their first misread elk. On the spreadsheet a week later that category was 19 percent of the Eyeball errors and the specialist model offered 0.21 points per week, the lowest on the sheet. The re-labelling job nobody had proposed was 14 percent of the errors and 1.62 points per week.</p>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>The errors table is the first system's real deliverable<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>The model file will be replaced within weeks. The table it produced will be queried for the life of the project. Give it the shape session 3 needs:</p>
+        <ul>
+          <li><strong>frame_id</strong> - the key back to the image, so a human can open it. An error you cannot look at is an error you cannot categorise.</li>
+          <li><strong>half</strong> - eyeball or blackbox, carried over from the session 1 split. Session 3 only reads the Eyeball rows; session 4 explains why.</li>
+          <li><strong>predicted</strong> and <strong>actual</strong> - the model's answer and the label. The pair is often the category: elk predicted for deer is one row of a pattern.</li>
+          <li><strong>category</strong> - null. Every row. A human fills it in while looking at the frame, and the fact that it is empty tonight is the point: nothing has been decided yet.</li>
+          <li><strong>One row per wrong frame,</strong> nothing else. Correct frames belong in the scoring log, not here; the spreadsheet is about mistakes.</li>
+        </ul>
+        <p>A baseline that produced a number but no table has done half the job. The number says how wrong the model is; the table says how, and only the second one funds a project.</p>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>The fast first system will sometimes be embarrassing<span class="mini">2 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>A pretrained backbone with default settings will call a badger a fox and a moving branch a boar. Somebody will screenshot it. The reflex is to hold the baseline back until it is presentable, and the reflex is wrong: every embarrassing error is a row in the table, and the pattern behind the embarrassment is a project with a ceiling. Lanternfish's 18 empty frames called animals looked ridiculous in a demo and turned into a two-week motion filter worth 1.6 points, the second-best points per week on the sheet.</p>
+        <p>The embarrassment is information. A first system that is never embarrassing was either tuned before it was measured, or measured on frames chosen to spare it.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ DEMO ============ -->
+  <section class="section" id="demo-1">
+    <div class="section-kicker">
+      <span class="klabel">Build-along</span>
+      <h2>The baseline in an afternoon</h2>
+      <span class="tag demo">★ 20 min · everyone builds</span>
+    </div>
+    <p class="lede">Bring the dev set from session 1 and any labelled training frames you have. If you are on the Lanternfish exercise pack, it ships the labelled camera frames, the 1,000-frame dev set with its <code class="mono">dev_half</code> column, and the baseline's frozen predictions, so everyone's table lands on the same 120 rows. If you fine-tune your own backbone instead, your count will differ by a few frames and every step below still works.</p>
+
+    <div class="steps">
+      <div class="step">
+        <p><strong>Fine-tune a pretrained backbone with defaults.</strong> A model-zoo ResNet, the default optimiser, three epochs, no tuning. If you find yourself opening the hyperparameter documentation, close it. That is a session 5 decision, and it will be made against a number.</p>
+        <div class="prompt-box good">
+          <span class="label">★ Try it now</span>
+# a baseline in an afternoon: pretrained backbone, default everything
+import timm, torch
+from torch.utils.data import DataLoader
+
+model = timm.create_model("resnet50", pretrained=True, num_classes=len(SPECIES))
+opt = torch.optim.AdamW(model.parameters())          # library defaults, on purpose
+loader = DataLoader(train_frames, batch_size=64, shuffle=True)
+
+for epoch in range(3):
+    for x, y in loader:
+        loss = torch.nn.functional.cross_entropy(model(x), y)
+        opt.zero_grad(); loss.backward(); opt.step()
+        </div>
+      </div>
+      <div class="step">
+        <p><strong>Score it on the 1,000-frame dev set and write every mistake to a table.</strong> One row per wrong frame: <code class="mono">frame_id</code>, <code class="mono">half</code>, <code class="mono">predicted</code>, <code class="mono">actual</code>, and a <code class="mono">category</code> column that is null in every row. Do not fill the category in tonight, even when it is obvious.</p>
+        <div class="prompt-box good">
+          <span class="label">★ Try it now</span>
+import pandas as pd
+
+rows = []
+model.eval()
+with torch.no_grad():
+    for frame_id, half, x, y in dev_loader:          # 1,000 frames, dev_half from session 1
+        pred = model(x).argmax(1)
+        for f, h, p, a in zip(frame_id, half, pred.tolist(), y.tolist()):
+            if p != a:
+                rows.append((f, h, SPECIES[p], SPECIES[a], None))
+
+errors = pd.DataFrame(rows, columns=["frame_id", "half", "predicted", "actual", "category"])
+errors.to_sql("dev_errors", con, if_exists="replace", index=False)
+print(len(errors), "wrong of 1000")                   # 120
+        </div>
+      </div>
+      <div class="step">
+        <p><strong>Confirm the counts per half.</strong> The split from session 1 was random, so the two halves will not carry the same number of errors. Lanternfish's do not: 64 in the Eyeball half and 56 in the Blackbox. Write both down; the gap between them is a fact about sampling, not about the model.</p>
+        <div class="prompt-box good">
+          <span class="label">★ Try it now</span>
+select half,
+       count(*)                          as errors,
+       round(100.0 * count(*) / 500, 1)  as error_pct
+from dev_errors
+group by half
+order by half;
+-- blackbox   56   11.2
+-- eyeball    64   12.8
+        </div>
+      </div>
+      <div class="step">
+        <p><strong>Record the baseline where the team will see it.</strong> Accuracy 88 percent, 120 errors, 12.8 and 11.2 by half, the date, and the model file's hash. Every project from session 3 onward is priced against this row, and a baseline that lives in one person's notebook is a baseline the team will argue about later.</p>
+        <div class="prompt-box good">
+          <span class="label">★ Try it now</span>
+insert into baselines (recorded_on, model_ref, dev_n, dev_errors, dev_acc_pct, eyeball_err_pct, blackbox_err_pct)
+values (current_date, 'resnet50-ft-3ep-a91c2', 1000, 120, 88.0, 12.8, 11.2);
+        </div>
+      </div>
+      <div class="step">
+        <p><strong>Open ten Eyeball errors in a viewer and look at them.</strong> Not categorise, look. Notice what you notice: the grain on the night frames, the antlers hidden by a branch, the frame with nothing in it that the model called a boar. Write nothing in the category column. The looking is practice for session 3; the writing is session 3.</p>
+        <div class="prompt-box good">
+          <span class="label">★ Try it now</span>
+select frame_id, predicted, actual
+from dev_errors
+where half = 'eyeball'
+order by random()
+limit 10;
+-- open each frame_id in the viewer; leave category null
+        </div>
+      </div>
+    </div>
+
+    <div class="callout tip">
+      <p><strong>Ten frames is enough to feel the pull.</strong> Three of the ten will be night blur and someone will know a fix. That pull is exactly what the spreadsheet in session 3 is for: it turns "I saw three" into "it is 33 percent of the errors and worth 0.84 points a week", and the fix gets funded on the second number, not the first.</p>
+    </div>
+  </section>
+
+  <!-- ============ HOMEWORK ============ -->
+  <section class="section" id="exercise">
+    <div class="section-kicker">
+      <span class="klabel">Homework</span>
+      <h2>Before session 3</h2>
+      <span class="tag exercise">30 min</span>
+    </div>
+    <ol>
+      <li>For one classifier you own, find its baseline: the first honest dev-set number, the date, and the model it came from. If nobody can produce it, the project has been pricing its work against a number that does not exist.</li>
+      <li>Check whether your baseline was measured on the real dev set or on something friendlier. A demo folder, a training holdout or a hand-picked sample makes it a prototype number, and the first honest score is still ahead of you.</li>
+      <li>List every fix made to the model before anyone counted its errors by category. For each one, write down who chose it and on how many examples. Most are one person and under ten.</li>
+      <li>Build your own <code class="mono">dev_errors</code> table with the five columns from tonight, and bring the Eyeball rows to session 3 with the category column still empty.</li>
+    </ol>
+  </section>
+
+  <!-- ============ QUIZ ============ -->
+  <section class="section" id="quiz">
+    <div class="section-kicker">
+      <span class="klabel">Check yourself</span>
+      <h2>Three questions</h2>
+    </div>
+
+    <div class="quiz-q" data-answer="2">
+      <p class="qtext">Why build the first system in a week with a pretrained backbone and default hyperparameters, rather than designing the right architecture first?</p>
+      <button class="qopt" type="button">A · Because pretrained backbones are always more accurate than custom architectures</button>
+      <button class="qopt" type="button">B · Because hyperparameters do not matter for image classifiers</button>
+      <button class="qopt" type="button">C · Because until there is a dev set with mistakes on it, every design argument is speculation, and the fastest way to get real mistakes is to ship something that runs</button>
+      <p class="qwhy">Chapter 13: build your first system quickly, then iterate. The first system's job is to produce the errors that decide what to build next, not to be good.</p>
+    </div>
+
+    <div class="quiz-q" data-answer="0">
+      <p class="qtext">Two teams each build a classifier in a week. One scores it on the real dev set and writes the errors to a table; the other tunes the threshold until a demo folder looks right. Which has a baseline?</p>
+      <button class="qopt" type="button">A · Only the first: a baseline is measured on the real dev set from day one, and a demo is a prototype however fast it was built</button>
+      <button class="qopt" type="button">B · Both, because both were built quickly</button>
+      <button class="qopt" type="button">C · Neither, because a baseline needs tuned hyperparameters</button>
+      <p class="qwhy">Speed is necessary but not sufficient. What makes a baseline is what it is measured on. A prototype promoted to a baseline prices every later project against a fiction.</p>
+    </div>
+
+    <div class="quiz-q" data-answer="1">
+      <p class="qtext">The Lanternfish baseline has 64 errors in the Eyeball half and 56 in the Blackbox half. What does the gap tell you?</p>
+      <button class="qopt" type="button">A · The model is worse on the Eyeball half and should be retrained on it</button>
+      <button class="qopt" type="button">B · Nothing about the model: the split was random, so the two halves carry different numbers of errors by chance, and both are recorded as they are</button>
+      <button class="qopt" type="button">C · The Blackbox half was labelled more carefully</button>
+      <p class="qwhy">12.8 and 11.2 percent are both readings of the same model on two random halves of one dev set. The gap is sampling, and writing both down is what lets session 4 spot a gap that is not.</p>
+    </div>
+
+    <p class="quiz-score"></p>
+  </section>
+
+  <!-- ============ COVERAGE ============ -->
+  <section class="section" id="official">
+    <div class="section-kicker">
+      <span class="klabel">Sources covered</span>
+      <h2>What tonight maps to</h2>
+    </div>
+    <div class="covered">
+      <div class="covered-row">
+        <span class="status pill solid">✓</span>
+        <span class="name">Machine Learning Yearning, chapter 13</span>
+        <span class="note">Build your first system quickly, then iterate: as a build discipline, with the 12-percent baseline it produces for Lanternfish.</span>
+      </div>
+      <div class="covered-row">
+        <span class="status pill light">◐</span>
+        <span class="name">Machine Learning Yearning, chapters 14 to 15</span>
+        <span class="note">The errors table is built tonight; categorising it, the ceiling and the spreadsheet are session 3.</span>
+      </div>
+      <div class="covered-row">
+        <span class="status pill light">◐</span>
+        <span class="name">Machine Learning Yearning, chapters 5 to 7</span>
+        <span class="note">The dev set the baseline is scored on was built in session 1 and is taken as given tonight.</span>
+      </div>
+      <div class="covered-row">
+        <span class="status pill light">◐</span>
+        <span class="name">Iteration speed as a strategy</span>
+        <span class="note">Leader session 1 makes the same argument for whoever approves the sprint.</span>
+      </div>
+      <div class="covered-row">
+        <span class="status pill inkpill">·</span>
+        <span class="name">Architecture choice, hyperparameter tuning, transfer-learning technique</span>
+        <span class="note">Not covered by design. The deep learning course owns the technique; tonight uses the defaults precisely so that nothing is tuned before it is measured.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ CHEAT SHEET ============ -->
+  <section class="cheat" id="cheatsheet">
+    <h3>Session 2 cheat sheet</h3>
+    <div class="grid-2">
+      <div class="cheat-item"><b>The first system exists to produce errors</b><span>Not to be good. Its 120 mistakes are the first evidence the project has.</span></div>
+      <div class="cheat-item"><b>Until there are errors, it is speculation</b><span>Five theories become five counts: 42, 24, 22, 18, 14. Someone looked.</span></div>
+      <div class="cheat-item"><b>Quickly means</b><span>Pretrained backbone, default hyperparameters, simplest pipeline, one week at most.</span></div>
+      <div class="cheat-item"><b>Baseline, not prototype</b><span>Measured on the real dev set from day one. A demo folder is a prototype however fast it was.</span></div>
+      <div class="cheat-item"><b>No fix before the count</b><span>A fix made before the spreadsheet was chosen by conviction, on three frames, by whoever knew a trick.</span></div>
+      <div class="cheat-item"><b>The table is the deliverable</b><span>frame_id, half, predicted, actual, category null. One row per wrong frame.</span></div>
+      <div class="cheat-item"><b>The numbers to write down</b><span>88 percent, 120 errors, Eyeball 64 of 500 at 12.8, Blackbox 56 of 500 at 11.2.</span></div>
+      <div class="cheat-item"><b>Embarrassment is information</b><span>18 empty frames called animals became a two-week filter worth 1.6 points.</span></div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="pagefoot">
+  <div class="wrap">
+    <p>Practitioner session 2 of 10 · learn-ml-strategy-with-phoebe · by Phoebe Fu</p>
+    <nav class="pagenav">
+      <a href="p1-dev-and-test-sets.html">← Practitioner session 1 · Dev and test sets</a>
+      <a href="p3-error-analysis-spreadsheet.html">Practitioner session 3 · The error-analysis spreadsheet →</a>
+    </nav>
+  </div>
+</footer>
+
+<script src="../assets/app.js?v=1"></script>
+</body>
+</html>

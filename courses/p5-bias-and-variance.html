@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- social:start -->
+<meta name="description" content="Practitioner session 5 of 10. Training error, dev error and a human-level estimate split one error rate into three terms you can act on. Lanternfish reads 3, 12 and 2, giving unavoidable bias 2, avoidable bias 1 and variance 9, and each of those three funds a different family of project.">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Learn with Phoebe">
+<meta property="og:title" content="Bias and variance from three numbers - learn ml strategy with phoebe">
+<meta property="og:description" content="Practitioner session 5 of 10. Three numbers decide whether the fix is a bigger model or more data.">
+<meta property="og:url" content="https://phoebefu6.github.io/learn-ml-strategy-with-phoebe/courses/p5-bias-and-variance.html">
+<meta property="og:image" content="https://phoebefu6.github.io/learn-ml-strategy-with-phoebe/assets/og-cover.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Bias and variance from three numbers - learn ml strategy with phoebe">
+<meta name="twitter:description" content="Unavoidable 2, avoidable bias 1, variance 9. A 3 percent training error is excellent on one task and terrible on another.">
+<meta name="twitter:image" content="https://phoebefu6.github.io/learn-ml-strategy-with-phoebe/assets/og-cover.png">
+<!-- social:end -->
+<title>Practitioner session 5 · Bias and variance from three numbers - learn ml strategy with phoebe</title>
+<link rel="stylesheet" href="../assets/style.css?v=1">
+</head>
+<body>
+
+<div class="toolbar">
+  <div class="wrap">
+    <span class="crumb"><a href="../index.html">learn-ml-strategy-with-phoebe</a> / Practitioner session 5 of 10</span>
+    <button class="btn" id="toggle-all" type="button">Expand all</button>
+    <button class="btn primary" id="zoom-toggle" type="button">Projector zoom: off</button>
+  </div>
+</div>
+
+<header class="masthead">
+  <div class="wrap">
+    <div class="eyebrow">Learn ML Strategy with Phoebe · Practitioner session 5 of 10</div>
+    <h1>Bias and variance from <span class="accent">three numbers</span></h1>
+    <p class="sub">The error-analysis sheet from session 3 says which kinds of image are wrong. It does not say whether the answer is a bigger model or more data, and those two answers fund completely different quarters. Three numbers settle it: what the model gets wrong on the data it trained on, what it gets wrong on the dev set, and what a careful human gets wrong on the same images. Lanternfish reads 3, 12 and 2. Tonight you turn a pair of subtractions into a diagnosis, and check whether the sprint the team is already running matches it.</p>
+    <div class="chip-row">
+      <span class="chip level">🟡 Core</span>
+      <span class="chip audience">Data scientists and ML engineers</span>
+      <span class="chip time">45 min</span>
+    </div>
+    <div class="agenda">
+      <span class="a1" style="flex:1">0-3 · Welcome</span>
+      <span class="a2" style="flex:5">3-20 · Three numbers, one decomposition</span>
+      <span class="a3" style="flex:4">20-40 · Build-along: diagnose the classifier</span>
+      <span class="a4" style="flex:1">40-45 · Q&amp;A</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ============ INTRO ============ -->
+  <section class="section" id="intro">
+    <div class="section-kicker">
+      <span class="klabel">Part 0</span>
+      <h2>What one error rate hides</h2>
+    </div>
+    <p class="lede">A 12 percent dev error is not one thing. Part of it is error nobody could remove, because the images genuinely do not contain the answer. Part of it is the model failing to fit even the data it was shown. The rest appears only when the model meets data it has not seen. Those three parts have different causes, different fixes and different costs, and a single number keeps all three invisible.</p>
+
+    <div class="legend">
+      <span class="pill">Live = presented in the 45 minutes</span>
+      <span class="pill">Self-study = the full depth, after class</span>
+      <span class="pill">🔍 Every diagram zooms</span>
+    </div>
+
+    <div class="callout win">
+      <p><strong>★ What you walk out with tonight.</strong> Lanternfish's 12 percent split into unavoidable bias 2, avoidable bias 1 and variance 9, from three numbers you can measure this week. A human-level estimate from 50 hand-labelled dev images, which is the number that tells a hard problem apart from a weak model. And a check on the current sprint: which of the two project families it belongs to, and whether the decomposition agrees.</p>
+    </div>
+
+    <details class="card" open>
+      <summary><span class="mode live">Live</span>The three numbers, and where each comes from<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <ul>
+          <li><strong>Training error.</strong> The same metric, computed on the data the model learned from. Cheap: you already have the predictions. If it is high, the model cannot even fit what it was shown.</li>
+          <li><strong>Dev error.</strong> The Blackbox half from session 4, because after four sessions of reading errors it is the only honest reading left. Lanternfish: 12 percent.</li>
+          <li><strong>Human-level error.</strong> What a careful person gets wrong on the same images. Not free: it costs a labelling exercise. It is also the number that decides whether 3 percent training error is a triumph or an embarrassment.</li>
+        </ul>
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <p>Lanternfish's team argued for a month about whether to buy more labelled night frames or move to a larger backbone. Both cases were well made. The three numbers took an afternoon and said the model fits its training data almost as well as a human reads the images, and falls apart on data it has not seen. That is a data and generalisation problem, and the larger backbone was the wrong quarter.</p>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>The vocabulary, carefully<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <ul>
+          <li><strong>Optimal error rate</strong> - the error no model could remove, because the information is not in the input. A night frame with one ear visible does not say elk or deer, and no architecture will change that. Also called unavoidable bias.</li>
+          <li><strong>Avoidable bias</strong> - the gap between training error and the optimal error rate. Error the model is making on data it has already seen, which is therefore in principle removable.</li>
+          <li><strong>Variance</strong> - dev error minus training error. The part that appears only on unseen data.</li>
+          <li><strong>Human-level performance</strong> - the practical stand-in for the optimal error rate on perception tasks, and the reason chapter 33 exists.</li>
+          <li><strong>Orthogonalization</strong> - one knob per problem, so a change that moves two numbers at once cannot be reasoned about. Course material from Ng's <em>Structuring Machine Learning Projects</em>, not from the book.</li>
+        </ul>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 1 ============ -->
+  <section class="section" id="part-1">
+    <div class="section-kicker">
+      <span class="klabel">Part 1 · covers chapters 20, 22 and 33</span>
+      <h2>"Bias and Variance: The two big sources of error"</h2>
+      <span class="tag concept">9 min live</span>
+    </div>
+    <p class="lede">That is chapter 20 of <em>Machine Learning Yearning</em>, and chapter 22 does the arithmetic on a worked example. A system with 30 percent dev error, on a task where the optimal error rate is 14 percent, has avoidable bias of 1 percent, "calculated as the difference between the training error and the optimal error rate". Variance is dev error minus training error: 15 points. The 30 percent that looked like a broken model turns out to be a hard task with a generalisation problem on top.</p>
+
+    <figure class="zoomable">
+      <svg viewBox="0 0 880 330" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Lanternfish's 12 percent dev error drawn as a stacked bar: unavoidable bias 2 points at the bottom marking the human-level floor, avoidable bias 1 point above it, and variance 9 points on top. A side panel lists training error 3, dev error 12 and human-level 2, and concludes that variance is the bigger term.">
+        <style>
+          .p5aT { font: 800 12px Inter, sans-serif; fill: #fff; }
+          .p5aH { font: 800 12px Inter, sans-serif; fill: #1C1917; }
+          .p5aB { font: 400 11px Inter, sans-serif; fill: #1C1917; }
+          .p5aM { font: 400 11px Inter, sans-serif; fill: #6B6259; }
+          .p5aN { font: 700 11px Inter, sans-serif; fill: #1C1917; }
+          .p5aG { font: 800 12px Inter, sans-serif; fill: #713F12; }
+          .p5aV { font: 800 13px Inter, sans-serif; fill: #fff; }
+          .p5aK { font: 800 13px Inter, sans-serif; fill: #1C1917; }
+        </style>
+
+        <text class="p5aH" x="14" y="30">Lanternfish: 12 percent dev error, split into three terms</text>
+
+        <line x1="210" y1="60" x2="210" y2="250" stroke="#D9D2C5" stroke-width="1.5"></line>
+        <line x1="210" y1="250" x2="352" y2="250" stroke="#D9D2C5" stroke-width="1.5"></line>
+        <text class="p5aM" x="204" y="74" text-anchor="end">12%</text>
+        <text class="p5aM" x="204" y="254" text-anchor="end">0</text>
+
+        <rect x="230" y="70" width="110" height="135" fill="#A16207"></rect>
+        <rect x="230" y="205" width="110" height="15" fill="#FACC15"></rect>
+        <rect x="230" y="220" width="110" height="30" fill="#713F12"></rect>
+        <text class="p5aV" x="285" y="143" text-anchor="middle">9</text>
+        <text class="p5aK" x="285" y="217" text-anchor="middle">1</text>
+        <text class="p5aV" x="285" y="241" text-anchor="middle">2</text>
+
+        <line x1="150" y1="220" x2="352" y2="220" stroke="#D9D2C5" stroke-width="1.5" stroke-dasharray="5 3"></line>
+        <text class="p5aM" x="146" y="212" text-anchor="end">human-level</text>
+        <text class="p5aM" x="146" y="228" text-anchor="end">floor: 2 percent</text>
+
+        <line x1="340" y1="137" x2="358" y2="134" stroke="#D9D2C5" stroke-width="1.5"></line>
+        <text class="p5aH" x="362" y="130">Variance 9 points</text>
+        <text class="p5aM" x="362" y="148">dev 12 minus train 3</text>
+
+        <line x1="340" y1="212" x2="358" y2="200" stroke="#D9D2C5" stroke-width="1.5"></line>
+        <text class="p5aH" x="362" y="196">Avoidable bias 1 point</text>
+        <text class="p5aM" x="362" y="214">train 3 minus human 2</text>
+
+        <line x1="340" y1="235" x2="358" y2="238" stroke="#D9D2C5" stroke-width="1.5"></line>
+        <text class="p5aH" x="362" y="242">Unavoidable bias 2 points</text>
+        <text class="p5aM" x="362" y="260">error nobody can remove</text>
+
+        <rect x="600" y="48" width="266" height="214" rx="10" fill="#FEFCE8" stroke="#D9D2C5"></rect>
+        <text class="p5aH" x="618" y="76">The three numbers</text>
+        <text class="p5aB" x="618" y="104">training error</text>
+        <text class="p5aB" x="848" y="104" text-anchor="end">3 percent</text>
+        <text class="p5aB" x="618" y="124">dev error (Blackbox)</text>
+        <text class="p5aB" x="848" y="124" text-anchor="end">12 percent</text>
+        <text class="p5aB" x="618" y="144">human-level</text>
+        <text class="p5aB" x="848" y="144" text-anchor="end">2 percent</text>
+        <line x1="618" y1="158" x2="848" y2="158" stroke="#D9D2C5" stroke-width="1"></line>
+        <text class="p5aM" x="618" y="182">unavoidable bias</text>
+        <text class="p5aB" x="848" y="182" text-anchor="end">2</text>
+        <text class="p5aM" x="618" y="202">avoidable bias</text>
+        <text class="p5aB" x="848" y="202" text-anchor="end">1</text>
+        <text class="p5aM" x="618" y="222">variance</text>
+        <text class="p5aB" x="848" y="222" text-anchor="end">9</text>
+        <text class="p5aG" x="618" y="248">variance is the bigger term</text>
+
+        <rect x="210" y="292" width="14" height="14" rx="3" fill="#60A5FA"></rect>
+        <text class="p5aN" x="234" y="304">Dev error 12 splits into 2 you cannot remove, 1 of bias, and 9 of variance.</text>
+      </svg>
+      <figcaption>🔍 Click to zoom - one error rate, three terms, three different fixes.</figcaption>
+    </figure>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Two subtractions, in the right order<span class="mini">4 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Write the three numbers in a column: human-level 2, training 3, dev 12. Then read the gaps between adjacent rows. Training minus human-level is <strong>avoidable bias</strong>: 1 point. Dev minus training is <strong>variance</strong>: 9 points. What is left underneath, the human-level number itself, is <strong>unavoidable bias</strong>: 2 points. The three add back to the 12 you started with, which is the check that you did it right.</p>
+        <p>The order matters because it tells you which gap to attack. Lanternfish's model fits its training data to within one point of a careful human, so there is almost nothing to win by making it fit training data better. Nine of its twelve points appear only on data it has not seen. Whatever the team does next, if it does not close that gap it is not addressing 75 percent of the error.</p>
+        <div class="prompt-box good">
+          <span class="label">★ Try it now · the whole decomposition, in one query</span>
+select 2.0                          as human_level_pct,
+       3.0                          as train_pct,
+       12.0                         as dev_pct,
+       2.0                          as unavoidable_bias,
+       3.0 - 2.0                    as avoidable_bias,
+       12.0 - 3.0                   as variance,
+       case when (12.0 - 3.0) &gt; (3.0 - 2.0) then 'variance' else 'bias' end as focus;
+-- the three terms must sum back to dev error, or one of the numbers is measured wrong
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Why the human-level estimate is not optional<span class="mini">4 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Chapter 33 asks why we compare to human-level performance, and the practical answer is that without it you cannot tell a hard problem from a weak model. A 3 percent training error is close to flawless on a task where a careful person gets 2 percent wrong. The identical 3 percent is a serious failure on a task where a person gets 0.1 percent wrong, because it means 29 out of every 30 mistakes the model makes are mistakes a person would not make.</p>
+        <p>Without the third number you have only two, and two numbers can tell you about variance but say nothing about whether the training error is any good. Teams that skip the estimate end up funding capacity work on tasks that were already at the ceiling, or accepting a training error that a fifteen-minute labelling exercise would have shown was terrible.</p>
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <p>Lanternfish's field team hand-labelled 50 dev images cold, with no access to the model's answer. They got one wrong: a badger at the edge of the frame, in a photo where two of the three labellers also said badger and the ground truth said nothing there at all. One in 50 is 2 percent, and it came with a useful side effect: the disagreements were concentrated in exactly the night-blur category the error-analysis sheet had at the top.</p>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>The same three numbers on a much harder task<span class="mini">4 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Chapter 22's worked example is a system with 30 percent dev error on a task where the optimal error rate is 14 percent. The instinct in the room is always that the model is broken. The decomposition disagrees: avoidable bias is 1 point, so the model is fitting its training data to within a point of the best anything could do, and the remaining 15 points are variance.</p>
+        <p>Drawn beside Lanternfish, the two look nothing alike and are read exactly the same way. One is a task a person handles easily where the model has a generalisation problem. The other is a task that is genuinely hard where the model also has a generalisation problem. Both diagnoses point at the same project family, and neither is visible from the headline number.</p>
+      </div>
+    </details>
+
+    <figure class="zoomable">
+      <svg viewBox="0 0 880 352" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Two stacked bars on one scale: Lanternfish's 12 percent dev error as variance 9, avoidable bias 1 and unavoidable bias 2, beside chapter 22's worked example of 30 percent dev error as variance 15, avoidable bias 1 and unavoidable bias 14.">
+        <style>
+          .p5bT { font: 800 12px Inter, sans-serif; fill: #fff; }
+          .p5bH { font: 800 12px Inter, sans-serif; fill: #1C1917; }
+          .p5bB { font: 400 11px Inter, sans-serif; fill: #1C1917; }
+          .p5bM { font: 400 11px Inter, sans-serif; fill: #6B6259; }
+          .p5bN { font: 700 11px Inter, sans-serif; fill: #1C1917; }
+          .p5bC { font: 800 12px Inter, sans-serif; fill: #713F12; }
+        </style>
+
+        <text class="p5bH" x="120" y="42">The same three terms, on one scale, at two very different sizes</text>
+
+        <line x1="120" y1="70" x2="120" y2="270" stroke="#D9D2C5" stroke-width="1.5"></line>
+        <line x1="120" y1="270" x2="860" y2="270" stroke="#D9D2C5" stroke-width="1.5"></line>
+        <text class="p5bM" x="114" y="84" text-anchor="end">30%</text>
+        <text class="p5bM" x="114" y="274" text-anchor="end">0</text>
+
+        <rect x="150" y="194" width="120" height="57" fill="#A16207"></rect>
+        <rect x="150" y="251" width="120" height="6" fill="#FACC15"></rect>
+        <rect x="150" y="257" width="120" height="13" fill="#713F12"></rect>
+        <text class="p5bC" x="210" y="292" text-anchor="middle">Lanternfish classifier</text>
+        <text class="p5bM" x="210" y="310" text-anchor="middle">dev error 12 percent</text>
+
+        <rect x="290" y="196" width="12" height="12" fill="#A16207"></rect>
+        <text class="p5bB" x="310" y="206">Variance 9</text>
+        <rect x="290" y="220" width="12" height="12" fill="#FACC15"></rect>
+        <text class="p5bB" x="310" y="230">Avoidable bias 1</text>
+        <rect x="290" y="244" width="12" height="12" fill="#713F12"></rect>
+        <text class="p5bB" x="310" y="254">Unavoidable bias 2</text>
+
+        <rect x="520" y="80" width="120" height="95" fill="#A16207"></rect>
+        <rect x="520" y="175" width="120" height="6" fill="#FACC15"></rect>
+        <rect x="520" y="181" width="120" height="89" fill="#713F12"></rect>
+        <text class="p5bC" x="580" y="292" text-anchor="middle">Chapter 22 worked example</text>
+        <text class="p5bM" x="580" y="310" text-anchor="middle">dev error 30 percent</text>
+
+        <rect x="660" y="100" width="12" height="12" fill="#A16207"></rect>
+        <text class="p5bB" x="680" y="110">Variance 15</text>
+        <rect x="660" y="124" width="12" height="12" fill="#FACC15"></rect>
+        <text class="p5bB" x="680" y="134">Avoidable bias 1</text>
+        <rect x="660" y="148" width="12" height="12" fill="#713F12"></rect>
+        <text class="p5bB" x="680" y="158">Unavoidable bias 14</text>
+
+        <rect x="120" y="326" width="14" height="14" rx="3" fill="#60A5FA"></rect>
+        <text class="p5bN" x="144" y="338">One is mostly variance. The other is mostly a task nobody can do better.</text>
+      </svg>
+      <figcaption>🔍 Click to zoom - a method, not one company's numbers.</figcaption>
+    </figure>
+  </section>
+
+  <!-- ============ PART 2 ============ -->
+  <section class="section" id="part-2">
+    <div class="section-kicker">
+      <span class="klabel">Part 2 · covers what each diagnosis funds</span>
+      <h2>Each diagnosis funds a different project</h2>
+      <span class="tag concept">8 min live</span>
+    </div>
+    <p class="lede">The decomposition is only worth an afternoon if it changes what the team does on Monday. It does, because the two removable terms have disjoint sets of remedies. Chapter 25 holds the techniques for reducing avoidable bias and chapter 27 holds the techniques for reducing variance, and picking from the wrong chapter is a quarter spent moving a term that was already at its floor.</p>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Two families, named<span class="mini">4 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <table class="clean">
+          <thead><tr><th>Term</th><th>Reads as</th><th>Project family</th><th>What will not help</th></tr></thead>
+          <tbody>
+            <tr><td>Unavoidable bias</td><td>Human-level error on this task</td><td>None. Change the input or the task, or accept it</td><td>Every modelling technique there is</td></tr>
+            <tr><td>Avoidable bias</td><td>Training error minus human-level</td><td>Chapter 25: make the model able to fit its training data</td><td>More training data. It does not fix data the model already sees and gets wrong</td></tr>
+            <tr><td>Variance</td><td>Dev error minus training error</td><td>Chapter 27: make what the model learned carry to unseen data</td><td>More capacity on its own, which usually widens the gap</td></tr>
+          </tbody>
+        </table>
+        <p>Regularisation, dropout and model capacity are the mechanics inside those two families, and they are taught properly in the intro ML and deep learning courses. What the decomposition contributes is the prior question: which family the next four weeks belong to. Lanternfish has one point of avoidable bias and nine of variance, so the ceiling on all of chapter 25's work is one point. That is the entire argument against the larger backbone, and it fits in a sentence.</p>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>The sheet says which category, the decomposition says which shape<span class="mini">4 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Session 3's error-analysis sheet and tonight's three numbers answer different halves of the same question, and a team needs both. The sheet says night infrared blur is 33 percent of the errors and re-labelling is worth 1.62 points per week. It cannot tell you whether those blurry frames are wrong because the model never learned them or because it learned them and cannot generalise. The decomposition says the shape of the fix is generalisation. It cannot tell you which images to point that fix at.</p>
+        <ul>
+          <li><strong>Sheet first, decomposition second, on any real backlog.</strong> The sheet narrows five thousand possible projects to five. The decomposition then rules out the ones whose family does not match, and reorders what is left.</li>
+          <li><strong>They can disagree usefully.</strong> A category that dominates the sheet and sits in the family with almost no headroom is a project that will feel important and deliver a fraction of a point.</li>
+          <li><strong>They share an input.</strong> Both are computed on the dev set from session 1, and both inherit whatever is wrong with it.</li>
+          <li><strong>Run the decomposition per category when a category is big enough.</strong> Night blur at 42 of 120 errors can carry its own training and dev rates, and it often has a different shape from the whole.</li>
+        </ul>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>One knob per problem<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Orthogonalization is the discipline of having a separate control for each of these terms, so that turning one does not move the others. It is course material from Ng's <em>Structuring Machine Learning Projects</em> rather than anything in the book, and it is worth naming plainly because it is the reason the decomposition is actionable at all.</p>
+        <p>A change that increases capacity and adds augmentation and rebalances the classes in the same pull request moves avoidable bias and variance at once. If the dev number improves, nothing has been learned about which term moved, and the next decision is a guess. One change, one term, one measurement, and the two halves from session 4 reported side by side.</p>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>The honest limit of all three numbers<span class="mini">4 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <ul>
+          <li><strong>Everything here rests on the dev set from session 1.</strong> If it is drawn from the wrong distribution, the variance term is measuring the distance between two populations rather than a generalisation gap, and session 7 is where that gets separated properly.</li>
+          <li><strong>A wrong human-level estimate moves the whole diagnosis.</strong> Estimate 5 percent when the truth is 2 and Lanternfish's avoidable bias goes negative, which reads as a model beating people and usually means the labellers had an easier job than the model does.</li>
+          <li><strong>Which human, on what evidence, is part of the estimate.</strong> A field ecologist with the full camera burst is a different number from a contractor with one frame. Match the labeller's information to the model's input or the estimate is about a different task.</li>
+          <li><strong>Fifty images gives a rough number, and rough is usually enough.</strong> One error in 50 is 2 percent with a wide band around it. It is enough to tell 2 percent from 15; it is not enough to argue about 2 against 3.</li>
+          <li><strong>Training error on augmented data is not training error.</strong> Compute it on the same metric and the same preprocessing as the dev number, or the subtraction is between two different things.</li>
+          <li><strong>The terms move as you work.</strong> Re-run the decomposition after each project rather than treating the first reading as a standing fact about the system.</li>
+        </ul>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ DEMO ============ -->
+  <section class="section" id="demo-1">
+    <div class="section-kicker">
+      <span class="klabel">Build-along</span>
+      <h2>Diagnose the classifier</h2>
+      <span class="tag demo">★ 20 min · everyone builds</span>
+    </div>
+    <p class="lede">You need predictions on the training set and on the dev set, the split from session 4, and fifty minutes of somebody's eyes. The Lanternfish tables are <code class="mono">cams.predictions</code> with a <code class="mono">split</code> column and <code class="mono">cams.dev_results</code> from last session.</p>
+
+    <div class="steps">
+      <div class="step">
+        <p><strong>Compute training error and dev error on the same metric.</strong> Same preprocessing, same threshold, same class set. Take the dev number from the Blackbox half, because the Eyeball half has been read and its rate is a diagnostic rather than a measurement.</p>
+      </div>
+      <div class="step">
+        <p><strong>Run a small human-labelling exercise on 50 dev images.</strong> Draw them from the Eyeball half, show the labeller exactly what the model sees and nothing more, and hide the model's answer. Two labellers if you can afford it; where they disagree is where the ground truth is soft.</p>
+      </div>
+      <div class="step">
+        <p><strong>Compute the three terms and check they sum.</strong> Unavoidable is the human-level rate, avoidable bias is training minus human-level, variance is dev minus training. If they do not add back to the dev error, one of the three was measured on different data.</p>
+      </div>
+      <div class="step">
+        <p><strong>Write the diagnosis into the results table beside the two half-errors.</strong> Same row, same run label. Three months from now, the question will be when the shape changed, and only a stored row can answer it.</p>
+      </div>
+      <div class="step">
+        <p><strong>Check which family the current sprint is in.</strong> Write down what is in flight, tag each item bias or variance, and compare with the diagnosis. Lanternfish had a larger backbone in flight against one point of available bias.</p>
+      </div>
+      <div class="step">
+        <p><strong>Re-run the decomposition per category for the big ones.</strong> Night blur is 42 of the 120 errors, enough to carry its own three numbers, and a category whose shape differs from the whole is the most useful thing this exercise produces.</p>
+      </div>
+    </div>
+
+    <div class="prompt-box good">
+      <span class="label">★ Try it now · training and dev error on one metric</span>
+with scored as (
+  select p.split,
+         s.dev_half,
+         case when p.pred_label &lt;&gt; p.true_label then 1 else 0 end as is_error
+  from cams.predictions p
+  left join cams.dev_split s on s.frame_id = p.frame_id
+  where p.run_label = 'v7-baseline'
+)
+select case when split = 'train' then 'train'
+            when dev_half = 'blackbox' then 'dev_blackbox'
+            else 'dev_eyeball' end          as measured_on,
+       count(*)                              as n,
+       round(100.0 * sum(is_error) / count(*), 1) as error_pct
+from scored
+group by 1
+order by 1;
+-- expect train 3.0, dev_blackbox 11.2 and dev_eyeball 12.8; the headline dev rate is 12.0
+    </div>
+
+    <div class="prompt-box good">
+      <span class="label">★ Try it now · fifty images, one human, no peeking</span>
+import random, json, pathlib
+
+random.seed(20260909)
+frames = json.loads(pathlib.Path("dev_eyeball.json").read_text())   # frame_id + true_label
+sample = random.sample(frames, 50)
+
+# write a labelling sheet that carries the image and nothing else:
+# no model prediction, no filename hint, no ordering by category
+sheet = [{"n": i + 1, "frame_id": f["frame_id"], "human_label": ""} for i, f in enumerate(sample)]
+pathlib.Path("human_sheet.json").write_text(json.dumps(sheet, indent=2))
+
+# after the labeller fills it in
+done = json.loads(pathlib.Path("human_sheet.json").read_text())
+truth = {f["frame_id"]: f["true_label"] for f in sample}
+wrong = sum(1 for r in done if r["human_label"] != truth[r["frame_id"]])
+print(f"human-level error: {wrong}/50 = {100 * wrong / 50:.1f} percent")   # 1/50 = 2.0 percent
+    </div>
+
+    <div class="prompt-box good">
+      <span class="label">★ Try it now · the diagnosis, stored beside the two halves</span>
+def decompose(train_pct: float, dev_pct: float, human_pct: float) -&gt; dict:
+    """Chapter 22 arithmetic. Returns the three terms and which one to fund."""
+    unavoidable = human_pct
+    avoidable = train_pct - human_pct
+    variance = dev_pct - train_pct
+    total = unavoidable + avoidable + variance
+    assert abs(total - dev_pct) &lt; 1e-9, "the terms must sum to dev error"
+    focus = "variance" if variance &gt; avoidable else ("bias" if avoidable &gt; 0 else "neither")
+    return {"unavoidable": unavoidable, "avoidable_bias": avoidable,
+            "variance": variance, "focus": focus}
+
+print(decompose(train_pct=3.0, dev_pct=12.0, human_pct=2.0))
+# {'unavoidable': 2.0, 'avoidable_bias': 1.0, 'variance': 9.0, 'focus': 'variance'}
+    </div>
+
+    <div class="callout tip">
+      <p><strong>A negative avoidable bias is a measurement bug, not a milestone.</strong> If training error comes out below the human-level estimate, the labellers almost certainly had information the model does not, or the two numbers were computed on different preprocessing. Fix the measurement before anybody writes the word superhuman in a deck.</p>
+    </div>
+  </section>
+
+  <!-- ============ HOMEWORK ============ -->
+  <section class="section" id="exercise">
+    <div class="section-kicker">
+      <span class="klabel">Homework</span>
+      <h2>Before session 6</h2>
+      <span class="tag exercise">30 min</span>
+    </div>
+    <ol>
+      <li>Compute all three numbers for one model you own, on one metric, and write the decomposition down. If you cannot get a human-level estimate this week, write the number you are assuming and label it an assumption.</li>
+      <li>Tag every item in the current sprint as bias work or variance work. Count the weeks in each column and compare with the two terms.</li>
+      <li>Take the largest category from your error-analysis sheet and decompose it on its own. Note whether its shape matches the system as a whole.</li>
+      <li>Find one recent change that moved more than one term at once, and write what you would have to run to work out which term actually moved.</li>
+      <li>Bring your training and dev numbers to session 6. Learning curves are the same three numbers plotted against training set size, and they answer the question the single reading cannot: whether more data would help.</li>
+    </ol>
+  </section>
+
+  <!-- ============ QUIZ ============ -->
+  <section class="section" id="quiz">
+    <div class="section-kicker">
+      <span class="klabel">Check yourself</span>
+      <h2>Three questions</h2>
+    </div>
+
+    <div class="quiz-q" data-answer="2">
+      <p class="qtext">Lanternfish reads training error 3 percent, dev error 12 percent, human-level 2 percent. What is the avoidable bias?</p>
+      <button class="qopt" type="button">A · 9 points, which is dev error minus training error</button>
+      <button class="qopt" type="button">B · 10 points, which is dev error minus human-level</button>
+      <button class="qopt" type="button">C · 1 point, the difference between the training error and the optimal error rate, with 2 points unavoidable and 9 of variance underneath it</button>
+      <p class="qwhy">Avoidable bias is "calculated as the difference between the training error and the optimal error rate". Dev minus training is variance. The three terms sum back to the 12 percent dev error, which is the check.</p>
+    </div>
+
+    <div class="quiz-q" data-answer="0">
+      <p class="qtext">Two teams both report 3 percent training error. Why can that be excellent work on one task and a serious failure on another?</p>
+      <button class="qopt" type="button">A · Because the number only means something against the optimal error rate: 3 against a human-level 2 leaves one point to win, and 3 against a human-level 0.1 means almost every mistake is one a person would not make</button>
+      <button class="qopt" type="button">B · Because training error is unreliable below 5 percent</button>
+      <button class="qopt" type="button">C · Because the two teams are using different metrics</button>
+      <p class="qwhy">Chapter 33's point: without a human-level estimate you cannot tell a hard problem from a weak model, and the same training error supports both readings.</p>
+    </div>
+
+    <div class="quiz-q" data-answer="1">
+      <p class="qtext">A system has 30 percent dev error, an optimal error rate of 14 percent and 1 point of avoidable bias. A teammate proposes a much larger model. What does the decomposition say?</p>
+      <button class="qopt" type="button">A · Agree: 30 percent error is far too high for the current model</button>
+      <button class="qopt" type="button">B · The ceiling on all bias work is 1 point, because the model already fits its training data to within a point of the best possible, and the 15 points of variance are where the error lives</button>
+      <button class="qopt" type="button">C · Nothing, because the optimal error rate cannot be measured</button>
+      <p class="qwhy">Chapter 22's worked example. A headline number that looks like a broken model is a hard task plus a generalisation problem, and capacity work has one point of headroom.</p>
+    </div>
+
+    <p class="quiz-score"></p>
+  </section>
+
+  <!-- ============ COVERAGE ============ -->
+  <section class="section" id="official">
+    <div class="section-kicker">
+      <span class="klabel">Sources covered</span>
+      <h2>What tonight maps to</h2>
+    </div>
+    <div class="covered">
+      <div class="covered-row">
+        <span class="status pill solid">✓</span>
+        <span class="name">Machine Learning Yearning, chapters 20 and 22</span>
+        <span class="note">"Bias and Variance: The two big sources of error" and "Comparing to the optimal error rate", with the 14 / 1 / 15 worked example computed alongside Lanternfish's 2 / 1 / 9.</span>
+      </div>
+      <div class="covered-row">
+        <span class="status pill solid">✓</span>
+        <span class="name">Machine Learning Yearning, chapter 33</span>
+        <span class="note">Why we compare to human-level performance, run as a 50-image labelling exercise rather than an assumption.</span>
+      </div>
+      <div class="covered-row">
+        <span class="status pill light">◐</span>
+        <span class="name">Machine Learning Yearning, chapters 25 and 27</span>
+        <span class="note">The two families of technique are named as the projects each diagnosis funds, and their ceilings computed. The techniques themselves are not worked here.</span>
+      </div>
+      <div class="covered-row">
+        <span class="status pill light">◐</span>
+        <span class="name">Orthogonalization</span>
+        <span class="note">Named as course material from Ng's Structuring Machine Learning Projects, week 1, not from the book.</span>
+      </div>
+      <div class="covered-row">
+        <span class="status pill light">◐</span>
+        <span class="name">Whether more data would help</span>
+        <span class="note">Session 6. Learning curves plot these same numbers against training set size.</span>
+      </div>
+      <div class="covered-row">
+        <span class="status pill inkpill">·</span>
+        <span class="name">Regularisation, dropout, model capacity</span>
+        <span class="note">Not covered by design. The intro ML and deep learning courses own the mechanics; the decomposition owns which family to reach into.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ CHEAT SHEET ============ -->
+  <section class="cheat" id="cheatsheet">
+    <h3>Session 5 cheat sheet</h3>
+    <div class="grid-2">
+      <div class="cheat-item"><b>Three numbers, two subtractions</b><span>Human-level, training, dev. The gaps between adjacent rows are the diagnosis.</span></div>
+      <div class="cheat-item"><b>Avoidable bias</b><span>Training error minus the optimal error rate. Lanternfish: 3 minus 2 is 1 point.</span></div>
+      <div class="cheat-item"><b>Variance</b><span>Dev error minus training error. Lanternfish: 12 minus 3 is 9 points.</span></div>
+      <div class="cheat-item"><b>They must sum</b><span>2 plus 1 plus 9 is 12. If they do not, something was measured on different data.</span></div>
+      <div class="cheat-item"><b>3 percent means nothing alone</b><span>Excellent against a human-level 2, a failure against a human-level 0.1.</span></div>
+      <div class="cheat-item"><b>Two disjoint families</b><span>Chapter 25 for avoidable bias, chapter 27 for variance. More data does not fix bias.</span></div>
+      <div class="cheat-item"><b>Sheet plus decomposition</b><span>One says which category, the other says which shape. A team needs both.</span></div>
+      <div class="cheat-item"><b>One knob per problem</b><span>A change that moves two terms at once teaches you nothing about either.</span></div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="pagefoot">
+  <div class="wrap">
+    <p>Practitioner session 5 of 10 · learn-ml-strategy-with-phoebe · by Phoebe Fu</p>
+    <nav class="pagenav">
+      <a href="p4-eyeball-and-blackbox.html">← Practitioner session 4 · Eyeball and Blackbox dev sets</a>
+      <a href="p6-learning-curves.html">Practitioner session 6 · Learning curves, read honestly →</a>
+    </nav>
+  </div>
+</footer>
+
+<script src="../assets/app.js?v=1"></script>
+</body>
+</html>

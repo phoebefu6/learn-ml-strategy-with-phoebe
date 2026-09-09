@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- social:start -->
+<meta name="description" content="Leader session 2 of 6. Show a team precision and recall for two models and it will argue; show it one number and it will pick. One metric to optimise, the rest as bars to clear, and the signal that says the metric has stopped measuring what the field cares about. Lanternfish optimises accuracy and requires 200 milliseconds on the camera.">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Learn with Phoebe">
+<meta property="og:title" content="One number, or two kinds - learn ml strategy with phoebe">
+<meta property="og:description" content="Leader session 2 of 6. Two numbers is a debate, one number is a decision. Optimising and satisficing metrics, and when to change them.">
+<meta property="og:url" content="https://phoebefu6.github.io/learn-ml-strategy-with-phoebe/courses/a2-one-number-or-two-kinds.html">
+<meta property="og:image" content="https://phoebefu6.github.io/learn-ml-strategy-with-phoebe/assets/og-cover.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="One number, or two kinds - learn ml strategy with phoebe">
+<meta name="twitter:description" content="One metric you optimise, N-1 you only require. The single number does not remove the trade; it makes it a decision instead of a weekly argument.">
+<meta name="twitter:image" content="https://phoebefu6.github.io/learn-ml-strategy-with-phoebe/assets/og-cover.png">
+<!-- social:end -->
+<title>Leader session 2 · One number, or two kinds - learn ml strategy with phoebe</title>
+<link rel="stylesheet" href="../assets/style.css?v=1">
+</head>
+<body>
+
+<div class="toolbar">
+  <div class="wrap">
+    <span class="crumb"><a href="../index.html">learn-ml-strategy-with-phoebe</a> / Leader session 2 of 6</span>
+    <button class="btn" id="toggle-all" type="button">Expand all</button>
+    <button class="btn primary" id="zoom-toggle" type="button">Projector zoom: off</button>
+  </div>
+</div>
+
+<header class="masthead">
+  <div class="wrap">
+    <div class="eyebrow">Learn ML Strategy with Phoebe · Leader session 2 of 6</div>
+    <h1>One number, <span class="accent">or two kinds</span></h1>
+    <p class="sub">Show a team precision and recall for two models and it will argue for three weeks. Show it one number and it will pick on Monday. Chapter 8 of Machine Learning Yearning is titled "Establish a single-number evaluation metric for your team to optimize", and chapter 9 adds the second kind of number: the ones you never optimise, only require to clear a bar. Lanternfish optimises accuracy on its species dev set and requires inference under 200 milliseconds on the camera. Tonight is what that sentence hides, when to rewrite it, and how to write your own and read it to the person who signs off the model.</p>
+    <div class="chip-row">
+      <span class="chip level">🟢 Foundational</span>
+      <span class="chip audience">Data and product leaders</span>
+      <span class="chip time">45 min</span>
+    </div>
+    <div class="agenda">
+      <span class="a1" style="flex:1">0-3 · Welcome</span>
+      <span class="a2" style="flex:5">3-22 · Single-number, optimizing, satisficing</span>
+      <span class="a3" style="flex:4">22-40 · Build-along: write the metric sentence</span>
+      <span class="a4" style="flex:1">40-45 · Q&amp;A</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ============ INTRO ============ -->
+  <section class="section" id="intro">
+    <div class="section-kicker">
+      <span class="klabel">Part 0</span>
+      <h2>Why the metric is a leadership decision</h2>
+    </div>
+    <p class="lede">Session 1 made the case that a machine learning project is a loop, and that the speed of the loop is what the funder actually controls. Every turn of that loop ends with the same act: somebody reads the dev set and decides whether the idea stays. The metric is what they read. If it takes two numbers to say whether the model got better, every turn of the loop ends in a meeting, and the meeting is the loop speed. Lanternfish's team lost three weeks of a quarter to exactly that meeting, before anybody had written down what the field cared about.</p>
+
+    <div class="legend">
+      <span class="pill">Live = presented in the 45 minutes</span>
+      <span class="pill">Self-study = the full depth, after class</span>
+      <span class="pill">🔍 Every diagram zooms</span>
+    </div>
+
+    <div class="callout win">
+      <p><strong>★ What you walk out with tonight.</strong> The reason one number beats two: not because one is more accurate, but because one is a decision and two is a debate. The book's pattern for the other requirements, one metric to optimise and the rest as bars to clear, so that "fast enough" and "small enough" stop competing with "accurate". A one-sentence metric statement for a model you fund, with what it hides written next to it. And the signal that says it is time to rewrite the sentence.</p>
+    </div>
+
+    <details class="card" open>
+      <summary><span class="mode live">Live</span>What the metric decides, and who should decide it<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>The metric is the definition of "better". Every model change the team accepts is accepted because it moved the metric, and every change it drops is dropped because it did not. So the metric silently decides what the model becomes over a quarter: which mistakes it learns to avoid, and which it is allowed to keep making because they cost nothing on the number.</p>
+        <p>That is a product decision wearing a technical costume. Which mistakes matter is a question about the field, the customer and the mission, and an engineer asked to choose a metric alone is being asked to make that call without the information. The right shape is a sentence the funder can read and sign: what the field cares about, the one number that tracks it, what that number hides, and the bars everything else has to clear.</p>
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <p>Lanternfish's classifier was scored on accuracy across the species set because accuracy is what the training library printed. Nobody chose it. Two quarters later the conservation groups asked why the one species they were legally required to report was the one the model most often missed. Accuracy had never been asked to care.</p>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>Names, not definitions<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>The words below appear tonight only as names. Each has a definition, a threshold behaviour and a failure mode, and the model-evaluation course owns all three. Here the only question is which one goes in the sentence.</p>
+        <ul>
+          <li><strong>Accuracy</strong> - the single number Lanternfish currently optimises, over the whole species set.</li>
+          <li><strong>Precision and recall</strong> - the pair most classification teams are shown, and the pair most often argued about.</li>
+          <li><strong>F1 and its relatives</strong> - single numbers built by combining a pair, so that a team has one thing to optimise.</li>
+          <li><strong>Per-species accuracy</strong> - the same number computed for each species separately, which is what makes a rare species visible.</li>
+          <li><strong>Inference time, model size, battery draw</strong> - the non-accuracy requirements a camera in a forest imposes, and the ones that become bars rather than targets.</li>
+        </ul>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 1 ============ -->
+  <section class="section" id="part-1">
+    <div class="section-kicker">
+      <span class="klabel">Part 1 · covers the single-number metric, chapter 8</span>
+      <h2>Establish a single-number evaluation metric for your team to optimize</h2>
+      <span class="tag concept">9 min live</span>
+    </div>
+    <p class="lede">The chapter title is the instruction. A team needs one number that goes up when the model gets better, so that at the end of every turn of the loop the decision is a comparison rather than a conversation. The cost is that any single number hides a trade inside it. The discipline is to choose it knowing what it hides, rather than letting the training library choose for you.</p>
+
+    <figure class="zoomable">
+      <svg viewBox="0 0 880 330" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Two teams look at the same two models. The left team is shown two numbers per model, precision and recall, and neither model wins on both, so the team argues for three weeks. The right team is shown a single accuracy number per model, and picks model B on Monday. A note under the right panel says what the single number hides: a protected species in one percent of frames counts as one point.">
+        <style>
+          .a2aT { font: 800 12px Inter, sans-serif; fill: #fff; }
+          .a2aH { font: 800 12px Inter, sans-serif; fill: #1C1917; }
+          .a2aB { font: 400 11px Inter, sans-serif; fill: #1C1917; }
+          .a2aM { font: 400 11px Inter, sans-serif; fill: #6B6259; }
+          .a2aN { font: 700 11px Inter, sans-serif; fill: #1C1917; }
+          .a2aR { font: 800 12px Inter, sans-serif; fill: #991B1B; }
+          .a2aG { font: 800 12px Inter, sans-serif; fill: #713F12; }
+          .a2aX { font: 800 22px Inter, sans-serif; fill: #713F12; }
+        </style>
+
+        <rect x="14" y="20" width="410" height="250" rx="10" fill="#FEFCE8" stroke="#D9D2C5"></rect>
+        <rect x="14" y="20" width="410" height="34" rx="10" fill="#FACC15"></rect>
+        <text class="a2aH" x="219" y="42" text-anchor="middle">Team shown two numbers per model</text>
+        <rect x="30" y="70" width="180" height="96" rx="9" fill="#FEF08A" stroke="#D9D2C5"></rect>
+        <text class="a2aH" x="120" y="92" text-anchor="middle">Model A</text>
+        <text class="a2aB" x="120" y="116" text-anchor="middle">precision 96</text>
+        <text class="a2aB" x="120" y="136" text-anchor="middle">recall 88</text>
+        <text class="a2aM" x="120" y="156" text-anchor="middle">wins on one</text>
+        <rect x="228" y="70" width="180" height="96" rx="9" fill="#FEF08A" stroke="#D9D2C5"></rect>
+        <text class="a2aH" x="318" y="92" text-anchor="middle">Model B</text>
+        <text class="a2aB" x="318" y="116" text-anchor="middle">precision 91</text>
+        <text class="a2aB" x="318" y="136" text-anchor="middle">recall 94</text>
+        <text class="a2aM" x="318" y="156" text-anchor="middle">wins on the other</text>
+        <text class="a2aR" x="219" y="200" text-anchor="middle">"Which one?" Neither wins on both.</text>
+        <text class="a2aM" x="219" y="222" text-anchor="middle">three weeks of meetings, no model shipped,</text>
+        <text class="a2aM" x="219" y="240" text-anchor="middle">the same argument again next sprint</text>
+
+        <rect x="456" y="20" width="410" height="250" rx="10" fill="#FEFCE8" stroke="#D9D2C5"></rect>
+        <rect x="456" y="20" width="410" height="34" rx="10" fill="#A16207"></rect>
+        <text class="a2aT" x="661" y="42" text-anchor="middle">Team shown one number per model</text>
+        <rect x="472" y="70" width="180" height="96" rx="9" fill="#FEF08A" stroke="#D9D2C5"></rect>
+        <text class="a2aH" x="562" y="92" text-anchor="middle">Model A</text>
+        <text class="a2aX" x="562" y="128" text-anchor="middle">88.0</text>
+        <text class="a2aM" x="562" y="156" text-anchor="middle">accuracy, species set</text>
+        <rect x="670" y="70" width="180" height="96" rx="9" fill="#FEF08A" stroke="#713F12" stroke-width="2"></rect>
+        <text class="a2aH" x="760" y="92" text-anchor="middle">Model B</text>
+        <text class="a2aX" x="760" y="128" text-anchor="middle">89.4</text>
+        <text class="a2aM" x="760" y="156" text-anchor="middle">accuracy, species set</text>
+        <text class="a2aG" x="661" y="200" text-anchor="middle">B is higher. B ships Monday.</text>
+        <text class="a2aM" x="661" y="222" text-anchor="middle">what the number hides: a protected species</text>
+        <text class="a2aM" x="661" y="240" text-anchor="middle">in 1 percent of frames is worth 1 point at most</text>
+
+        <rect x="14" y="296" width="14" height="14" rx="3" fill="#60A5FA"></rect>
+        <text class="a2aN" x="38" y="308">Two numbers is a debate. One number is a decision, and it hides a trade: choose it knowing what it hides.</text>
+      </svg>
+      <figcaption>🔍 Click to zoom - the same two models, two ways of looking, and what the single number hides.</figcaption>
+    </figure>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Two numbers is a debate, one number is a decision<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Put two models in front of a team with two numbers each, and one model will usually win on one number and lose on the other. The team now has to decide how much of one it would trade for how much of the other, and that is a values question, so everybody has a view and nobody has the authority. The meeting runs long, the decision is deferred, and the same meeting happens after the next experiment because nothing was settled.</p>
+        <p>Put the same two models in front of the same team with one number each, and the higher one wins. The decision takes the time it takes to read two numbers. The trade has not gone away; it was made once, when the single number was chosen, by whoever chose it. That is the whole argument for a single-number metric: it moves the values question out of every sprint and into one deliberate decision.</p>
+        <ul>
+          <li><strong>The loop turns faster</strong> because each turn ends in a comparison, not a conversation.</li>
+          <li><strong>The team stops relitigating</strong> because the trade was settled above them, in writing.</li>
+          <li><strong>Progress becomes visible</strong> across weeks: one line going up or not, rather than two lines crossing.</li>
+        </ul>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>What a single number costs<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Any single number is a compression. It takes every kind of mistake the model can make and adds them up according to some rule, and the rule decides which mistakes are expensive and which are free. Accuracy's rule is that every wrong frame costs the same, so a mistake on a species that appears in half the frames and a mistake on one that appears in one frame in a hundred are worth exactly the same to the number. That is not wrong; it is a choice, and it was made the moment accuracy was picked.</p>
+        <p>So the cost of a single number is that it hides the trade inside it, and the discipline is to choose it knowing what it hides. Written next to the metric, in the same sentence, should be the one thing the number is blind to that the field cares about. If nobody can write that clause, nobody has thought about the metric yet.</p>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Lanternfish chose accuracy, and what that hides<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Lanternfish optimises accuracy over the species set: the share of dev frames where the predicted species is the labelled one. It is a defensible single number for a classifier whose customers want to know what walked past. It is also blind to one thing the customers care about more than anything else.</p>
+        <p>One of the species on the list is protected, and it appears in about 1 percent of frames. A model that never recognises it at all loses at most one point of accuracy. A model that gets it right every time gains at most one point. To the number, the protected species and a common deer are interchangeable; to the conservation groups paying for the cameras, the protected species is the reason the cameras exist.</p>
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <p>Two quarters of accuracy-driven work made the classifier steadily better on deer, elk and boar, and steadily no better on the one species with a legal reporting requirement. Nothing in the loop could have caught it, because nothing in the loop was looking. The number went up every sprint, honestly.</p>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>Three ways teams end up with the wrong single number<span class="mini">4 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <ul>
+          <li><strong>The library chose it.</strong> Accuracy is what the training tool prints by default, so it becomes the metric without anybody deciding. The fix is a sentence with a signature on it.</li>
+          <li><strong>The convenient one was chosen.</strong> The metric that was easy to compute on the data to hand, rather than the one that tracks what the field cares about. It measures the wrong thing precisely, exactly as a dev set from the wrong traffic does.</li>
+          <li><strong>The metric was chosen for the dashboard.</strong> A number that looks good to report is not the same as a number that is hard to move in the wrong direction. Numbers chosen to look good tend to look good.</li>
+        </ul>
+        <p>All three share a cause: the choice was made by whoever was nearest the keyboard, on the day the project started, and never revisited. The build-along makes the choice explicit and gives it an owner.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 2 ============ -->
+  <section class="section" id="part-2">
+    <div class="section-kicker">
+      <span class="klabel">Part 2 · covers optimizing and satisficing metrics, chapters 9 and 11</span>
+      <h2>Optimizing and satisficing metrics</h2>
+      <span class="tag concept">8 min live</span>
+    </div>
+    <p class="lede">A single number to optimise does not mean nothing else matters. A classifier on a camera in a forest has to run fast enough, fit in the memory the camera has and not drain the battery, and none of those is accuracy. Chapter 9 gives the pattern that keeps them from turning back into a debate: one metric you optimise, and the rest as bars the model only has to clear.</p>
+
+    <figure class="zoomable">
+      <svg viewBox="0 0 880 310" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Lanternfish's metric stack. One optimizing bar across the top: accuracy on the species dev set, the number that has to go up. Under it three satisficing gates, each with a threshold: inference time at most 200 milliseconds on the camera, model size at most 25 megabytes, and a dashed placeholder for any further requirement, written as a bar with a number and never as a second optimizing metric. A model that fails any gate is out regardless of accuracy; models that clear every gate are compared on accuracy alone.">
+        <style>
+          .a2bT { font: 800 12px Inter, sans-serif; fill: #fff; }
+          .a2bW { font: 400 11px Inter, sans-serif; fill: #fff; }
+          .a2bH { font: 800 12px Inter, sans-serif; fill: #1C1917; }
+          .a2bB { font: 400 11px Inter, sans-serif; fill: #1C1917; }
+          .a2bM { font: 400 11px Inter, sans-serif; fill: #6B6259; }
+          .a2bN { font: 700 11px Inter, sans-serif; fill: #1C1917; }
+          .a2bR { font: 700 11px Inter, sans-serif; fill: #991B1B; }
+          .a2bG { font: 800 12px Inter, sans-serif; fill: #713F12; }
+        </style>
+        <defs>
+          <marker id="a2bAr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#D9D2C5"></path></marker>
+        </defs>
+
+        <text class="a2bH" x="14" y="30">Lanternfish's metric stack: one number to optimise, N-1 bars to clear</text>
+
+        <rect x="14" y="44" width="852" height="56" rx="10" fill="#A16207"></rect>
+        <text class="a2bT" x="30" y="68">OPTIMISE · accuracy on the species dev set</text>
+        <text class="a2bW" x="30" y="88">the one number that has to go up; hides the 1 percent protected species, and that is written next to it</text>
+
+        <line x1="440" y1="102" x2="440" y2="124" stroke="#D9D2C5" stroke-width="1.5" marker-end="url(#a2bAr)"></line>
+
+        <rect x="14" y="128" width="272" height="96" rx="10" fill="#FEFCE8" stroke="#D9D2C5"></rect>
+        <rect x="14" y="128" width="272" height="30" rx="10" fill="#FACC15"></rect>
+        <text class="a2bH" x="150" y="148" text-anchor="middle">Gate 1 · inference time</text>
+        <text class="a2bG" x="150" y="178" text-anchor="middle">at most 200 ms on the camera</text>
+        <text class="a2bM" x="150" y="198" text-anchor="middle">clear it, then stop caring</text>
+        <text class="a2bM" x="150" y="214" text-anchor="middle">150 ms is not better than 190</text>
+
+        <rect x="304" y="128" width="272" height="96" rx="10" fill="#FEFCE8" stroke="#D9D2C5"></rect>
+        <rect x="304" y="128" width="272" height="30" rx="10" fill="#FACC15"></rect>
+        <text class="a2bH" x="440" y="148" text-anchor="middle">Gate 2 · model size</text>
+        <text class="a2bG" x="440" y="178" text-anchor="middle">at most 25 MB on the camera's flash</text>
+        <text class="a2bM" x="440" y="198" text-anchor="middle">clear it, then stop caring</text>
+        <text class="a2bM" x="440" y="214" text-anchor="middle">a smaller model earns nothing</text>
+
+        <rect x="594" y="128" width="272" height="96" rx="10" fill="#FEFCE8" stroke="#D9D2C5" stroke-dasharray="6 4"></rect>
+        <rect x="594" y="128" width="272" height="30" rx="10" fill="#FEF08A"></rect>
+        <text class="a2bH" x="730" y="148" text-anchor="middle">Any further requirement</text>
+        <text class="a2bB" x="730" y="178" text-anchor="middle">written as a bar with a number</text>
+        <text class="a2bR" x="730" y="198" text-anchor="middle">never a second number to optimise</text>
+        <text class="a2bM" x="730" y="214" text-anchor="middle">the book's own example: at most 100 ms</text>
+
+        <text class="a2bR" x="14" y="252">Fails any gate: out, whatever its accuracy.</text>
+        <text class="a2bG" x="440" y="252">Clears every gate: compared on accuracy alone.</text>
+
+        <rect x="14" y="280" width="14" height="14" rx="3" fill="#60A5FA"></rect>
+        <text class="a2bN" x="38" y="292">With N things you care about, optimise one and make the other N-1 bars. A bar cannot start an argument.</text>
+      </svg>
+      <figcaption>🔍 Click to zoom - one optimizing bar on top, the satisficing gates beneath it, each with its threshold.</figcaption>
+    </figure>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>One to optimise, N-1 to clear<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Chapter 9 is titled "Optimizing and satisficing metrics", and the pattern is exactly that. The book's example is a classifier where accuracy is the optimizing metric, the thing you want as high as possible, and running time "should take at most 100ms" is a satisficing one: it has to clear the bar, and once it does, faster earns nothing. With N things you care about, you set N-1 of them as satisficing bars and optimise the one that is left.</p>
+        <p>The reason this works is that a bar cannot start an argument. Either the model runs in under the limit or it does not; there is no trade to negotiate, so there is no meeting. All of the negotiating happens once, when the bar is set, and setting it is a question the funder can answer: how slow is too slow for the field, how big is too big for the device.</p>
+        <ul>
+          <li><strong>A satisficing metric is pass or fail.</strong> A model that fails it is out, however accurate. A model that passes it is compared on the optimizing metric alone.</li>
+          <li><strong>Every bar has a number.</strong> "Fast enough" is an argument; "at most 200 milliseconds" is a gate.</li>
+          <li><strong>There is exactly one optimizing metric.</strong> Two things to maximise is the debate from Part 1 wearing a different hat.</li>
+        </ul>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Lanternfish's stack<span class="mini">2 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>The camera is a small computer on a tree, running on a battery, with a fixed amount of flash storage and a motion trigger that fires many times a night. Those facts set the bars. Accuracy is the one number that goes up; everything else is a gate with a threshold the hardware team can defend.</p>
+        <table class="clean">
+          <thead><tr><th>Kind</th><th>Metric</th><th>Rule</th><th>Set by</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Optimizing</strong></td><td>Accuracy on the species dev set</td><td>As high as possible; hides the 1 percent protected species</td><td>Product, with the field</td></tr>
+            <tr><td>Satisficing</td><td>Inference time on the camera</td><td>At most 200 milliseconds per frame</td><td>Hardware, from the trigger rate</td></tr>
+            <tr><td>Satisficing</td><td>Model size</td><td>At most 25 megabytes</td><td>Hardware, from the flash budget</td></tr>
+            <tr><td>Satisficing</td><td>Any further requirement</td><td>A bar with a number, never a second optimizing metric</td><td>Whoever owns the constraint</td></tr>
+          </tbody>
+        </table>
+        <p>Once this table exists, the eight-week specialist model from session 1 has to clear two gates before its accuracy is even read. A model that is two points more accurate and 40 megabytes is not a trade-off to discuss. It is out.</p>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>When to change the metric<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Chapter 11 covers when to change dev sets and metrics, and the signal for the metric is one sentence: change it when it has stopped measuring what the field cares about. The metric is a proxy for a goal outside the model, and a proxy can drift away from its goal without anybody doing anything wrong. When the number and the field disagree about which of two models is better, the field is right and the number is what changes.</p>
+        <p>Lanternfish's signal was the protected species. Accuracy ranked a model that never recognised it above one that sometimes did, because the second model made a few more mistakes on deer. The field would have taken the second model without hesitation. That disagreement is the whole test: the metric had a preference the customer did not share, so the metric was wrong, not the customer.</p>
+        <ul>
+          <li><strong>The fix is a new sentence,</strong> not a quiet tweak. Per-species accuracy with the protected species weighted, or a satisficing bar on the protected species alone, written down and signed again.</li>
+          <li><strong>The dev set usually changes with it,</strong> because a species that appears in 1 percent of frames needs enough examples in the dev set to be measured at all. Practitioner session 1 owns that arithmetic.</li>
+          <li><strong>What is not a signal:</strong> a number the team dislikes. A metric that says the model is worse than hoped is doing its job.</li>
+        </ul>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>The honest limit of a single number<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>A single-number metric does not make the trade go away. The protected species is still worth one point to accuracy after the sentence is written, and the deer-versus-boar confusion is still worth more. What changes is where the trade is made and by whom. Before the sentence, it was made implicitly, every sprint, by whichever model happened to score higher. After the sentence, it was made once, deliberately, by the person who is accountable for the field, and written down where the team can read it.</p>
+        <ul>
+          <li><strong>The trade is visible.</strong> The "what it hides" clause names it, so nobody is surprised when the field raises it.</li>
+          <li><strong>The trade has an owner.</strong> Changing it is a decision with a signature, not a drift.</li>
+          <li><strong>The trade is revisited on a signal,</strong> not on a schedule and not on a mood.</li>
+        </ul>
+        <p>That is the modest claim for a single number: it turns a weekly argument into a deliberate choice. It does not turn a hard trade into an easy one.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ DEMO ============ -->
+  <section class="section" id="demo-1">
+    <div class="section-kicker">
+      <span class="klabel">Build-along</span>
+      <h2>Write the metric sentence</h2>
+      <span class="tag demo">★ 18 min · everyone builds</span>
+    </div>
+    <p class="lede">Bring a model you fund. If you have none to hand, use Lanternfish. The output is five lines of plain prose that the person who signs off the model could read in a minute and object to in two.</p>
+
+    <div class="steps">
+      <div class="step">
+        <p><strong>Write the one sentence that says what the field cares about.</strong> Not what the model does; what the customer would be angry about. Lanternfish: "Conservation groups need every frame identified to species, and a protected species must never go unreported."</p>
+      </div>
+      <div class="step">
+        <p><strong>Choose the single optimizing metric that best tracks it, and write what it hides.</strong> Lanternfish: accuracy on the species dev set, which hides the protected species because it is 1 percent of frames and worth one point at most. If the hidden thing is the thing the field cares about most, the metric is wrong already, and the next step is to change it before the sentence is signed.</p>
+      </div>
+      <div class="step">
+        <p><strong>List every other requirement as a satisficing bar with a number.</strong> Inference time at most 200 milliseconds on the camera. Model size at most 25 megabytes. If a requirement resists having a number, it is not yet a requirement; it is a wish.</p>
+      </div>
+      <div class="step">
+        <p><strong>Write the signal that would make you change the metric.</strong> Lanternfish: "If the metric ranks a model that misses the protected species above one that catches it, the metric changes, not the model." A signal written in advance is a decision; one discovered in a complaint is a crisis.</p>
+      </div>
+      <div class="step">
+        <p><strong>Read the sentence to the person who signs off the model.</strong> Out loud, in a meeting, and watch which clause they push back on. It is almost always the hidden-thing clause, and that push-back is the metric being chosen properly for the first time.</p>
+      </div>
+    </div>
+
+    <div class="prompt-box bad">
+      <span class="label">✕ The version most teams are running on</span>
+The species model should be accurate and fast, with good precision and recall, and small enough for the camera.
+    </div>
+
+    <div class="prompt-box good">
+      <span class="label">★ The metric sentence, as it goes to sign-off</span>
+Field: conservation groups need every frame identified to species, and a protected species must never go unreported.
+
+Optimise: accuracy on the species dev set (1,000 frames drawn from live cameras).
+  Hides: the protected species is 1 percent of frames, so missing it every time costs at most 1 point.
+
+Bars, each pass or fail:
+  inference time  at most 200 ms per frame on the camera
+  model size      at most 25 MB
+  (any new requirement is added here with a number, never as a second thing to optimise)
+
+Change the metric when: it ranks a model that misses the protected species above one that catches it.
+Signed by: the person accountable for the field, dated, and re-read every quarter.
+    </div>
+
+    <div class="callout tip">
+      <p><strong>The bad version is not wrong, it is undecided.</strong> Every word in it is true and none of it can be checked. "Accurate and fast" is two things to optimise, "good precision and recall" is the three-week meeting, and "small enough" has no number. The good version can be failed, which is the only way a sentence can be useful.</p>
+    </div>
+  </section>
+
+  <!-- ============ HOMEWORK ============ -->
+  <section class="section" id="exercise">
+    <div class="section-kicker">
+      <span class="klabel">Homework</span>
+      <h2>Before session 3</h2>
+      <span class="tag exercise">30 min</span>
+    </div>
+    <ol>
+      <li>For one model you fund, find out what number the team actually optimises and who chose it. If the answer is "the library" or "nobody", write the metric sentence and take it to them.</li>
+      <li>Write the "what it hides" clause for that number. If you cannot, ask the team what mistake the model could make every day without the number moving. That is the clause.</li>
+      <li>List the requirements the team currently treats as things to improve, and turn each into a bar with a number. Count how many meetings the last quarter spent on the ones that should have been bars.</li>
+      <li>Ask the field, a customer or a downstream team, which of the last two model versions they preferred. If their answer disagrees with the metric's, the metric changes, and session 3 will show you where the errors that matter actually are.</li>
+    </ol>
+  </section>
+
+  <!-- ============ QUIZ ============ -->
+  <section class="section" id="quiz">
+    <div class="section-kicker">
+      <span class="klabel">Check yourself</span>
+      <h2>Three questions</h2>
+    </div>
+
+    <div class="quiz-q" data-answer="2">
+      <p class="qtext">A team is shown two models: one has higher precision, the other higher recall. Why does the book insist on a single-number metric here?</p>
+      <button class="qopt" type="button">A · Because one number is more accurate than two</button>
+      <button class="qopt" type="button">B · Because precision and recall cannot both be measured on the same dev set</button>
+      <button class="qopt" type="button">C · Because two numbers turn every model comparison into a values debate, and one number moves that debate into a single deliberate choice made once</button>
+      <p class="qwhy">Two numbers is a debate, one number is a decision. The trade does not disappear; it is made once, by whoever chooses the metric, instead of every sprint.</p>
+    </div>
+
+    <div class="quiz-q" data-answer="0">
+      <p class="qtext">Lanternfish requires inference under 200 milliseconds on the camera. A new model runs in 150 milliseconds. What does that earn it?</p>
+      <button class="qopt" type="button">A · Nothing beyond clearing the bar: inference time is satisficing, so once it passes, only accuracy is compared</button>
+      <button class="qopt" type="button">B · A bonus in the ranking, because it is faster than the last model</button>
+      <button class="qopt" type="button">C · A higher accuracy score, because speed and accuracy are combined</button>
+      <p class="qwhy">Chapter 9: the running-time requirement is satisficing. Clear it, then stop caring. Faster than the bar earns nothing, which is exactly why a bar cannot start an argument.</p>
+    </div>
+
+    <div class="quiz-q" data-answer="1">
+      <p class="qtext">Accuracy ranks a model that never recognises the protected species above one that sometimes does, because the second makes a few more mistakes on deer. The field would take the second model without hesitation. What changes?</p>
+      <button class="qopt" type="button">A · The field's expectations, since the metric is objective</button>
+      <button class="qopt" type="button">B · The metric, because it has stopped measuring what the field cares about, and the dev set with it so the rare species can be measured at all</button>
+      <button class="qopt" type="button">C · Nothing, because a one-point difference is inside the noise</button>
+      <p class="qwhy">Chapter 11: change the metric when it disagrees with the field about which model is better. The metric is a proxy; the field is the goal.</p>
+    </div>
+
+    <p class="quiz-score"></p>
+  </section>
+
+  <!-- ============ COVERAGE ============ -->
+  <section class="section" id="official">
+    <div class="section-kicker">
+      <span class="klabel">Sources covered</span>
+      <h2>What tonight maps to</h2>
+    </div>
+    <div class="covered">
+      <div class="covered-row">
+        <span class="status pill solid">✓</span>
+        <span class="name">Machine Learning Yearning, chapter 8</span>
+        <span class="note">Establish a single-number evaluation metric for your team to optimize: why one number is a decision and two is a debate, and what the single number costs.</span>
+      </div>
+      <div class="covered-row">
+        <span class="status pill solid">✓</span>
+        <span class="name">Machine Learning Yearning, chapter 9</span>
+        <span class="note">Optimizing and satisficing metrics: one to optimise, N-1 as bars, with the book's running-time example and Lanternfish's 200-millisecond gate.</span>
+      </div>
+      <div class="covered-row">
+        <span class="status pill solid">✓</span>
+        <span class="name">Machine Learning Yearning, chapter 11</span>
+        <span class="note">When to change dev/test sets and metrics: the signal is the metric disagreeing with the field about which model is better.</span>
+      </div>
+      <div class="covered-row">
+        <span class="status pill light">◐</span>
+        <span class="name">Machine Learning Yearning, chapters 5 to 7</span>
+        <span class="note">A metric change usually brings a dev set change, so the rare species is present in enough frames to be measured. Practitioner session 1 owns the arithmetic.</span>
+      </div>
+      <div class="covered-row">
+        <span class="status pill inkpill">·</span>
+        <span class="name">Metric definitions, thresholds, calibration</span>
+        <span class="note">Not covered by design. Precision, recall, F1 and per-species accuracy appear tonight as names only; the model-evaluation course owns what each one means and how it fails.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ CHEAT SHEET ============ -->
+  <section class="cheat" id="cheatsheet">
+    <h3>Session 2 cheat sheet</h3>
+    <div class="grid-2">
+      <div class="cheat-item"><b>The metric is the definition of better</b><span>It silently decides what the model becomes. That is a product decision, so it needs a signature.</span></div>
+      <div class="cheat-item"><b>Two numbers is a debate</b><span>One number is a decision. Chapter 8.</span></div>
+      <div class="cheat-item"><b>Every single number hides a trade</b><span>Write what it hides in the same sentence. Lanternfish: the 1 percent protected species.</span></div>
+      <div class="cheat-item"><b>One to optimise, N-1 to clear</b><span>Chapter 9. A bar is pass or fail, so a bar cannot start an argument.</span></div>
+      <div class="cheat-item"><b>Every bar has a number</b><span>At most 200 ms, at most 25 MB. "Fast enough" is a wish.</span></div>
+      <div class="cheat-item"><b>Faster than the bar earns nothing</b><span>Clear it, then stop caring. Only the optimizing metric is compared.</span></div>
+      <div class="cheat-item"><b>Change the metric when</b><span>It disagrees with the field about which model is better. Chapter 11. The dev set usually changes with it.</span></div>
+      <div class="cheat-item"><b>The honest limit</b><span>A single number does not remove the trade. It makes it one deliberate choice instead of a weekly argument.</span></div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="pagefoot">
+  <div class="wrap">
+    <p>Leader session 2 of 6 · learn-ml-strategy-with-phoebe · by Phoebe Fu</p>
+    <nav class="pagenav">
+      <a href="a1-strategy-is-deciding.html">← Leader session 1 · Strategy is deciding what not to try</a>
+      <a href="a3-look-at-100-mistakes.html">Leader session 3 · Look at 100 mistakes →</a>
+    </nav>
+  </div>
+</footer>
+
+<script src="../assets/app.js?v=1"></script>
+</body>
+</html>

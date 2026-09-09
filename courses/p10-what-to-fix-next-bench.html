@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- social:start -->
+<meta name="description" content="Practitioner session 10 of 10. Five projects, two halves of a dev set, your order of work. Points per week puts a one-week re-label job ahead of an eight-week model; the interesting project first leaves the team at 11.2 percent error through week 6; rules written against what you looked at fix one half and not the other.">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Learn with Phoebe">
+<meta property="og:title" content="The what-to-fix-next bench - learn ml strategy with phoebe">
+<meta property="og:description" content="Practitioner session 10 of 10. Choose the order of work; both halves of the dev set answer.">
+<meta property="og:url" content="https://phoebefu6.github.io/learn-ml-strategy-with-phoebe/courses/p10-what-to-fix-next-bench.html">
+<meta property="og:image" content="https://phoebefu6.github.io/learn-ml-strategy-with-phoebe/assets/og-cover.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="The what-to-fix-next bench - learn ml strategy with phoebe">
+<meta name="twitter:description" content="1.62 points per week against 0.21. Same destination at week 18; eight weeks of difference on the way.">
+<meta name="twitter:image" content="https://phoebefu6.github.io/learn-ml-strategy-with-phoebe/assets/og-cover.png">
+<!-- social:end -->
+<title>Practitioner session 10 · The what-to-fix-next bench - learn ml strategy with phoebe</title>
+<link rel="stylesheet" href="../assets/style.css?v=1">
+</head>
+<body>
+
+<div class="toolbar">
+  <div class="wrap">
+    <span class="crumb"><a href="../index.html">learn-ml-strategy-with-phoebe</a> / Practitioner session 10 of 10</span>
+    <button class="btn" id="toggle-all" type="button">Expand all</button>
+    <button class="btn primary" id="zoom-toggle" type="button">Projector zoom: off</button>
+  </div>
+</div>
+
+<header class="masthead">
+  <div class="wrap">
+    <div class="eyebrow">Learn ML Strategy with Phoebe · Practitioner session 10 of 10</div>
+    <h1>The what-to-fix-next <span class="accent">bench</span></h1>
+    <p class="sub">Nine sessions of discipline, and now the decision it was all for. Lanternfish has 120 wrong images in a 1,000-image dev set, five candidate projects with a cost in weeks each, and a spreadsheet that already says which to do first. The bench below lets you choose the order anyway. It recomputes both halves of the dev set after every project, keeps the week count, and shows what the two most popular wrong answers actually cost.</p>
+    <div class="chip-row">
+      <span class="chip level">🔴 Hardest</span>
+      <span class="chip audience">Data scientists and ML engineers</span>
+      <span class="chip audience">Whoever approves the next sprint</span>
+      <span class="chip time">45 min</span>
+    </div>
+    <div class="agenda">
+      <span class="a1" style="flex:1">0-3 · Welcome</span>
+      <span class="a2" style="flex:3">3-15 · Ceiling per week</span>
+      <span class="a3" style="flex:6">15-40 · Build-along: choose the order</span>
+      <span class="a4" style="flex:1">40-45 · Q&amp;A</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ============ INTRO ============ -->
+  <section class="section" id="intro">
+    <div class="section-kicker">
+      <span class="klabel">Part 0</span>
+      <h2>What the bench measures</h2>
+    </div>
+    <p class="lede">Two error rates and a week count. The Blackbox half is the number you would report; the Eyeball half is the number you have been staring at; the week count is what the order cost. Any single one of the three can be made to look good on its own, which is why the bench refuses to show fewer than three.</p>
+
+    <div class="legend">
+      <span class="pill">Live = presented in the 45 minutes</span>
+      <span class="pill">Self-study = the full depth, after class</span>
+      <span class="pill">🔍 Every diagram zooms</span>
+    </div>
+
+    <div class="callout win">
+      <p><strong>★ What you walk out with tonight.</strong> An order of work you have scored rather than argued for. The measured cost of funding the interesting project first, which is eight weeks at 11.2 percent error to reach the same place. And the two-halves picture of what happens when a team tunes to the examples it looked at: one half drops to 3.8 percent, the other stays at 11.2, and the gap is not a model.</p>
+    </div>
+
+    <details class="card" open>
+      <summary><span class="mode live">Live</span>Ceiling is the only honest way to rank a project<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>A project's ceiling is the share of current errors it could remove, times the share it actually does remove when it works. A category holding 14 percent of the errors, fixed by a project that catches 90 percent of them, has a ceiling of about 12.6 percent of your error rate. At 12.8 percent dev error that is 1.6 points, and it takes one week. A category holding 19 percent of the errors, fixed by a project that catches 70 percent, is 1.7 points and takes eight weeks. The ceilings are close; the points per week are 1.62 against 0.21.</p>
+        <p>Nobody funds the eight-week project because they computed that. They fund it because it is interesting, and a spreadsheet with a points-per-week column is what makes "interesting" visible as a cost.</p>
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <p>Lanternfish's most senior engineer wanted the deer-versus-elk model. It was a genuinely hard problem and a genuinely good piece of work. It also shipped in week 8 to a dev set that was still 11.2 percent wrong, when a one-week re-labelling job and a two-week motion filter would have had the team at 9.0 percent by week 3.</p>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>What is real here, and the one construction<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <ul>
+          <li><strong>The dev set.</strong> 1,000 images from a fixed seed, 120 wrong, each carrying the category a human wrote in the spreadsheet: night blur 42, deer-versus-elk 24, half out of frame 22, empty frame 18, wrong label 14. Split by index into Eyeball and Blackbox halves of 500; random placement left 64 errors in one and 56 in the other, which is why they start at 12.8 and 11.2.</li>
+          <li><strong>The projects.</strong> Each removes a stated share of its category's errors, earliest-indexed first, so the arithmetic is deterministic and the same for every learner.</li>
+          <li><strong>The construction.</strong> "Hand rules against the errors you looked at" removes 70 percent of errors in the Eyeball half and none in the Blackbox half. That is not modelled human behaviour; it is what a rule written against sixty specific examples does by definition, and the widget says so.</li>
+          <li><strong>Nothing else is modelled.</strong> No estimate of anybody's behaviour anywhere. Every number is a count.</li>
+        </ul>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 1 ============ -->
+  <section class="section" id="part-1">
+    <div class="section-kicker">
+      <span class="klabel">Part 1 · covers the spreadsheet and the three orders</span>
+      <h2>The spreadsheet, and the numbers it actually produces</h2>
+      <span class="tag concept">10 min live</span>
+    </div>
+    <p class="lede">Every number here is computed by the bench on this page. The first table is the error-analysis spreadsheet with the two columns most teams leave off. The second is what three orders of work do to the Blackbox half over eighteen weeks.</p>
+
+    <table class="clean">
+      <thead><tr><th>Category</th><th>Eyeball errors</th><th>Share</th><th>Project</th><th>Weeks</th><th>Ceiling</th><th>Points per week</th></tr></thead>
+      <tbody>
+        <tr><td>Night infrared blur</td><td>21</td><td>33 percent</td><td>Infrared denoising pass</td><td>3</td><td>2.5</td><td>0.84</td></tr>
+        <tr><td>Deer mistaken for elk</td><td>12</td><td>19 percent</td><td>Deer-vs-elk specialist model</td><td>8</td><td>1.7</td><td><strong>0.21</strong></td></tr>
+        <tr><td>Animal half out of frame</td><td>12</td><td>19 percent</td><td>Occlusion augmentation</td><td>4</td><td>1.2</td><td>0.30</td></tr>
+        <tr><td>Empty frame called animal</td><td>10</td><td>16 percent</td><td>Motion-trigger filter</td><td>2</td><td>1.6</td><td>0.80</td></tr>
+        <tr><td>Label was wrong</td><td>9</td><td>14 percent</td><td>Re-label the dev set</td><td>1</td><td>1.6</td><td><strong>1.62</strong></td></tr>
+      </tbody>
+    </table>
+
+    <table class="clean">
+      <thead><tr><th>Order of work</th><th>Blackbox error at week 6</th><th>At week 8</th><th>At week 18</th><th>Eyeball error at the end</th></tr></thead>
+      <tbody>
+        <tr><td>Best points per week: re-label, motion filter, denoise, occlusion, specialist</td><td><strong>6.2 percent</strong></td><td>6.2</td><td>3.6</td><td>4.4</td></tr>
+        <tr><td>Most interesting first: specialist model, then the rest</td><td><strong>11.2 percent</strong></td><td>9.2</td><td>3.6</td><td>4.4</td></tr>
+        <tr><td>Tune to what you looked at: hand rules, 2 weeks</td><td>11.2 percent</td><td>-</td><td>-</td><td><strong>3.8 percent</strong></td></tr>
+      </tbody>
+    </table>
+
+    <div class="callout tip">
+      <p><strong>Same destination, different journey.</strong> Both honest orders end at 3.6 percent after eighteen weeks, because they do the same five projects. The difference is that one team was at 6.2 percent by week 6 and the other was still at 11.2, waiting for the interesting thing to ship. Order does not change where you finish; it changes how long the field lives with the error.</p>
+    </div>
+
+    <figure class="zoomable">
+      <svg viewBox="0 0 880 330" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Blackbox dev error over eighteen weeks under two orders of work: the points-per-week order drops early and reaches 6.2 percent by week 6, the interesting-first order stays at 11.2 percent until week 8, and both reach 3.6 percent at week 18. A third short line shows hand rules dropping the Eyeball half to 3.8 percent in two weeks while the Blackbox half does not move.">
+        <style>
+          .p10aH { font: 800 12px Inter, sans-serif; fill: #1C1917; }
+          .p10aB { font: 400 10px Inter, sans-serif; fill: #6B6259; }
+          .p10aN { font: 700 11px Inter, sans-serif; fill: #1C1917; }
+          .p10aR { font: 800 11px Inter, sans-serif; fill: #991B1B; }
+          .p10aG { font: 800 11px Inter, sans-serif; fill: #713F12; }
+          .p10aA { font: 800 11px Inter, sans-serif; fill: #0F172A; }
+        </style>
+
+        <text class="p10aH" x="60" y="30">Blackbox dev error, by week, under two orders of work</text>
+        <line x1="60" y1="250" x2="620" y2="250" stroke="#D9D2C5" stroke-width="1.5"></line>
+        <line x1="60" y1="60" x2="60" y2="250" stroke="#D9D2C5" stroke-width="1.5"></line>
+        <text class="p10aB" x="60" y="266">week 0</text>
+        <text class="p10aB" x="240" y="266">week 6</text>
+        <text class="p10aB" x="300" y="266">week 8</text>
+        <text class="p10aB" x="592" y="266">week 18</text>
+        <text class="p10aB" x="14" y="72">12%</text>
+        <text class="p10aB" x="22" y="252">0</text>
+
+        <polyline points="60,74 90,90 150,108 240,153 360,162 620,193" fill="none" stroke="#A16207" stroke-width="2.5"></polyline>
+        <text class="p10aG" x="248" y="146">6.2 at week 6</text>
+        <text class="p10aG" x="626" y="197">3.6</text>
+
+        <polyline points="60,74 300,74 300,105 420,115 510,158 570,177 620,193" fill="none" stroke="#991B1B" stroke-width="2.5"></polyline>
+        <text class="p10aR" x="120" y="66">still 11.2 through week 6</text>
+        <text class="p10aR" x="308" y="98">9.2 at week 8</text>
+
+        <text class="p10aH" x="660" y="30">Tune to what you looked at</text>
+        <rect x="660" y="60" width="90" height="190" rx="4" fill="#60A5FA"></rect>
+        <text class="p10aA" x="705" y="110" text-anchor="middle">Eyeball</text>
+        <text class="p10aA" x="705" y="128" text-anchor="middle">12.8 to 3.8</text>
+        <rect x="770" y="60" width="90" height="190" rx="4" fill="#A16207"></rect>
+        <text class="p10aG" x="815" y="54" text-anchor="middle">Blackbox</text>
+        <text class="p10aB" x="815" y="266" text-anchor="middle">11.2 to 11.2</text>
+        <text class="p10aR" x="760" y="290" text-anchor="middle">a 7.4-point gap in two weeks</text>
+
+        <rect x="60" y="300" width="14" height="14" rx="3" fill="#60A5FA"></rect>
+        <text class="p10aN" x="84" y="312">Both honest orders end at 3.6. One of them lived at 11.2 for eight weeks to get there.</text>
+      </svg>
+      <figcaption>🔍 Click to zoom - same destination, eight weeks apart, and the gap that is not a model.</figcaption>
+    </figure>
+  </section>
+
+  <!-- ============ DEMO ============ -->
+  <section class="section" id="demo-1">
+    <div class="section-kicker">
+      <span class="klabel">Build-along</span>
+      <h2>Choose the order yourself</h2>
+      <span class="tag demo">★ 25 min · everyone builds</span>
+    </div>
+    <p class="lede">The bench is live below. The sheet at the top is already sorted by points per week. Press an order, or fund projects one at a time, and watch both halves.</p>
+
+    <div data-mls-bench></div>
+
+    <div class="steps">
+      <div class="step">
+        <p><strong>Read the sheet before touching anything.</strong> The biggest category is night blur at 33 percent. The best points per week is the smallest category, wrong labels at 14 percent, because it costs one week. Ceiling and cost are two columns, and the ranking needs both.</p>
+      </div>
+      <div class="step">
+        <p><strong>Press "best points per week".</strong> Blackbox error 11.2 to 10.2 after one week, 9.0 after three, 6.2 after six. Eighteen weeks in, 3.6 percent. Notice the Eyeball and Blackbox lines move together the whole way: every fix was a fix to the problem, not to the examples.</p>
+      </div>
+      <div class="step">
+        <p><strong>Press "most interesting first".</strong> The specialist model ships in week 8. Until then the Blackbox line is flat at 11.2. The same five projects then follow, and the line lands at 3.6 percent in week 18, exactly where the other order landed. Hover the week-8 row and read the note.</p>
+      </div>
+      <div class="step">
+        <p><strong>Press "tune to what you looked at".</strong> Two weeks. Eyeball 12.8 to 3.8; Blackbox 11.2 to 11.2. This is the dev set you have memorised, and a team that only tracked the number it was looking at would ship it and call it a 70 percent error reduction.</p>
+      </div>
+      <div class="step">
+        <p><strong>Clear it and build your own order, one project at a time.</strong> Try the denoising pass first: the biggest category, a sensible instinct, 0.84 points per week. Then check what the re-label job would have done in the week you spent on setup.</p>
+      </div>
+      <div class="step">
+        <p><strong>Write down the order you would defend to the team,</strong> and the Blackbox number you would report at week 6. If the interesting project is anywhere in the first three slots, say out loud what the field is getting for the wait.</p>
+      </div>
+    </div>
+
+    <div class="callout tip">
+      <p><strong>What the bench leaves out, deliberately.</strong> Every error counts the same. A mislabelled endangered species is not a blurry deer, and a real spreadsheet would weight them. Add a severity column first when you build your own; it reorders the middle of the sheet and does not rescue either wrong order.</p>
+    </div>
+  </section>
+
+  <!-- ============ HOMEWORK ============ -->
+  <section class="section" id="exercise">
+    <div class="section-kicker">
+      <span class="klabel">Homework</span>
+      <h2>Closing the track</h2>
+      <span class="tag exercise">45 min</span>
+    </div>
+    <ol>
+      <li>Run your own error-analysis spreadsheet from session 3 through the two extra columns: weeks per project and points per week. Sort by the last column and compare with the order the team is actually running.</li>
+      <li>Report your Eyeball and Blackbox numbers side by side for the last three model changes. If the Eyeball number moved and the Blackbox did not, you know which kind of change it was.</li>
+      <li>Find the project in your backlog with the highest ceiling and the lowest points per week. Write the sentence that explains to its sponsor what the field gets for the wait.</li>
+      <li>Add a severity weight to your own spreadsheet and see which rows change order. Then take the one-page memo from leader session 6 to whoever approves the sprint.</li>
+    </ol>
+  </section>
+
+  <!-- ============ QUIZ ============ -->
+  <section class="section" id="quiz">
+    <div class="section-kicker">
+      <span class="klabel">Check yourself</span>
+      <h2>Three questions</h2>
+    </div>
+
+    <div class="quiz-q" data-answer="2">
+      <p class="qtext">Re-labelling the dev set fixes the smallest category on the sheet, yet ranks first. Why?</p>
+      <button class="qopt" type="button">A · Because wrong labels are always the most important category</button>
+      <button class="qopt" type="button">B · Because it has the largest ceiling</button>
+      <button class="qopt" type="button">C · Because it costs one week, so its 1.6 points of ceiling are 1.62 points per week, against 0.21 for the eight-week specialist model</button>
+      <p class="qwhy">Ceiling and cost are two columns. Ranking on ceiling alone puts the specialist model near the top; ranking on points per week puts it last.</p>
+    </div>
+
+    <div class="quiz-q" data-answer="0">
+      <p class="qtext">Both honest orders end at 3.6 percent Blackbox error after eighteen weeks. What did the order change?</p>
+      <button class="qopt" type="button">A · How long the field lived with the error: 6.2 percent by week 6 in one order, still 11.2 in the other</button>
+      <button class="qopt" type="button">B · The final error rate, by a small amount</button>
+      <button class="qopt" type="button">C · Nothing, which is why order does not matter</button>
+      <p class="qwhy">The same five projects reach the same place. The order decides whether the team spends eight weeks at double-digit error waiting for the interesting project to ship.</p>
+    </div>
+
+    <div class="quiz-q" data-answer="1">
+      <p class="qtext">Hand rules against the sixty Eyeball errors take the Eyeball half from 12.8 to 3.8 percent in two weeks and leave the Blackbox half at 11.2. What has the team built?</p>
+      <button class="qopt" type="button">A · A 70 percent error reduction that will hold in production</button>
+      <button class="qopt" type="button">B · A memorised dev set: the rules fix the examples that were looked at and nothing else, and production will look like the Blackbox line</button>
+      <button class="qopt" type="button">C · A better model whose gains are not yet visible on the Blackbox half</button>
+      <p class="qwhy">This is why the Blackbox half exists. A rule written against sixty specific images fixes those sixty images. The half you never looked at is the only honest reading left.</p>
+    </div>
+
+    <p class="quiz-score"></p>
+  </section>
+
+  <!-- ============ COVERAGE ============ -->
+  <section class="section" id="official">
+    <div class="section-kicker">
+      <span class="klabel">Sources covered</span>
+      <h2>What tonight maps to</h2>
+    </div>
+    <div class="covered">
+      <div class="covered-row">
+        <span class="status pill solid">✓</span>
+        <span class="name">Machine Learning Yearning, chapters 14 to 15</span>
+        <span class="note">The ceiling of a project and the spreadsheet with a row per misclassified example, extended with a weeks column and a points-per-week column.</span>
+      </div>
+      <div class="covered-row">
+        <span class="status pill solid">✓</span>
+        <span class="name">Machine Learning Yearning, chapters 17 to 18</span>
+        <span class="note">Eyeball and Blackbox dev sets, with the memorised-dev-set failure computed rather than described.</span>
+      </div>
+      <div class="covered-row">
+        <span class="status pill solid">✓</span>
+        <span class="name">Machine Learning Yearning, chapter 13</span>
+        <span class="note">Build quickly then iterate, as the reason order of work matters at all.</span>
+      </div>
+      <div class="covered-row">
+        <span class="status pill light">◐</span>
+        <span class="name">Severity weighting of error categories</span>
+        <span class="note">Named as the first extension. Every error counts the same on this bench.</span>
+      </div>
+      <div class="covered-row">
+        <span class="status pill inkpill">·</span>
+        <span class="name">Metric definitions, thresholds, calibration</span>
+        <span class="note">Not covered by design. The model-evaluation course owns how to score; this bench takes the score as given.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ CHEAT SHEET ============ -->
+  <section class="cheat" id="cheatsheet">
+    <h3>Session 10 cheat sheet</h3>
+    <div class="grid-2">
+      <div class="cheat-item"><b>Two columns, not one</b><span>Ceiling and weeks. Points per week is the ranking; ceiling alone funds the wrong thing.</span></div>
+      <div class="cheat-item"><b>1.62 against 0.21</b><span>Re-label the dev set against the specialist model. Close ceilings, eight times the cost.</span></div>
+      <div class="cheat-item"><b>Same destination</b><span>Both honest orders end at 3.6 percent. Order decides how long the field waits.</span></div>
+      <div class="cheat-item"><b>6.2 by week 6</b><span>Or 11.2 by week 6. The interesting project ships in week 8.</span></div>
+      <div class="cheat-item"><b>Two halves, always</b><span>Eyeball 3.8, Blackbox 11.2 is a memorised dev set, not a model.</span></div>
+      <div class="cheat-item"><b>Report the Blackbox number</b><span>The half you never looked at is the only honest reading after you have tuned.</span></div>
+      <div class="cheat-item"><b>Weight by severity next</b><span>A mislabelled endangered species is not a blurry deer.</span></div>
+      <div class="cheat-item"><b>Nothing is modelled</b><span>Every number here is a count. The one construction is labelled.</span></div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="pagefoot">
+  <div class="wrap">
+    <p>Practitioner session 10 of 10 · learn-ml-strategy-with-phoebe · by Phoebe Fu</p>
+    <nav class="pagenav">
+      <a href="p9-error-analysis-by-parts.html">← Practitioner session 9 · Error analysis by parts</a>
+      <a href="../index.html">All sessions →</a>
+    </nav>
+  </div>
+</footer>
+
+<script src="../assets/app.js?v=1"></script>
+<script src="../assets/mls-live.js?v=1"></script>
+</body>
+</html>

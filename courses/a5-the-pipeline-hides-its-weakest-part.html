@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- social:start -->
+<meta name="description" content="Leader session 5 of 6. Lanternfish's production system is two stages: a motion detector, then a species classifier. The overall error rate says nothing about which stage caused a mistake, and the error sheet blames the last box in the chain. Hand one stage a perfect input and the fault becomes visible in an afternoon.">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Learn with Phoebe">
+<meta property="og:title" content="The pipeline that hides its weakest part - learn ml strategy with phoebe">
+<meta property="og:description" content="Leader session 5 of 6. Attribute an error to one stage by giving the next stage a perfect input, then compare every stage to human-level for that stage alone.">
+<meta property="og:url" content="https://phoebefu6.github.io/learn-ml-strategy-with-phoebe/courses/a5-the-pipeline-hides-its-weakest-part.html">
+<meta property="og:image" content="https://phoebefu6.github.io/learn-ml-strategy-with-phoebe/assets/og-cover.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="The pipeline that hides its weakest part - learn ml strategy with phoebe">
+<meta name="twitter:description" content="Ten empty-frame errors filed against the species classifier. Every one of them belonged to the motion detector, and the classifier project would have removed none.">
+<meta name="twitter:image" content="https://phoebefu6.github.io/learn-ml-strategy-with-phoebe/assets/og-cover.png">
+<!-- social:end -->
+<title>Leader session 5 · The pipeline that hides its weakest part - learn ml strategy with phoebe</title>
+<link rel="stylesheet" href="../assets/style.css?v=1">
+</head>
+<body>
+
+<div class="toolbar">
+  <div class="wrap">
+    <span class="crumb"><a href="../index.html">learn-ml-strategy-with-phoebe</a> / Leader session 5 of 6</span>
+    <button class="btn" id="toggle-all" type="button">Expand all</button>
+    <button class="btn primary" id="zoom-toggle" type="button">Projector zoom: off</button>
+  </div>
+</div>
+
+<header class="masthead">
+  <div class="wrap">
+    <div class="eyebrow">Learn ML Strategy with Phoebe · Leader session 5 of 6</div>
+    <h1>The pipeline that <span class="accent">hides its weakest part</span></h1>
+    <p class="sub">Lanternfish does not run one model. A frame arrives, a motion detector decides whether there is an animal in it, and only then does the species classifier say what the animal is. The dev error rate, 12 percent, is a number about the pair. It does not say which of the two was wrong, and the error sheet quietly assumes the answer is whichever box spoke last. Tonight is the method that settles it: give one stage a perfect version of what the stage before it should have produced, and see whether the error survives. It costs an afternoon of hand-correcting, and at Lanternfish it moved a whole category of errors off the classifier's ledger.</p>
+    <div class="chip-row">
+      <span class="chip level">🟠 Advanced</span>
+      <span class="chip audience">Data and product leaders</span>
+      <span class="chip time">45 min</span>
+    </div>
+    <div class="agenda">
+      <span class="a1" style="flex:1">0-3 · Welcome</span>
+      <span class="a2" style="flex:5">3-22 · Error analysis by parts</span>
+      <span class="a3" style="flex:4">22-40 · Build-along: attribute one error</span>
+      <span class="a4" style="flex:1">40-45 · Q&amp;A</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ============ INTRO ============ -->
+  <section class="section" id="intro">
+    <div class="section-kicker">
+      <span class="klabel">Part 0</span>
+      <h2>Where this sits in the leader track</h2>
+    </div>
+    <p class="lede">Session 3 built the sheet that ranks projects by what they could fix. Session 4 split the error into unavoidable bias, avoidable bias and variance, so that the diagnosis chooses the project rather than the loudest sponsor. Both of those assumed one model. Almost no production system is one model. Tonight the same discipline is applied to a chain of them, where the arithmetic that worked for a single classifier gives an answer that is confidently wrong. Session 6 then puts the whole thing on one page.</p>
+
+    <div class="legend">
+      <span class="pill">Live = presented in the 45 minutes</span>
+      <span class="pill">Self-study = the full depth, after class</span>
+      <span class="pill">🔍 Every diagram zooms</span>
+    </div>
+
+    <div class="callout win">
+      <p><strong>★ What you walk out with tonight.</strong> A drawing of your own system as boxes, which most teams have never made. One question that attributes any single error to one box: which box would a human have to fix for this error to disappear. A per-box tally from ten errors, which is enough to change a funding decision. And the rule that saves a quarter: if every box is already at human-level and the system still is not, no box is the problem and the design is.</p>
+    </div>
+
+    <details class="card" open>
+      <summary><span class="mode live">Live</span>Why a single error rate stops being useful<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>One model, one error rate, one place to send the money. That is why the previous sessions work. A pipeline breaks the link: the error rate is measured at the end of the chain, the money has to go to one link, and nothing in the number says which link. Every stage is a candidate and every stage has a sponsor who can explain why it is not their stage.</p>
+        <p>What fills the gap, in most teams, is the error sheet's category name. A frame with no animal in it comes out labelled deer, so the row says "empty frame called animal", and the word "called" points at the thing that does the calling. The category describes the symptom at the end of the pipe. It was never a claim about the cause, and it gets read as one.</p>
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <p>Lanternfish's classifier is genuinely wrong on 120 of its 1,000 dev images. When the team drew its system on a whiteboard for the first time, halfway through session 5, three people discovered there was a motion detector in front of the classifier at all. It had been written by a contractor, it had never been measured, and it was in front of every single one of those 120 decisions.</p>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>The words for tonight<span class="mini">4 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <ul>
+          <li><strong>Pipeline</strong> - a system where the output of one learned component is the input of the next. Lanternfish has two stages: motion detector, then species classifier.</li>
+          <li><strong>Stage, or part</strong> - one box in that chain. The unit a project is funded against.</li>
+          <li><strong>Error analysis by parts</strong> - attributing each mistake of the whole system to one box, rather than to a symptom category. Chapter 53.</li>
+          <li><strong>Attribution by perfect input</strong> - hand the later stage a hand-corrected version of the earlier stage's output. If the error disappears, it was the earlier stage's. Chapter 54.</li>
+          <li><strong>Human-level performance for a stage</strong> - how well a person does that stage's job alone, given that stage's input. The yardstick from session 4, applied one box at a time.</li>
+          <li><strong>A flawed pipeline</strong> - every stage at human-level, system still short. The chain's shape is the problem. Chapter 57.</li>
+          <li><strong>End-to-end learning</strong> - replacing the whole chain with one model trained input to output. A real alternative, and a different course.</li>
+        </ul>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 1 ============ -->
+  <section class="section" id="part-1">
+    <div class="section-kicker">
+      <span class="klabel">Part 1 · covers chapters 53 and 54</span>
+      <h2>Error analysis by parts</h2>
+      <span class="tag concept">10 min live</span>
+    </div>
+    <p class="lede">Chapter 53 of Machine Learning Yearning is titled "Error analysis by parts", and the problem it solves is exactly the one above: a system made of components, an error rate measured on the whole, and a decision that has to be made about one component. The instrument is not a better metric. It is a way of asking, error by error, which box was actually responsible, using the one thing a machine learning team always has available and rarely uses: a person who can do the job by hand.</p>
+
+    <figure class="zoomable">
+      <svg viewBox="0 0 880 380" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Top row: an empty frame enters Lanternfish's motion detector, which wrongly says an animal is present, so the species classifier is called and answers deer, and the error sheet files the mistake against the classifier. Bottom row: the same frame with a human-corrected detector decision saying no animal, so the classifier is never called and the error disappears, which proves the error belonged to the detector.">
+        <style>
+          .a5aT { font: 800 12px Inter, sans-serif; fill: #fff; }
+          .a5aH { font: 800 12px Inter, sans-serif; fill: #1C1917; }
+          .a5aB { font: 400 11px Inter, sans-serif; fill: #1C1917; }
+          .a5aM { font: 400 11px Inter, sans-serif; fill: #6B6259; }
+          .a5aN { font: 700 11px Inter, sans-serif; fill: #1C1917; }
+          .a5aR { font: 700 11px Inter, sans-serif; fill: #991B1B; }
+          .a5aG { font: 800 12px Inter, sans-serif; fill: #713F12; }
+        </style>
+        <defs>
+          <marker id="a5aAr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#D9D2C5"></path></marker>
+        </defs>
+
+        <text class="a5aH" x="14" y="30">What the system did, and who got blamed</text>
+
+        <rect x="14" y="44" width="130" height="58" rx="9" fill="#FEF08A"></rect>
+        <text class="a5aH" x="79" y="68" text-anchor="middle">Empty frame</text>
+        <text class="a5aB" x="79" y="86" text-anchor="middle">no animal in it</text>
+
+        <rect x="176" y="44" width="150" height="58" rx="9" fill="#FACC15"></rect>
+        <text class="a5aH" x="251" y="68" text-anchor="middle">Motion detector</text>
+        <text class="a5aB" x="251" y="86" text-anchor="middle">says: animal here</text>
+
+        <rect x="358" y="44" width="160" height="58" rx="9" fill="#A16207"></rect>
+        <text class="a5aT" x="438" y="68" text-anchor="middle">Species classifier</text>
+        <text class="a5aB" x="438" y="86" text-anchor="middle" fill="#fff">says: deer</text>
+
+        <rect x="550" y="44" width="140" height="58" rx="9" fill="#FEFCE8" stroke="#991B1B" stroke-width="2"></rect>
+        <text class="a5aR" x="620" y="68" text-anchor="middle">Logged: deer</text>
+        <text class="a5aB" x="620" y="86" text-anchor="middle">counted as error</text>
+
+        <line x1="146" y1="73" x2="172" y2="73" stroke="#D9D2C5" stroke-width="1.5" marker-end="url(#a5aAr)"></line>
+        <line x1="328" y1="73" x2="354" y2="73" stroke="#D9D2C5" stroke-width="1.5" marker-end="url(#a5aAr)"></line>
+        <line x1="520" y1="73" x2="546" y2="73" stroke="#D9D2C5" stroke-width="1.5" marker-end="url(#a5aAr)"></line>
+
+        <rect x="706" y="44" width="160" height="130" rx="10" fill="#FEFCE8" stroke="#D9D2C5"></rect>
+        <text class="a5aH" x="720" y="66">Sheet category:</text>
+        <text class="a5aB" x="720" y="86">empty frame called</text>
+        <text class="a5aB" x="720" y="102">animal</text>
+        <text class="a5aR" x="720" y="126">Blamed: classifier</text>
+        <text class="a5aM" x="720" y="148">a symptom name read</text>
+        <text class="a5aM" x="720" y="164">as a cause</text>
+
+        <line x1="438" y1="106" x2="438" y2="122" stroke="#991B1B" stroke-width="1.5"></line>
+        <text class="a5aR" x="438" y="136" text-anchor="middle">the box that spoke last</text>
+
+        <line x1="14" y1="176" x2="866" y2="176" stroke="#D9D2C5" stroke-width="1"></line>
+
+        <text class="a5aH" x="14" y="206">The same frame, with a perfect first stage</text>
+
+        <rect x="14" y="220" width="130" height="58" rx="9" fill="#FEF08A"></rect>
+        <text class="a5aH" x="79" y="244" text-anchor="middle">Same frame</text>
+        <text class="a5aB" x="79" y="262" text-anchor="middle">no animal in it</text>
+
+        <rect x="176" y="220" width="150" height="58" rx="9" fill="#FEF08A" stroke="#713F12" stroke-width="2"></rect>
+        <text class="a5aH" x="251" y="244" text-anchor="middle">Corrected by hand</text>
+        <text class="a5aB" x="251" y="262" text-anchor="middle">says: no animal</text>
+
+        <rect x="358" y="220" width="160" height="58" rx="9" fill="#FEFCE8" stroke="#D9D2C5"></rect>
+        <text class="a5aM" x="438" y="244" text-anchor="middle">Classifier not called</text>
+        <text class="a5aM" x="438" y="262" text-anchor="middle">it never sees this</text>
+
+        <rect x="550" y="220" width="140" height="58" rx="9" fill="#713F12"></rect>
+        <text class="a5aT" x="620" y="244" text-anchor="middle">No error</text>
+        <text class="a5aB" x="620" y="262" text-anchor="middle" fill="#fff">frame logged empty</text>
+
+        <line x1="146" y1="249" x2="172" y2="249" stroke="#D9D2C5" stroke-width="1.5" marker-end="url(#a5aAr)"></line>
+        <line x1="328" y1="249" x2="354" y2="249" stroke="#713F12" stroke-width="2" marker-end="url(#a5aAr)"></line>
+        <line x1="520" y1="249" x2="546" y2="249" stroke="#713F12" stroke-width="2" marker-end="url(#a5aAr)"></line>
+
+        <rect x="706" y="220" width="160" height="112" rx="10" fill="#FEFCE8" stroke="#713F12"></rect>
+        <text class="a5aG" x="720" y="242">Error disappeared</text>
+        <text class="a5aB" x="720" y="262">so it belonged to</text>
+        <text class="a5aB" x="720" y="278">the first stage</text>
+        <text class="a5aM" x="720" y="300">a classifier project</text>
+        <text class="a5aM" x="720" y="316">removes none of</text>
+        <text class="a5aM" x="720" y="332">these ten</text>
+
+        <rect x="14" y="356" width="14" height="14" rx="3" fill="#60A5FA"></rect>
+        <text class="a5aN" x="38" y="368">Hand the next stage a perfect input. If the error vanishes, it was the earlier stage's error.</text>
+      </svg>
+      <figcaption>🔍 Click to zoom - the same frame twice, once through the real detector and once through a hand-corrected one.</figcaption>
+    </figure>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>The overall number hides which stage caused it<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Consider one Lanternfish frame. A branch moves in the wind at three in the morning. The motion detector decides there is an animal and passes the frame on. The species classifier, whose entire job is to name an animal, is handed a picture with no animal in it and does the only thing it can do: it names the closest thing, and says deer. The frame is logged as a deer sighting, the conservation group's report has a deer in it that was never there, and the error sheet gets a row.</p>
+        <p>Every part of that story is the detector's doing except the last two. The classifier was not wrong in any sense it could have been right about; nothing in its training or its architecture would have saved it, because it was never asked whether there was an animal. It was asked which animal. Yet the sheet's row says the classifier said deer, and the classifier is what gets funded.</p>
+        <p>This is not a labelling slip. It is structural: the last stage in a chain is the one that produces the visible output, so the visible output carries its name. In a longer pipeline the effect compounds, and the last box acquires a reputation for being the weak one purely by standing at the exit.</p>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Attributing error to one part<span class="mini">4 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Chapter 54 is called "Attributing error to one part", and the move it describes is small enough to do on a laptop in an afternoon. Take one error the whole system made. Give the second stage a perfect version of what the first stage should have produced, made by hand, by a person looking at the frame. Then run the second stage again and see what happens.</p>
+        <ul>
+          <li><strong>The error disappears.</strong> The second stage was capable all along, given a correct input. The error belonged to the first stage.</li>
+          <li><strong>The error survives.</strong> Even handed a perfect input, the second stage still gets it wrong. The error is genuinely the second stage's, and a project on the first stage will not remove it.</li>
+          <li><strong>Both stages contributed.</strong> It happens, and it is not a problem for the tally: attribute it to the stage whose correction removed the error, and note the row. If correcting either one removes it, the cheaper correction wins the funding argument.</li>
+        </ul>
+        <p>The reason this works is that it turns an argument into an experiment. Before it, two engineers hold two opinions about a frame and neither can be checked. After it, there is a frame, a corrected input, and a result that both of them can look at. Nothing about the model changed; the question changed from "whose fault do you think this is" to "watch what happens when we fix one thing at a time".</p>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Ten empty-frame errors that were never the classifier's<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Lanternfish's Eyeball spreadsheet has 64 errors on it. Ten of them, 16 percent, sit in the category "empty frame called animal". Before tonight, those ten were classifier errors, because that is where the sheet put them and nobody had drawn the system as boxes.</p>
+        <p>Correcting the detector's decision by hand on all ten made all ten errors disappear. Not most of them. All of them, because an empty frame that never reaches the classifier cannot be misclassified. Every one of the ten belonged to the motion detector, which had never been measured, and none of them could have been touched by any amount of work on the species model.</p>
+        <ul>
+          <li><strong>The project that fixes them is the motion-trigger filter</strong>, first stage, two weeks, ceiling 1.6 points, 0.80 points per week. It was on the sheet from session 3, sitting third.</li>
+          <li><strong>The project that cannot fix them is the deer-versus-elk specialist model</strong>, eight weeks, 0.21 points per week, and the one the room wanted. It is a second-stage project, and these are first-stage errors.</li>
+          <li><strong>What the attribution changed</strong> was not the ranking of those two projects, which was already clear, but the reason. The room could argue about points per week. It could not argue with ten frames where correcting the detector made the error go away.</li>
+        </ul>
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <p>The contractor who wrote the motion detector had tuned it to miss nothing, on the reasonable-sounding grounds that a missed animal is a lost sighting and a false trigger is only a wasted classification. That trade was made before there was a classifier downstream turning every false trigger into a confident, published, wrong species. Nobody revisited it, because the person who owned the trade-off never saw the error sheet, and the error sheet never named their box.</p>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>Two failures that look identical on the sheet<span class="mini">4 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Take two rows from the Lanternfish sheet, both filed under a species being named wrongly. On paper they are the same failure. Under attribution they are two different projects.</p>
+        <ul>
+          <li><strong>Row one.</strong> The detector cropped tightly around a moving shape and handed the classifier a corner of an elk. Given the full frame by hand, the classifier names it correctly. First-stage error. A better classifier changes nothing.</li>
+          <li><strong>Row two.</strong> The detector produced a clean, correctly cropped animal, and the classifier said deer where a person says elk. Given a perfect crop, the error survives. Second-stage error, and it is one of the twelve the specialist model exists to fix.</li>
+        </ul>
+        <p>Both rows say the same thing in the category column. One of them belongs to a two-week project and one to an eight-week project, and only the attribution step can tell them apart. This is why the tally is worth an afternoon even when the sheet already looks well organised: a good category scheme describes what the output looked like, and funding needs to know what produced it.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 2 ============ -->
+  <section class="section" id="part-2">
+    <div class="section-kicker">
+      <span class="klabel">Part 2 · covers chapters 56 and 57</span>
+      <h2>Comparing each part to human-level, and spotting a flawed pipeline</h2>
+      <span class="tag concept">9 min live</span>
+    </div>
+    <p class="lede">Attribution says which box owns an error. It does not yet say which box to fund, because a box can own the most errors and still be close to as good as anything could be. Session 4's yardstick handles that, applied one box at a time: measure each stage against how well a person does that stage's job alone, and fund the stage with the widest gap. Then chapter 57 supplies the case that saves a quarter, where the answer is no stage at all.</p>
+
+    <figure class="zoomable">
+      <svg viewBox="0 0 880 330" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Two horizontal bars comparing each Lanternfish pipeline stage to human-level performance for that stage alone. The motion detector is at 91 percent against human-level 99, a gap of 8 points, and is marked as the stage to fund. The species classifier, given a correct detector call, is at 94 percent against human-level 98, a gap of 4 points.">
+        <style>
+          .a5bT { font: 800 12px Inter, sans-serif; fill: #fff; }
+          .a5bH { font: 800 12px Inter, sans-serif; fill: #1C1917; }
+          .a5bB { font: 400 11px Inter, sans-serif; fill: #1C1917; }
+          .a5bM { font: 400 11px Inter, sans-serif; fill: #6B6259; }
+          .a5bN { font: 700 11px Inter, sans-serif; fill: #1C1917; }
+          .a5bR { font: 700 11px Inter, sans-serif; fill: #991B1B; }
+          .a5bG { font: 800 12px Inter, sans-serif; fill: #713F12; }
+        </style>
+
+        <text class="a5bH" x="14" y="28">Each stage against human-level for that stage alone</text>
+
+        <text class="a5bH" x="14" y="60">Stage 1 · motion detector</text>
+        <text class="a5bM" x="14" y="76">is there an animal in this frame?</text>
+        <rect x="270" y="46" width="540" height="32" rx="7" fill="#FEFCE8" stroke="#D9D2C5"></rect>
+        <rect x="270" y="46" width="378" height="32" rx="7" fill="#A16207"></rect>
+        <text class="a5bT" x="284" y="67">91 percent correct</text>
+        <line x1="810" y1="40" x2="810" y2="84" stroke="#713F12" stroke-width="2" stroke-dasharray="4 3"></line>
+        <text class="a5bG" x="820" y="60">99</text>
+        <text class="a5bM" x="820" y="76">human</text>
+        <rect x="270" y="88" width="200" height="22" rx="6" fill="#991B1B"></rect>
+        <text class="a5bT" x="284" y="104">gap 8 points · fund this</text>
+        <text class="a5bM" x="486" y="104">widest distance from what a person does</text>
+
+        <text class="a5bH" x="14" y="156">Stage 2 · species classifier</text>
+        <text class="a5bM" x="14" y="172">given a correct detector call</text>
+        <rect x="270" y="142" width="540" height="32" rx="7" fill="#FEFCE8" stroke="#D9D2C5"></rect>
+        <rect x="270" y="142" width="450" height="32" rx="7" fill="#FACC15"></rect>
+        <text class="a5bH" x="284" y="163">94 percent correct</text>
+        <line x1="794" y1="136" x2="794" y2="180" stroke="#713F12" stroke-width="2" stroke-dasharray="4 3"></line>
+        <text class="a5bG" x="804" y="156">98</text>
+        <text class="a5bM" x="804" y="172">human</text>
+        <rect x="270" y="184" width="150" height="22" rx="6" fill="#FEF08A"></rect>
+        <text class="a5bH" x="284" y="200">gap 4 points</text>
+        <text class="a5bM" x="436" y="200">closer to human-level than it looked</text>
+
+        <rect x="14" y="226" width="410" height="76" rx="10" fill="#FEFCE8" stroke="#D9D2C5"></rect>
+        <text class="a5bH" x="30" y="250">Fund the widest gap, not the biggest box</text>
+        <text class="a5bB" x="30" y="272">The classifier owns more errors overall and sits</text>
+        <text class="a5bB" x="30" y="290">closer to the ceiling of what anyone could do.</text>
+
+        <rect x="440" y="226" width="426" height="76" rx="10" fill="#FEFCE8" stroke="#991B1B"></rect>
+        <text class="a5bR" x="456" y="250">If both bars reached their dashed line</text>
+        <text class="a5bB" x="456" y="272">and the system was still short, no stage is the problem.</text>
+        <text class="a5bB" x="456" y="290">The chain's design is. Chapter 57.</text>
+
+        <rect x="14" y="312" width="14" height="14" rx="3" fill="#60A5FA"></rect>
+        <text class="a5bN" x="38" y="324">A stage is worth funding by its distance from human-level, not by its share of the errors.</text>
+      </svg>
+      <figcaption>🔍 Click to zoom - two stages, two human-level bars, and the gap that decides the funding.</figcaption>
+    </figure>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Measure each stage against human-level for that stage alone<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Chapter 56 extends session 4's yardstick to a chain. Human-level performance for the whole system is not the useful number here; human-level performance for each stage in isolation is. Show a person only what the motion detector sees, a single frame, and ask only the detector's question: is there an animal in this. Then show a person only what the classifier sees, a correctly cropped animal, and ask only which species. Two separate exercises, two separate numbers.</p>
+        <p>At Lanternfish the detector is right 91 times in 100 on its own question and a person is right 99 times: a gap of eight points. The classifier, handed a correct detector call, is right 94 times where a person is right 98: a gap of four. The stage with the wider gap is the one where work has somewhere to go, and it is the stage nobody had been funding.</p>
+        <ul>
+          <li><strong>A wide gap means headroom.</strong> Something a person can do and the model cannot is, by demonstration, learnable.</li>
+          <li><strong>A narrow gap means diminishing returns.</strong> The classifier can still be improved, and each point will cost more than the last, because it is close to what anyone can do with that input.</li>
+          <li><strong>The share of errors does not decide this.</strong> The classifier owns more of the 120 errors and is nearer its ceiling. Both are true at once, and only the second one prices a project.</li>
+        </ul>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Spotting a flawed ML pipeline<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Chapter 57 is titled "Spotting a flawed ML pipeline", and it names the situation every stage-by-stage analysis has to be able to reach: each stage is performing at human-level for its own job, and the system as a whole is still not good enough. When that happens, there is no stage left to fund. The problem is the shape of the chain.</p>
+        <p>The usual cause is that the interface between two stages throws away something the later stage needed. A motion detector that outputs a yes or a no has already discarded where in the frame the movement was, how large it was, and how fast. A person doing the detector's job perfectly, under that interface, still hands the classifier a bare yes. If the classifier needs the crop and the interface cannot carry it, both stages can be flawless and the pair can still be wrong.</p>
+        <ul>
+          <li><strong>The test is cheap.</strong> Give every stage a perfect input by hand and let it run. If the system is still short, the design is the finding.</li>
+          <li><strong>The remedy is a design change,</strong> not a training run: widen the interface, merge two stages, or reorder them.</li>
+          <li><strong>It is worth reaching this conclusion early,</strong> because it is the one conclusion that no amount of funding a stage can arrive at, and teams can spend a year discovering it the slow way.</li>
+        </ul>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>End-to-end learning, named and not taught<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>There is an alternative to fixing a chain, and chapters 47 to 52 of Machine Learning Yearning are about it: replace the whole pipeline with a single model trained straight from the raw input to the final answer, so no hand-designed interface exists to lose anything. It is a genuine option, it has a real cost in data volume, and the trade-off between the two designs belongs to the deep learning course, which owns architecture decisions. It is named here so that a leader reading a flawed-pipeline finding knows the option exists, and does not conclude that the only move is to keep widening interfaces.</p>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>The honest limit: a perfect input has to be made by hand<span class="mini">4 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>The method has one real cost and it should be stated before anybody commits to it. A perfect input for a stage rarely exists in any system. Somebody has to make it, one example at a time, by looking at a frame and writing down what the earlier stage should have said. For Lanternfish that is a person, a screen, and a morning.</p>
+        <ul>
+          <li><strong>Ten errors is enough to change a decision.</strong> Not a hundred. Ten hand-corrected examples that all point at one box is a finding, and a team can produce ten in an hour.</li>
+          <li><strong>Not every stage can be hand-corrected cheaply.</strong> If a stage's output is a learned embedding, no person can write down its perfect value. Attribute what you can and say plainly which stages the method could not reach.</li>
+          <li><strong>The labelling is reusable.</strong> Corrected first-stage outputs are training data for the first stage, so the afternoon spent attributing errors is also the start of the project it recommends.</li>
+          <li><strong>It is worth it because the alternative is a guess</strong> with a two-week project and an eight-week project riding on it. An afternoon against eight weeks is not a close call.</li>
+        </ul>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ DEMO ============ -->
+  <section class="section" id="demo-1">
+    <div class="section-kicker">
+      <span class="klabel">Build-along</span>
+      <h2>Attribute one error, then ten</h2>
+      <span class="tag demo">★ 18 min · everyone builds</span>
+    </div>
+    <p class="lede">Bring a system your team runs and a handful of recent mistakes from it. If you have nothing to hand, use Lanternfish: two stages, 120 errors in 1,000 dev images, and a sheet that files ten of them as "empty frame called animal". Paper is enough. Nothing here needs a keyboard.</p>
+
+    <div class="steps">
+      <div class="step">
+        <p><strong>Draw your system as boxes.</strong> One box per component that makes a decision, left to right, with an arrow between each pair and a word on the arrow saying what passes along it. Stop when the last box produces the thing the user sees. Most teams find a box that half the room did not know was there, and finding it is already worth the ten minutes.</p>
+      </div>
+      <div class="step">
+        <p><strong>Take one recent error and ask which box a human would have to fix.</strong> Not which box looks suspect. Walk the frame through the boxes and ask, at each arrow, whether what passed along it was correct. The first arrow carrying something wrong points at the box behind it.</p>
+      </div>
+      <div class="step">
+        <p><strong>Check the answer by correcting that box's output by hand.</strong> Write down what it should have said, hand that to the next box, and run the rest of the chain. If the error disappears, the attribution is confirmed. If it survives, keep walking: a later box owns it too.</p>
+      </div>
+      <div class="step">
+        <p><strong>Do it for ten errors and count per box.</strong> One tally mark per error against one box. Ten is enough; the point is not a precise distribution but which box the marks cluster on. Lanternfish's ten empty-frame errors all landed on the detector.</p>
+      </div>
+      <div class="step">
+        <p><strong>For the box with the most marks, estimate two numbers.</strong> How well a person does that box's job alone, given only that box's input, and how well the box currently does it. Ten hand-judged examples give both. Lanternfish: detector 91 against a person's 99, classifier 94 against 98.</p>
+      </div>
+      <div class="step">
+        <p><strong>Write which stage you would fund and why the sheet pointed elsewhere.</strong> Two sentences. The second one is the important one, because it is the sentence that stops the sheet's category names from making the same wrong recommendation next quarter.</p>
+      </div>
+    </div>
+
+    <div class="prompt-box good">
+      <span class="label">★ The attribution tally, as it goes to the team</span>
+Lanternfish species pipeline. Ten errors walked through the boxes by hand, 9 September.
+
+  Stage 1, motion detector  ........  7 marks
+      of which: empty frames passed as animals  ....  5
+                animal cropped so tightly the species was gone  ....  2
+
+  Stage 2, species classifier  .....  3 marks
+      of which: clean crop, correct species available, still named wrong  ....  3
+
+  Human-level, stage 1 alone: 99 percent.  Current: 91.  Gap 8 points.
+  Human-level, stage 2 alone: 98 percent.  Current: 94.  Gap 4 points.
+
+Funding: the motion-trigger filter, stage 1, 2 weeks, 0.80 points per week.
+Not funding this sprint: the deer-vs-elk specialist model, stage 2, 8 weeks, 0.21 points per week.
+Why the sheet disagreed: its category names describe what came out of the last box,
+not which box produced the fault. The ten empty-frame rows were filed against the
+classifier and every one of them belonged to the detector.
+    </div>
+
+    <div class="callout tip">
+      <p><strong>If the marks are spread evenly across every box, that is a finding too.</strong> It usually means the boxes are all roughly as good as each other and the interfaces between them are where the losses are. Run the human-level comparison on each box before concluding anything: if every box is at its dashed line and the system is still short, chapter 57 has already named what you are looking at.</p>
+    </div>
+  </section>
+
+  <!-- ============ HOMEWORK ============ -->
+  <section class="section" id="exercise">
+    <div class="section-kicker">
+      <span class="klabel">Homework</span>
+      <h2>Before session 6</h2>
+      <span class="tag exercise">40 min</span>
+    </div>
+    <ol>
+      <li>Draw one production system you fund as boxes and arrows, then send the drawing to the two people who know it best and ask what is missing. Note how long the list is.</li>
+      <li>Attribute ten recent errors to one box each, using the hand-corrected input test rather than an opinion. Count the marks.</li>
+      <li>For the box with the most marks, get an estimate of human-level performance on that box's job alone. A person doing ten examples is enough for a first number.</li>
+      <li>Find one funded project and check which box it targets. If it targets a box that owns few of the marks, take the tally to its sponsor before the sprint starts, not after.</li>
+      <li>Write down which stages your team could not hand-correct cheaply, and what you would need in order to reach them. That list is the honest limit of tonight's method on your system.</li>
+    </ol>
+  </section>
+
+  <!-- ============ QUIZ ============ -->
+  <section class="section" id="quiz">
+    <div class="section-kicker">
+      <span class="klabel">Check yourself</span>
+      <h2>Three questions</h2>
+    </div>
+
+    <div class="quiz-q" data-answer="2">
+      <p class="qtext">An empty frame passes Lanternfish's motion detector, the species classifier names it a deer, and the error sheet files the row under "empty frame called animal". Who owns the error?</p>
+      <button class="qopt" type="button">A · The classifier, because it produced the wrong species name</button>
+      <button class="qopt" type="button">B · Both stages equally, since both were involved in the decision</button>
+      <button class="qopt" type="button">C · The detector, because correcting its decision by hand makes the error disappear and the classifier is never called</button>
+      <p class="qwhy">Attributing error to one part: give the later stage a perfect version of the earlier stage's output. If the error vanishes, it belonged to the earlier stage. The category name described the symptom at the exit of the pipe, not the cause.</p>
+    </div>
+
+    <div class="quiz-q" data-answer="0">
+      <p class="qtext">The motion detector is right 91 times in 100 where a person is right 99. The classifier, given a correct detector call, is right 94 where a person is right 98, and it owns more of the errors overall. Which stage do you fund?</p>
+      <button class="qopt" type="button">A · The detector, because its eight-point gap to human-level is the widest, and a gap that wide is demonstrated headroom</button>
+      <button class="qopt" type="button">B · The classifier, because it owns more of the errors</button>
+      <button class="qopt" type="button">C · Neither, because both are above 90 percent</button>
+      <p class="qwhy">Measure each stage against human-level for that stage alone and fund the widest gap. Share of errors ranks the classifier first; distance from what a person can do ranks the detector first, and only the second one says where work has somewhere to go.</p>
+    </div>
+
+    <div class="quiz-q" data-answer="1">
+      <p class="qtext">Every stage of a pipeline is measured at human-level for its own job, and the system as a whole is still not good enough. What does that tell you?</p>
+      <button class="qopt" type="button">A · The human-level estimates must be wrong and should be redone</button>
+      <button class="qopt" type="button">B · No stage is the problem: the design of the chain is, usually because an interface between two stages discards something a later stage needed</button>
+      <button class="qopt" type="button">C · The stage with the most errors should still be funded first</button>
+      <p class="qwhy">Spotting a flawed ML pipeline. It is the one conclusion that funding a stage can never reach, which is why it is worth testing for early rather than after a year of stage-by-stage projects.</p>
+    </div>
+
+    <p class="quiz-score"></p>
+  </section>
+
+  <!-- ============ COVERAGE ============ -->
+  <section class="section" id="official">
+    <div class="section-kicker">
+      <span class="klabel">Sources covered</span>
+      <h2>What tonight maps to</h2>
+    </div>
+    <div class="covered">
+      <div class="covered-row">
+        <span class="status pill solid">✓</span>
+        <span class="name">Machine Learning Yearning, chapter 53</span>
+        <span class="note">Error analysis by parts: why a system-level error rate cannot say which component caused a mistake, and why the sheet's category names point at the last box in the chain.</span>
+      </div>
+      <div class="covered-row">
+        <span class="status pill solid">✓</span>
+        <span class="name">Machine Learning Yearning, chapter 54</span>
+        <span class="note">Attributing error to one part: hand the later stage a perfect version of the earlier stage's output, and watch whether the error survives. Done on the ten empty-frame errors.</span>
+      </div>
+      <div class="covered-row">
+        <span class="status pill solid">✓</span>
+        <span class="name">Machine Learning Yearning, chapter 56</span>
+        <span class="note">Each stage compared to human-level performance on that stage's job alone, so the stage with the widest gap is the one funded. Detector 91 against 99; classifier 94 against 98.</span>
+      </div>
+      <div class="covered-row">
+        <span class="status pill solid">✓</span>
+        <span class="name">Machine Learning Yearning, chapter 57</span>
+        <span class="note">Spotting a flawed ML pipeline: every stage at human-level and the system still short means the design is the finding, not any component.</span>
+      </div>
+      <div class="covered-row">
+        <span class="status pill light">◐</span>
+        <span class="name">Machine Learning Yearning, chapters 47 to 52</span>
+        <span class="note">End-to-end learning named in one sentence as the alternative to a chain. The trade-off belongs to the deep learning course, which owns architecture decisions.</span>
+      </div>
+      <div class="covered-row">
+        <span class="status pill light">◐</span>
+        <span class="name">Human-level performance as a yardstick</span>
+        <span class="note">Session 4 establishes it on one model, with the chapter 22 arithmetic. Tonight applies it one stage at a time.</span>
+      </div>
+      <div class="covered-row">
+        <span class="status pill inkpill">·</span>
+        <span class="name">How to build or retrain either stage</span>
+        <span class="note">Not covered by design. Tonight decides which stage gets the money; the intro ML and deep learning courses own what happens after that decision.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ CHEAT SHEET ============ -->
+  <section class="cheat" id="cheatsheet">
+    <h3>Session 5 cheat sheet</h3>
+    <div class="grid-2">
+      <div class="cheat-item"><b>One error rate, several boxes</b><span>A system-level number says nothing about which stage caused a mistake.</span></div>
+      <div class="cheat-item"><b>Category names blame the exit</b><span>The last box produces the visible output, so it carries the name of the symptom.</span></div>
+      <div class="cheat-item"><b>Attribute with a perfect input</b><span>Hand-correct the earlier stage's output. Error gone means the error was the earlier stage's.</span></div>
+      <div class="cheat-item"><b>Ten empty frames, ten detector errors</b><span>None of them removable by any amount of work on the species classifier.</span></div>
+      <div class="cheat-item"><b>Human-level, one stage at a time</b><span>Ask a person only that stage's question, given only that stage's input.</span></div>
+      <div class="cheat-item"><b>Fund the widest gap</b><span>Detector 91 against 99 beats classifier 94 against 98, whoever owns more errors.</span></div>
+      <div class="cheat-item"><b>All stages at human-level, system short</b><span>The design is the problem. Widen the interface, merge the stages, or reorder them.</span></div>
+      <div class="cheat-item"><b>An afternoon against eight weeks</b><span>Perfect inputs are made by hand, ten are enough, and the labels feed the project they recommend.</span></div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="pagefoot">
+  <div class="wrap">
+    <p>Leader session 5 of 6 · learn-ml-strategy-with-phoebe · by Phoebe Fu</p>
+    <nav class="pagenav">
+      <a href="a4-where-the-error-comes-from.html">← Leader session 4 · Where the error comes from</a>
+      <a href="a6-the-one-page-memo.html">Leader session 6 · Get your teammates to read this →</a>
+    </nav>
+  </div>
+</footer>
+
+<script src="../assets/app.js?v=1"></script>
+</body>
+</html>

@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- social:start -->
+<meta name="description" content="Practitioner session 4 of 10. Split the dev set into a half you read and a half you never open. Lanternfish's 1,000 images become Eyeball 500 with 64 errors at 12.8 percent and Blackbox 500 with 56 at 11.2, and two weeks of hand rules take one half to 3.8 while the other does not move at all.">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Learn with Phoebe">
+<meta property="og:title" content="Eyeball and Blackbox dev sets - learn ml strategy with phoebe">
+<meta property="og:description" content="Practitioner session 4 of 10. The half you read stops being a measurement. Keep a half you never open.">
+<meta property="og:url" content="https://phoebefu6.github.io/learn-ml-strategy-with-phoebe/courses/p4-eyeball-and-blackbox.html">
+<meta property="og:image" content="https://phoebefu6.github.io/learn-ml-strategy-with-phoebe/assets/og-cover.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Eyeball and Blackbox dev sets - learn ml strategy with phoebe">
+<meta name="twitter:description" content="Eyeball 12.8 to 3.8 in two weeks. Blackbox 11.2 to 11.2. A 7.4-point gap that is not a model.">
+<meta name="twitter:image" content="https://phoebefu6.github.io/learn-ml-strategy-with-phoebe/assets/og-cover.png">
+<!-- social:end -->
+<title>Practitioner session 4 · Eyeball and Blackbox dev sets - learn ml strategy with phoebe</title>
+<link rel="stylesheet" href="../assets/style.css?v=1">
+</head>
+<body>
+
+<div class="toolbar">
+  <div class="wrap">
+    <span class="crumb"><a href="../index.html">learn-ml-strategy-with-phoebe</a> / Practitioner session 4 of 10</span>
+    <button class="btn" id="toggle-all" type="button">Expand all</button>
+    <button class="btn primary" id="zoom-toggle" type="button">Projector zoom: off</button>
+  </div>
+</div>
+
+<header class="masthead">
+  <div class="wrap">
+    <div class="eyebrow">Learn ML Strategy with Phoebe · Practitioner session 4 of 10</div>
+    <h1>Eyeball and Blackbox <span class="accent">dev sets</span></h1>
+    <p class="sub">Session 3 spent an evening reading misclassified images and filling in a spreadsheet, and that was the right thing to do. It also cost something: those examples are now in everybody's head, and every choice made from here is a little bit shaped by them. The fix is not to stop looking. It is to look at only half, and keep the other half sealed so there is still one honest reading left when the tuning is done. Tonight you make the split for Lanternfish, confirm both numbers, and then deliberately break the half you looked at so you can recognise the failure when it happens for real.</p>
+    <div class="chip-row">
+      <span class="chip level">🟡 Core</span>
+      <span class="chip audience">Data scientists and ML engineers</span>
+      <span class="chip time">45 min</span>
+    </div>
+    <div class="agenda">
+      <span class="a1" style="flex:1">0-3 · Welcome</span>
+      <span class="a2" style="flex:5">3-20 · The half you look at and the half you do not</span>
+      <span class="a3" style="flex:4">20-40 · Build-along: split, tune, compare</span>
+      <span class="a4" style="flex:1">40-45 · Q&amp;A</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ============ INTRO ============ -->
+  <section class="section" id="intro">
+    <div class="section-kicker">
+      <span class="klabel">Part 0</span>
+      <h2>Two halves, two jobs</h2>
+    </div>
+    <p class="lede">The dev set has been doing two incompatible jobs at once. It is the material you read to work out what is broken, and it is the instrument that tells you whether a change helped. Reading it well makes it worse at measuring. Splitting it lets each half do one job properly: an <strong>Eyeball</strong> half you open, categorise and argue about, and a <strong>Blackbox</strong> half nobody looks at, ever, which is therefore still an independent measurement after six months of tuning.</p>
+
+    <div class="legend">
+      <span class="pill">Live = presented in the 45 minutes</span>
+      <span class="pill">Self-study = the full depth, after class</span>
+      <span class="pill">🔍 Every diagram zooms</span>
+    </div>
+
+    <div class="callout win">
+      <p><strong>★ What you walk out with tonight.</strong> Lanternfish's 1,000 dev images split into a read half and a sealed half, with both error rates written down: 64 errors in the Eyeball half at 12.8 percent, 56 in the Blackbox half at 11.2. A reporting habit that puts the two numbers next to each other on every run. And the shape of the failure they exist to catch, produced on purpose in a build-along: one half drops to 3.8 percent in two weeks while the other stays exactly where it was.</p>
+    </div>
+
+    <details class="card" open>
+      <summary><span class="mode live">Live</span>Why reading a set costs you the set<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>An hour spent reading dev examples is an hour of fitting your own judgement to those examples. It happens without any bad faith and without anyone touching a training script. You notice that four of the night frames have a bright halo, so you add a halo check. You remember that two elk pictures had antlers cut off at the top, so you widen a crop. Each of those is a reasonable idea, and each of them was suggested by a specific image that lives in the set you are about to score on.</p>
+        <p>A dev set you have read hundreds of times is not an independent measurement any more. It is a set of examples your team has been optimising against with its eyes, and the number it produces is closer to a training score than to a hold-out score. The only defence that survives contact with a motivated team is a portion of data that nobody is allowed to open.</p>
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <p>Lanternfish's team read all 120 errors in session 3. Two of them could recite frame ids. When a new preprocessing step landed the following week, the first thing anyone did was check the six night-blur frames they remembered by name. All six were fixed. The dev error moved by 0.4 points.</p>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>The vocabulary for tonight<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <ul>
+          <li><strong>Eyeball dev set</strong> - the part you look at with your eyes, categorise by hand, and use to decide what to work on. Its error rate is a diagnostic, not a report.</li>
+          <li><strong>Blackbox dev set</strong> - the part you never open. Used only to score models. Its error rate is the one you report.</li>
+          <li><strong>The gap</strong> - Eyeball error minus Blackbox error. Small and stable is healthy. Growing is a warning that the Eyeball half is being tuned to rather than learned from.</li>
+          <li><strong>Retiring a set</strong> - replacing an Eyeball half that has been read so many times its number no longer tracks the Blackbox half. It is normal, it is planned for, and it costs a labelling run.</li>
+          <li><strong>Test set</strong> - still separate from both halves, still touched once, still from the same pool as the dev set. Session 1 owns that decision.</li>
+        </ul>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 1 ============ -->
+  <section class="section" id="part-1">
+    <div class="section-kicker">
+      <span class="klabel">Part 1 · covers chapter 17 and the sizing question</span>
+      <h2>"If you have a large dev set, split it into two subsets, only one of which you look at"</h2>
+      <span class="tag concept">9 min live</span>
+    </div>
+    <p class="lede">That is the title of chapter 17 of <em>Machine Learning Yearning</em>, and the mechanism it describes is one sentence long: "randomly select 10% of the dev set and place that into what we'll call an Eyeball dev set to remind ourselves that we are looking at it with our eyes". The remainder is the Blackbox dev set. You tune on it, you score on it, you never open it.</p>
+
+    <figure class="zoomable">
+      <svg viewBox="0 0 880 372" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Lanternfish's 1,000 image dev set with 120 errors splits into an Eyeball half of 500 images with 64 errors at 12.8 percent, which is read and categorised by hand, and a Blackbox half of 500 images with 56 errors at 11.2 percent, which is sealed and never opened.">
+        <style>
+          .p4aT { font: 800 12px Inter, sans-serif; fill: #fff; }
+          .p4aH { font: 800 12px Inter, sans-serif; fill: #1C1917; }
+          .p4aB { font: 400 11px Inter, sans-serif; fill: #1C1917; }
+          .p4aM { font: 400 11px Inter, sans-serif; fill: #6B6259; }
+          .p4aN { font: 700 11px Inter, sans-serif; fill: #1C1917; }
+          .p4aG { font: 800 13px Inter, sans-serif; fill: #713F12; }
+          .p4aW { font: 400 11px Inter, sans-serif; fill: #fff; }
+        </style>
+        <defs>
+          <marker id="p4aAr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#D9D2C5"></path></marker>
+        </defs>
+
+        <rect x="290" y="28" width="300" height="58" rx="10" fill="#A16207"></rect>
+        <text class="p4aT" x="440" y="52" text-anchor="middle">Dev set: 1,000 images</text>
+        <text class="p4aW" x="440" y="72" text-anchor="middle">120 wrong, 12.0 percent</text>
+
+        <line x1="380" y1="88" x2="240" y2="142" stroke="#D9D2C5" stroke-width="2" marker-end="url(#p4aAr)"></line>
+        <line x1="500" y1="88" x2="644" y2="142" stroke="#D9D2C5" stroke-width="2" marker-end="url(#p4aAr)"></line>
+
+        <rect x="40" y="150" width="380" height="182" rx="10" fill="#FEFCE8" stroke="#A16207" stroke-width="2"></rect>
+        <rect x="40" y="150" width="380" height="34" rx="10" fill="#FACC15"></rect>
+        <text class="p4aH" x="58" y="172">Eyeball half · opened and read</text>
+        <text class="p4aB" x="58" y="210">500 images, 64 wrong</text>
+        <text class="p4aG" x="58" y="234">12.8 percent error</text>
+        <text class="p4aM" x="58" y="258">every error categorised by hand</text>
+        <text class="p4aB" x="58" y="284">night blur 21, elk 12, frame 12</text>
+        <text class="p4aB" x="58" y="304">empty 10, wrong label 9</text>
+        <text class="p4aM" x="58" y="324">this number is a diagnostic</text>
+
+        <rect x="460" y="150" width="380" height="182" rx="10" fill="#FEFCE8" stroke="#713F12" stroke-width="2"></rect>
+        <rect x="460" y="150" width="380" height="34" rx="10" fill="#713F12"></rect>
+        <text class="p4aT" x="478" y="172">Blackbox half · sealed</text>
+        <text class="p4aB" x="478" y="210">500 images, 56 wrong</text>
+        <text class="p4aG" x="478" y="234">11.2 percent error</text>
+        <text class="p4aM" x="478" y="258">no example ever opened</text>
+        <text class="p4aB" x="478" y="284">scored by the model, read by</text>
+        <text class="p4aB" x="478" y="304">nobody on the team</text>
+        <text class="p4aM" x="478" y="324">this number is the report</text>
+
+        <rect x="40" y="346" width="14" height="14" rx="3" fill="#60A5FA"></rect>
+        <text class="p4aN" x="64" y="358">The halves are not identical: 64 errors and 56. Two readings, one of them still independent.</text>
+      </svg>
+      <figcaption>🔍 Click to zoom - one dev set, two halves, two different jobs.</figcaption>
+    </figure>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Why Lanternfish splits 500/500 rather than 10/90<span class="mini">4 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Ten percent of 1,000 images is 100 images, and 100 images at a 12 percent error rate holds about twelve errors. Twelve errors cannot be categorised into five buckets in any way that supports a decision: a category with three errors and a category with two are indistinguishable, and the ceiling arithmetic from session 3 would be reading noise.</p>
+        <p>Chapter 15 gives the number to aim at from the other direction: "I usually create a spreadsheet and fill it out while looking through ~100 misclassified dev set images." What matters is how many <em>errors</em> the Eyeball half contains, not how many images. Half of Lanternfish's dev set holds 64 errors, which is close enough to a hundred to fill a spreadsheet with categories that separate. So the split is 500 and 500, and the ten percent rule is what you use when the dev set is large enough for ten percent to carry a hundred mistakes.</p>
+        <div class="callout tip">
+          <p><strong>Read the sizing question in errors, not images.</strong> Chapter 18 asks how big the Eyeball and Blackbox dev sets should be, and the useful form of the question is: does the Eyeball half hold enough mistakes to categorise, and does the Blackbox half hold enough examples to detect the improvement you are trying to make?</p>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>The two halves do not start equal, and that is the point<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Lanternfish's split is random, and random placement of 120 errors across two halves of 500 left 64 in one and 56 in the other. That is a 1.6-point difference at the starting line, before anybody has done anything. Teams see it and want to rebalance until the halves match.</p>
+        <p>Do not. The whole value of the Blackbox half is that it is a fresh sample the team has no relationship with, and stratifying it to match the half you read hands back a little of the independence you just bought. The 1.6-point starting gap is a fact about sample size, and it is the yardstick for later: a gap that stays around 1.6 is two halves agreeing, and a gap that opens to 7.4 is something else entirely.</p>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>Deterministic splits, and why hash beats random<span class="mini">4 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <ul>
+          <li><strong>A split that moves is not a split.</strong> If the assignment is redrawn every time the query runs, images drift between halves and the Blackbox half quietly acquires examples somebody read last month.</li>
+          <li><strong>Hash the stable id, not the row order.</strong> <code class="mono">hash(frame_id) % 2</code> gives the same answer forever, survives a reload of the table, and needs no stored column. Row numbers change when the table changes.</li>
+          <li><strong>Store the assignment anyway.</strong> A materialised <code class="mono">dev_half</code> column means the split survives a change of database engine, which changes the hash function under you.</li>
+          <li><strong>New images join by the same rule.</strong> When the dev set is topped up, hash decides the half. Nobody chooses which half a new image lands in, because whoever chooses will choose in a way that flatters something.</li>
+          <li><strong>Access control is cheaper than discipline.</strong> A view that exposes only the Eyeball half is a better guarantee than an agreement not to look.</li>
+        </ul>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 2 ============ -->
+  <section class="section" id="part-2">
+    <div class="section-kicker">
+      <span class="klabel">Part 2 · covers the gap and when to retire a set</span>
+      <h2>How to tell you have overfit the half you looked at</h2>
+      <span class="tag concept">8 min live</span>
+    </div>
+    <p class="lede">Two numbers, reported side by side, on every run. The Blackbox rate is the result. The Eyeball rate sits next to it as a control. When they move together, the work is real. When the Eyeball rate improves and the Blackbox rate does not, the team has been fixing the examples it read rather than the problem those examples are evidence of, and the size of the gap is the size of the illusion.</p>
+
+    <figure class="zoomable">
+      <svg viewBox="0 0 880 336" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Two weeks of hand rules written against the Eyeball errors: the Eyeball half falls from 12.8 percent to 3.8 percent while the Blackbox half stays flat at 11.2 percent, opening a 7.4 point gap that is a memorised dev set rather than a better model.">
+        <style>
+          .p4bT { font: 800 12px Inter, sans-serif; fill: #fff; }
+          .p4bH { font: 800 12px Inter, sans-serif; fill: #1C1917; }
+          .p4bB { font: 400 11px Inter, sans-serif; fill: #1C1917; }
+          .p4bM { font: 400 10px Inter, sans-serif; fill: #6B6259; }
+          .p4bN { font: 700 11px Inter, sans-serif; fill: #1C1917; }
+          .p4bR { font: 800 11px Inter, sans-serif; fill: #991B1B; }
+          .p4bG { font: 800 11px Inter, sans-serif; fill: #713F12; }
+        </style>
+
+        <text class="p4bH" x="70" y="28">Two weeks of hand rules written against the 64 Eyeball errors</text>
+
+        <line x1="70" y1="250" x2="470" y2="250" stroke="#D9D2C5" stroke-width="1.5"></line>
+        <line x1="70" y1="52" x2="70" y2="250" stroke="#D9D2C5" stroke-width="1.5"></line>
+        <text class="p4bM" x="30" y="64">14%</text>
+        <text class="p4bM" x="46" y="252">0</text>
+        <text class="p4bM" x="70" y="268">week 0</text>
+        <text class="p4bM" x="248" y="268">week 1</text>
+        <text class="p4bM" x="446" y="268">week 2</text>
+
+        <polyline points="70,76 470,198" fill="none" stroke="#60A5FA" stroke-width="3"></polyline>
+        <circle cx="70" cy="76" r="4" fill="#60A5FA"></circle>
+        <circle cx="470" cy="198" r="4" fill="#60A5FA"></circle>
+        <text class="p4bH" x="86" y="68">Eyeball 12.8</text>
+
+        <polyline points="70,98 470,98" fill="none" stroke="#A16207" stroke-width="3"></polyline>
+        <circle cx="70" cy="98" r="4" fill="#A16207"></circle>
+        <circle cx="470" cy="98" r="4" fill="#A16207"></circle>
+        <text class="p4bG" x="150" y="118">Blackbox 11.2, unchanged</text>
+
+        <line x1="470" y1="98" x2="470" y2="198" stroke="#991B1B" stroke-width="1.5" stroke-dasharray="4 3"></line>
+        <text class="p4bR" x="360" y="150">7.4 points</text>
+        <text class="p4bG" x="410" y="216">3.8</text>
+
+        <rect x="540" y="52" width="326" height="198" rx="10" fill="#FEFCE8" stroke="#D9D2C5"></rect>
+        <text class="p4bH" x="558" y="80">What the gap actually is</text>
+        <text class="p4bB" x="558" y="106">45 of the 64 Eyeball errors were</text>
+        <text class="p4bB" x="558" y="124">patched by rules keyed to those</text>
+        <text class="p4bB" x="558" y="142">exact frames</text>
+        <text class="p4bR" x="558" y="170">Blackbox errors patched: 0</text>
+        <text class="p4bM" x="558" y="196">a rule written against sixty</text>
+        <text class="p4bM" x="558" y="212">specific images fixes those</text>
+        <text class="p4bM" x="558" y="228">sixty images, by definition</text>
+
+        <rect x="70" y="304" width="14" height="14" rx="3" fill="#60A5FA"></rect>
+        <text class="p4bN" x="94" y="316">Report both halves side by side. One number on its own cannot show this shape.</text>
+      </svg>
+      <figcaption>🔍 Click to zoom - one half improves 70 percent, the other does not move.</figcaption>
+    </figure>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>The demonstration, and why it is honest about being a construction<span class="mini">4 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Two weeks of hand rules written against the 64 errors in Lanternfish's Eyeball half take that half from 12.8 percent to 3.8 percent. The Blackbox half stays at 11.2 percent, exactly where it started. The reported improvement, if the team reported the number it had been watching, would be a 70 percent reduction in error. The real improvement, measured on data nobody touched, is zero.</p>
+        <p>This is a construction by definition and it is worth saying so plainly rather than dressing it up as a study of human behaviour. A rule keyed to a specific frame id fixes that frame and nothing else; there is no uncertainty in the arithmetic and nothing about anybody's psychology is being modelled. The construction earns its place because it draws the shape at full contrast: the two lines separating is what a memorised dev set looks like on a chart.</p>
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <p>Nobody writes rules keyed to frame ids on purpose. What happens instead is slower and much harder to see: a threshold nudged because two remembered images sat just the wrong side of it, a class weight raised because the elk errors felt more numerous than they were, an augmentation chosen to match the four blurry frames that stuck in the mind. The same gap opens over three months instead of two weeks, one decision at a time, and every decision is defensible on its own.</p>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Reading a gap, and what different sizes mean<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <table class="clean">
+          <thead><tr><th>What you see</th><th>What it means</th><th>What to do</th></tr></thead>
+          <tbody>
+            <tr><td>Both halves fall together</td><td>The change fixed the problem the examples were evidence of</td><td>Keep it, report the Blackbox number</td></tr>
+            <tr><td>Gap stable near its starting value</td><td>Sampling noise, nothing more</td><td>Nothing. Lanternfish starts at 1.6 points</td></tr>
+            <tr><td>Eyeball falls, Blackbox flat</td><td>The change fixed the examples, not the problem</td><td>Do not ship it. Ask what the rule keyed on</td></tr>
+            <tr><td>Gap grows slowly over months</td><td>Ordinary tuning has been fitting the read half</td><td>Retire the Eyeball half and draw a fresh one</td></tr>
+            <tr><td>Blackbox falls, Eyeball flat</td><td>Usually a small-sample accident, occasionally a category the Eyeball half is short of</td><td>Check the category counts before celebrating</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>Retiring an Eyeball set, and the trade when the dev set is small<span class="mini">4 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>An Eyeball set is consumable. It is read, argued over, and eventually so familiar that its number stops tracking the sealed half. Plan for that instead of being surprised by it.</p>
+        <ul>
+          <li><strong>The retirement signal is a gap that opens and will not close.</strong> Two model changes in a row that move the Eyeball rate and leave the Blackbox rate alone is the point at which the read half has stopped being a measurement of anything.</li>
+          <li><strong>Retirement means fresh data, not a reshuffle.</strong> Moving images from the Blackbox half into the Eyeball half spends the only clean data you have. Draw new labelled examples from current production traffic, exactly as session 1 drew the first set.</li>
+          <li><strong>Budget for it.</strong> A team reading errors seriously will burn an Eyeball half every few months. That is a recurring labelling cost, and it is cheaper than a quarter of decisions made on a memorised set.</li>
+          <li><strong>When the dev set is small, the trade is real and there is no clever way out.</strong> With 200 images, a half holds about a dozen errors. Categorise on the whole set, accept that the measurement is compromised, and buy back honesty with a test set that stays genuinely untouched.</li>
+          <li><strong>A small Blackbox half has its own limit.</strong> Session 1's arithmetic still applies: 500 examples makes a one-point improvement five examples, which is visible; a tenth of a point is half an example, which is not.</li>
+          <li><strong>Two halves cost nothing to keep.</strong> The split is a column. The discipline is a report with two columns instead of one, and neither is a project.</li>
+        </ul>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ DEMO ============ -->
+  <section class="section" id="demo-1">
+    <div class="section-kicker">
+      <span class="klabel">Build-along</span>
+      <h2>Split it, confirm it, then break it on purpose</h2>
+      <span class="tag demo">★ 20 min · everyone builds</span>
+    </div>
+    <p class="lede">Bring the dev set from session 1 and the error table from session 3. If you have nothing to hand, the Lanternfish tables are <code class="mono">cams.dev_set</code> with 1,000 rows and <code class="mono">cams.dev_errors</code> with the 120 misclassified frames and their categories.</p>
+
+    <div class="steps">
+      <div class="step">
+        <p><strong>Assign the halves deterministically, if session 1 did not.</strong> Hash the frame id so the assignment is the same on every run, on every machine, forever. Materialise it as a column so a change of engine cannot silently reshuffle who is in which half.</p>
+      </div>
+      <div class="step">
+        <p><strong>Count errors and the error rate per half, and confirm the two numbers.</strong> You are looking for 64 errors in the Eyeball half at 12.8 percent and 56 in the Blackbox half at 11.2 percent. If your split gives 60 and 60, the hash is doing something orderly rather than random, and that is worth ten minutes to find.</p>
+      </div>
+      <div class="step">
+        <p><strong>Write both numbers into a results table with a run label.</strong> One row per model version, with both rates and the gap as a stored column. This is the artifact that makes the failure visible three months from now, when nobody remembers what the gap used to be.</p>
+      </div>
+      <div class="step">
+        <p><strong>Simulate the trap.</strong> Write a rule keyed to a list of specific Eyeball frame ids, apply it, recompute both halves, and watch the gap open to 7.4 points. Doing it on purpose once is what makes it recognisable when it arrives by accident.</p>
+      </div>
+      <div class="step">
+        <p><strong>Write the reporting rule down where the team will hit it.</strong> Any run that reports one error rate is incomplete. Put the check in the same place the number is produced, so the two-column habit does not depend on anybody remembering.</p>
+      </div>
+      <div class="step">
+        <p><strong>Restrict access to the Blackbox half.</strong> A view that returns only Eyeball rows, and a scoring job that reads the sealed half without displaying an image. An agreement not to look is not a control.</p>
+      </div>
+    </div>
+
+    <div class="prompt-box good">
+      <span class="label">★ Try it now · a split that never moves</span>
+-- deterministic by hash of a stable id, materialised so the engine cannot change it
+create table cams.dev_split as
+select frame_id,
+       case when abs(hash(frame_id)) % 2 = 0 then 'eyeball' else 'blackbox' end as dev_half
+from cams.dev_set;
+
+-- both halves, both counts, both rates, in one reading
+select s.dev_half,
+       count(*)                                    as images,
+       count(e.frame_id)                           as errors,
+       round(100.0 * count(e.frame_id) / count(*), 1) as error_pct
+from cams.dev_split s
+left join cams.dev_errors e on e.frame_id = s.frame_id
+group by s.dev_half
+order by s.dev_half;
+-- expect: blackbox 500 / 56 / 11.2 and eyeball 500 / 64 / 12.8
+    </div>
+
+    <div class="prompt-box good">
+      <span class="label">★ Try it now · one row per run, both numbers, and the gap</span>
+create table if not exists cams.dev_results (
+  run_label     varchar,
+  scored_at     timestamp,
+  eyeball_pct   double,
+  blackbox_pct  double,
+  gap_points    double
+);
+
+insert into cams.dev_results
+with halves as (
+  select s.dev_half,
+         100.0 * count(p.frame_id) filter (where p.pred_label &lt;&gt; p.true_label) / count(*) as pct
+  from cams.dev_split s
+  join cams.predictions p on p.frame_id = s.frame_id and p.run_label = 'v7-baseline'
+  group by s.dev_half
+)
+select 'v7-baseline', now(),
+       max(pct) filter (where dev_half = 'eyeball')  as eyeball_pct,
+       max(pct) filter (where dev_half = 'blackbox') as blackbox_pct,
+       max(pct) filter (where dev_half = 'eyeball')
+     - max(pct) filter (where dev_half = 'blackbox') as gap_points
+from halves;
+    </div>
+
+    <div class="prompt-box good">
+      <span class="label">★ Try it now · the trap, built on purpose</span>
+-- a "fix" keyed to the exact frames somebody read: 45 of the 64 Eyeball errors
+create table cams.hand_rules as
+select frame_id from cams.dev_errors e
+join cams.dev_split s on s.frame_id = e.frame_id
+where s.dev_half = 'eyeball'
+order by e.frame_id
+limit 45;
+
+-- score again with the rules applied and watch only one half move
+select s.dev_half,
+       round(100.0 * count(e.frame_id) / count(*), 1) as error_pct_before,
+       round(100.0 * count(e.frame_id) filter (where r.frame_id is null) / count(*), 1) as error_pct_after
+from cams.dev_split s
+left join cams.dev_errors e on e.frame_id = s.frame_id
+left join cams.hand_rules r on r.frame_id = e.frame_id
+group by s.dev_half;
+-- eyeball 12.8 -&gt; 3.8, blackbox 11.2 -&gt; 11.2, a 7.4-point gap in two weeks of work
+    </div>
+
+    <div class="callout tip">
+      <p><strong>Make the report refuse to print one number.</strong> The cheapest durable version of tonight is a scoring script that raises if either half is missing, and prints <code class="mono">eyeball / blackbox / gap</code> as a single line. A convention survives about six weeks; a script that fails survives the team.</p>
+    </div>
+  </section>
+
+  <!-- ============ HOMEWORK ============ -->
+  <section class="section" id="exercise">
+    <div class="section-kicker">
+      <span class="klabel">Homework</span>
+      <h2>Before session 5</h2>
+      <span class="tag exercise">30 min</span>
+    </div>
+    <ol>
+      <li>Split one dev set you own into Eyeball and Blackbox halves by hash of a stable id, and record both error rates and the starting gap. That gap is your baseline for every comparison after this.</li>
+      <li>Count the errors in your Eyeball half. Under about fifty and the categorisation from session 3 is reading noise; say so out loud rather than working around it.</li>
+      <li>Go back through the last five model changes your team accepted. For each, write down whether anybody could tell you today which half improved. If the answer is no five times, that is the finding.</li>
+      <li>Add the two-column report to wherever your scoring runs, and make it fail rather than warn when a half is missing.</li>
+      <li>Ask how many times each error image has been opened this quarter. Any image somebody can describe from memory belongs in the Eyeball half or nowhere.</li>
+    </ol>
+  </section>
+
+  <!-- ============ QUIZ ============ -->
+  <section class="section" id="quiz">
+    <div class="section-kicker">
+      <span class="klabel">Check yourself</span>
+      <h2>Three questions</h2>
+    </div>
+
+    <div class="quiz-q" data-answer="1">
+      <p class="qtext">After two weeks of work the Eyeball half reads 3.8 percent and the Blackbox half reads 11.2 percent, unchanged. What does the 7.4-point gap tell you?</p>
+      <button class="qopt" type="button">A · The Blackbox half is too small to show the improvement yet</button>
+      <button class="qopt" type="button">B · The work fixed the specific examples that were read and not the problem behind them, so production will look like the Blackbox number</button>
+      <button class="qopt" type="button">C · The two halves came from different distributions</button>
+      <p class="qwhy">A rule written against sixty specific images fixes those sixty images. The half nobody opened is the only reading left that has not been tuned against, and it says nothing improved.</p>
+    </div>
+
+    <div class="quiz-q" data-answer="2">
+      <p class="qtext">Lanternfish has 1,000 dev images at 12 percent error. Why is the Eyeball half 500 images rather than the 100 that chapter 17's ten percent would give?</p>
+      <button class="qopt" type="button">A · Because ten percent only applies to test sets</button>
+      <button class="qopt" type="button">B · Because a bigger Eyeball half makes the reported number more reliable</button>
+      <button class="qopt" type="button">C · Because 100 images holds about twelve errors, too few to split into five categories, and half the set holds 64, close to the ~100 misclassified images chapter 15 suggests looking through</button>
+      <p class="qwhy">Size the Eyeball half by the errors it contains, not the images. Ten percent is the right rule once ten percent carries roughly a hundred mistakes.</p>
+    </div>
+
+    <div class="quiz-q" data-answer="0">
+      <p class="qtext">The two halves start at 12.8 and 11.2 percent. A teammate proposes rebalancing them so both start at 12.0. What is wrong with that?</p>
+      <button class="qopt" type="button">A · Stratifying the sealed half against the half you read spends the independence the split was bought for, and the 1.6-point starting gap is the yardstick that makes a later 7.4 readable</button>
+      <button class="qopt" type="button">B · Nothing, matched halves are easier to compare</button>
+      <button class="qopt" type="button">C · It would require relabelling the whole dev set</button>
+      <p class="qwhy">Random placement of 120 errors leaves the halves uneven, and that unevenness is a fact about sample size. Write the starting gap down and compare against it.</p>
+    </div>
+
+    <p class="quiz-score"></p>
+  </section>
+
+  <!-- ============ COVERAGE ============ -->
+  <section class="section" id="official">
+    <div class="section-kicker">
+      <span class="klabel">Sources covered</span>
+      <h2>What tonight maps to</h2>
+    </div>
+    <div class="covered">
+      <div class="covered-row">
+        <span class="status pill solid">✓</span>
+        <span class="name">Machine Learning Yearning, chapter 17</span>
+        <span class="note">"If you have a large dev set, split it into two subsets, only one of which you look at", with the ten percent Eyeball rule quoted and the Blackbox remainder defined.</span>
+      </div>
+      <div class="covered-row">
+        <span class="status pill solid">✓</span>
+        <span class="name">Machine Learning Yearning, chapter 18</span>
+        <span class="note">How big the two halves should be, read as a question about errors contained rather than images, and the trade when the dev set is small.</span>
+      </div>
+      <div class="covered-row">
+        <span class="status pill solid">✓</span>
+        <span class="name">The construction on the bench and the 7.4-point gap</span>
+        <span class="note">Eyeball 12.8 to 3.8 against Blackbox 11.2 to 11.2, computed rather than described, and labelled as a construction.</span>
+      </div>
+      <div class="covered-row">
+        <span class="status pill light">◐</span>
+        <span class="name">Machine Learning Yearning, chapter 15</span>
+        <span class="note">The ~100 misclassified images is used here to size the Eyeball half. Session 3 owns the spreadsheet itself.</span>
+      </div>
+      <div class="covered-row">
+        <span class="status pill light">◐</span>
+        <span class="name">Dev set distribution and size</span>
+        <span class="note">Session 1. Tonight splits the set that session built and reuses its detectable-difference arithmetic.</span>
+      </div>
+      <div class="covered-row">
+        <span class="status pill inkpill">·</span>
+        <span class="name">Cross-validation and the split mechanics</span>
+        <span class="note">Not covered by design. The intro ML course owns the mechanics; the halves here are a discipline about who is allowed to look.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ CHEAT SHEET ============ -->
+  <section class="cheat" id="cheatsheet">
+    <h3>Session 4 cheat sheet</h3>
+    <div class="grid-2">
+      <div class="cheat-item"><b>Reading a set costs you the set</b><span>An hour spent reading dev examples is an hour of fitting your judgement to them.</span></div>
+      <div class="cheat-item"><b>Eyeball reads, Blackbox reports</b><span>Ten percent into the half you look at with your eyes; the remainder never opened.</span></div>
+      <div class="cheat-item"><b>Size by errors, not images</b><span>The Eyeball half needs enough mistakes to categorise. Lanternfish: 64, near the ~100 of chapter 15.</span></div>
+      <div class="cheat-item"><b>500/500 for a 1,000-image set</b><span>Ten percent would hold twelve errors, which cannot separate five categories.</span></div>
+      <div class="cheat-item"><b>Both numbers, every run</b><span>12.8 and 11.2, with the gap stored. One number cannot show the failure.</span></div>
+      <div class="cheat-item"><b>The gap is the diagnostic</b><span>Stable near its start is noise. Eyeball falling alone is a memorised dev set.</span></div>
+      <div class="cheat-item"><b>7.4 points in two weeks</b><span>Eyeball 12.8 to 3.8, Blackbox 11.2 to 11.2. Zero real improvement.</span></div>
+      <div class="cheat-item"><b>Retire, do not reshuffle</b><span>When the gap opens and will not close, buy fresh data. The sealed half is not spare parts.</span></div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="pagefoot">
+  <div class="wrap">
+    <p>Practitioner session 4 of 10 · learn-ml-strategy-with-phoebe · by Phoebe Fu</p>
+    <nav class="pagenav">
+      <a href="p3-error-analysis-spreadsheet.html">← Practitioner session 3 · The error-analysis spreadsheet</a>
+      <a href="p5-bias-and-variance.html">Practitioner session 5 · Bias and variance from three numbers →</a>
+    </nav>
+  </div>
+</footer>
+
+<script src="../assets/app.js?v=1"></script>
+</body>
+</html>

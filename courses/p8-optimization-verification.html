@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- social:start -->
+<meta name="description" content="Practitioner session 8 of 10. A system that searches for an output fails in two ways, and one comparison tells them apart: score the answer a human would give, score the answer the system gave, and see which is higher. Higher means the search failed. Lower means the scoring function did.">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Learn with Phoebe">
+<meta property="og:title" content="The Optimization Verification test - learn ml strategy with phoebe">
+<meta property="og:description" content="Practitioner session 8 of 10. Two scores on one wrong example decide whether the next sprint belongs to the search team or the modelling team.">
+<meta property="og:url" content="https://phoebefu6.github.io/learn-ml-strategy-with-phoebe/courses/p8-optimization-verification.html">
+<meta property="og:image" content="https://phoebefu6.github.io/learn-ml-strategy-with-phoebe/assets/og-cover.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="The Optimization Verification test - learn ml strategy with phoebe">
+<meta name="twitter:description" content="Score the human's answer against the system's. Higher means fix the search; lower means fix the scoring function.">
+<meta name="twitter:image" content="https://phoebefu6.github.io/learn-ml-strategy-with-phoebe/assets/og-cover.png">
+<!-- social:end -->
+<title>Practitioner session 8 · The Optimization Verification test - learn ml strategy with phoebe</title>
+<link rel="stylesheet" href="../assets/style.css?v=1">
+</head>
+<body>
+
+<div class="toolbar">
+  <div class="wrap">
+    <span class="crumb"><a href="../index.html">learn-ml-strategy-with-phoebe</a> / Practitioner session 8 of 10</span>
+    <button class="btn" id="toggle-all" type="button">Expand all</button>
+    <button class="btn primary" id="zoom-toggle" type="button">Projector zoom: off</button>
+  </div>
+</div>
+
+<header class="masthead">
+  <div class="wrap">
+    <div class="eyebrow">Learn ML Strategy with Phoebe · Practitioner session 8 of 10</div>
+    <h1>The Optimization <span class="accent">Verification test</span></h1>
+    <p class="sub">Some systems do not classify. They search. A scoring function rates candidate outputs, a search procedure hunts for the best-scoring one, and the thing the user sees is whatever the search found. Such a system has two places to be wrong and they look identical from the outside: the scoring function may have ranked the right answer below a wrong one, or the scoring function may have been perfectly correct and the search never found the right answer to score. Telling those apart is one comparison, and it decides which of two very different teams owns the next quarter.</p>
+    <div class="chip-row">
+      <span class="chip level">🟠 Advanced</span>
+      <span class="chip audience">Data scientists and ML engineers</span>
+      <span class="chip time">45 min</span>
+    </div>
+    <div class="agenda">
+      <span class="a1" style="flex:1">0-3 · Welcome</span>
+      <span class="a2" style="flex:5">3-20 · Two ways a search-based system fails</span>
+      <span class="a3" style="flex:4">20-40 · Build-along: run the test</span>
+      <span class="a4" style="flex:1">40-45 · Q&amp;A</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ============ INTRO ============ -->
+  <section class="section" id="intro">
+    <div class="section-kicker">
+      <span class="klabel">Part 0</span>
+      <h2>Attribution, twice, before the bench</h2>
+    </div>
+    <p class="lede">The last two sessions before the bench both answer the same kind of question: given an error, <strong>which component produced it</strong>. Tonight the components are a scoring function and a search. Next session they are the two stages of a pipeline. Both tests replace a debate with a measurement, and both are cheap enough to run on twenty examples in an afternoon.</p>
+
+    <div class="legend">
+      <span class="pill">Live = presented in the 45 minutes</span>
+      <span class="pill">Self-study = the full depth, after class</span>
+      <span class="pill">🔍 Every diagram zooms</span>
+    </div>
+
+    <div class="callout win">
+      <p><strong>★ What you walk out with tonight.</strong> A three-line function that turns any wrong output of a search-based system into one of two verdicts. A tally over twenty examples that says which verdict dominates. And the sentence you take to the sprint planning: the next quarter belongs to the search team or to the modelling team, and here is the count that decided it.</p>
+    </div>
+
+    <details class="card" open>
+      <summary><span class="mode live">Live</span>Why guessing here is expensive<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>The two failures cost different things to fix. A search failure is fixed with beam width, better candidate generation, more inference-time compute: engineering work, often measurable in days, and it does not touch the model. A scoring failure is fixed with more data, a better objective, a bigger or differently shaped model: research work, measurable in months, and it does not touch the search.</p>
+        <p>Teams routinely fund one while suffering from the other. The symptom that gets reported is the same either way, "the system said elk and it was a deer", and the loudest voice in the room decides. The test below removes the room from the decision.</p>
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <p>Lanternfish spent six weeks widening the candidate list for its species pipeline because the field kept reporting confident wrong answers. The correct species had been in the list every time, sitting below the wrong one. Six weeks of search work on a scoring problem, and the extra candidates made the ranking noisier.</p>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>The vocabulary for tonight<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <ul>
+          <li><strong>Scoring function</strong> - the thing that takes an input and a candidate output and returns a number. Higher is meant to mean better.</li>
+          <li><strong>Search</strong> - the procedure that walks the space of possible outputs looking for the highest-scoring one. Beam search, greedy decoding, sampling with reranking, a planner, a shortlist of candidates from a cheaper model.</li>
+          <li><strong>Approximate maximization</strong> - what the search actually does. It rarely finds the true maximum, and the gap between what it found and what exists is the whole of the first failure mode.</li>
+          <li><strong>The reference output</strong> - the answer a human would give. You need one to run the test, and it has to be scoreable by the same function.</li>
+          <li><strong>The verdict</strong> - one of two words, "search" or "scoring", per example. The tally over many examples is the deliverable.</li>
+        </ul>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 1 ============ -->
+  <section class="section" id="part-1">
+    <div class="section-kicker">
+      <span class="klabel">Part 1 · covers chapter 44 and the general form in chapter 45</span>
+      <h2>"The Optimization Verification test"</h2>
+      <span class="tag concept">9 min live</span>
+    </div>
+    <p class="lede">Chapter 44 of <em>Machine Learning Yearning</em> is titled "The Optimization Verification test", and it exists because one class of system hides its own failures. Once a system searches rather than classifies, the output you see is the joint product of two components, and no amount of staring at outputs separates them. One comparison does.</p>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>The shape of system this applies to<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>The test applies wherever the system produces an output by searching for the best-scoring candidate rather than by naming a class directly. If your model ends in a softmax over twelve species and you take the argmax, there is no search and no test to run: the argmax is exact. The moment the output space is too large to enumerate, a search appears, and with it a second place to be wrong.</p>
+        <ul>
+          <li><strong>Speech recognition.</strong> A scoring function rates transcripts; a decoder searches the space of word sequences. The space is unbounded, so the decoder is approximate.</li>
+          <li><strong>Machine translation.</strong> Same shape. Beam search over sentences that could have been produced, scored by the model.</li>
+          <li><strong>Any planner or router.</strong> A cost function over routes, a search that cannot enumerate all routes.</li>
+          <li><strong>Retrieve-then-rerank.</strong> A cheap retriever proposes candidates, an expensive scorer ranks them. The retriever is the search.</li>
+          <li><strong>Lanternfish's pipeline.</strong> The species stage emits a ranked candidate list per frame with a score each, produced by a cheap shortlist step and rated by the classifier head.</li>
+        </ul>
+      </div>
+    </details>
+
+    <figure class="zoomable">
+      <svg viewBox="0 0 880 350" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="The Optimization Verification test as a decision. One wrong example is scored twice, once for the answer a human would give and once for the answer the system gave. If the human's answer scores higher, the search is at fault and the work is beam width, candidate generation and inference-time compute. If it scores lower, the scoring function is at fault and the work is the model, the data and the objective.">
+        <style>
+          .p8aT { font: 800 12px Inter, sans-serif; fill: #fff; }
+          .p8aW { font: 400 11px Inter, sans-serif; fill: #fff; }
+          .p8aH { font: 800 12px Inter, sans-serif; fill: #1C1917; }
+          .p8aB { font: 400 11px Inter, sans-serif; fill: #1C1917; }
+          .p8aM { font: 400 11px Inter, sans-serif; fill: #6B6259; }
+          .p8aN { font: 700 11px Inter, sans-serif; fill: #1C1917; }
+          .p8aR { font: 800 12px Inter, sans-serif; fill: #991B1B; }
+          .p8aG { font: 800 12px Inter, sans-serif; fill: #713F12; }
+        </style>
+        <defs>
+          <marker id="p8aAr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#D9D2C5"></path></marker>
+        </defs>
+
+        <text class="p8aH" x="14" y="24">One example the system got wrong, two scores, one verdict</text>
+
+        <rect x="14" y="118" width="210" height="110" rx="10" fill="#FEF08A"></rect>
+        <text class="p8aH" x="119" y="144" text-anchor="middle">One wrong example</text>
+        <text class="p8aB" x="119" y="168" text-anchor="middle">frame 4471, night infrared</text>
+        <text class="p8aB" x="119" y="186" text-anchor="middle">system chose: elk</text>
+        <text class="p8aB" x="119" y="204" text-anchor="middle">a human says: deer</text>
+        <text class="p8aM" x="119" y="222" text-anchor="middle">one scoring function</text>
+
+        <rect x="250" y="118" width="190" height="110" rx="10" fill="#A16207"></rect>
+        <text class="p8aT" x="345" y="144" text-anchor="middle">Compare the scores</text>
+        <text class="p8aW" x="345" y="168" text-anchor="middle">score(deer) = 0.58</text>
+        <text class="p8aW" x="345" y="186" text-anchor="middle">score(elk) = 0.71</text>
+        <text class="p8aW" x="345" y="204" text-anchor="middle">no model internals</text>
+        <text class="p8aW" x="345" y="222" text-anchor="middle">need to be understood</text>
+
+        <line x1="226" y1="173" x2="246" y2="173" stroke="#D9D2C5" stroke-width="2" marker-end="url(#p8aAr)"></line>
+        <line x1="442" y1="166" x2="466" y2="100" stroke="#D9D2C5" stroke-width="2" marker-end="url(#p8aAr)"></line>
+        <line x1="442" y1="180" x2="466" y2="250" stroke="#D9D2C5" stroke-width="2" marker-end="url(#p8aAr)"></line>
+
+        <rect x="470" y="40" width="190" height="96" rx="10" fill="#FACC15"></rect>
+        <text class="p8aH" x="565" y="66" text-anchor="middle">Human answer scores</text>
+        <text class="p8aG" x="565" y="86" text-anchor="middle">HIGHER</text>
+        <text class="p8aB" x="565" y="110" text-anchor="middle">The search is at fault</text>
+        <text class="p8aB" x="565" y="128" text-anchor="middle">it never found it</text>
+
+        <rect x="676" y="40" width="190" height="96" rx="10" fill="#FEFCE8" stroke="#D9D2C5"></rect>
+        <text class="p8aH" x="692" y="66">Funds the search side</text>
+        <text class="p8aB" x="692" y="88">beam width</text>
+        <text class="p8aB" x="692" y="106">candidate generation</text>
+        <text class="p8aB" x="692" y="124">inference-time compute</text>
+
+        <rect x="470" y="210" width="190" height="96" rx="10" fill="#FEF08A"></rect>
+        <text class="p8aH" x="565" y="236" text-anchor="middle">Human answer scores</text>
+        <text class="p8aR" x="565" y="256" text-anchor="middle">LOWER</text>
+        <text class="p8aB" x="565" y="280" text-anchor="middle">The scoring function</text>
+        <text class="p8aB" x="565" y="298" text-anchor="middle">is at fault</text>
+
+        <rect x="676" y="210" width="190" height="96" rx="10" fill="#FEFCE8" stroke="#D9D2C5"></rect>
+        <text class="p8aH" x="692" y="236">Funds the model side</text>
+        <text class="p8aB" x="692" y="258">training data</text>
+        <text class="p8aB" x="692" y="276">the objective</text>
+        <text class="p8aB" x="692" y="294">the model itself</text>
+
+        <rect x="14" y="320" width="14" height="14" rx="3" fill="#60A5FA"></rect>
+        <text class="p8aN" x="38" y="332">Two scores decide which team owns the sprint. Nothing else needs explaining.</text>
+      </svg>
+      <figcaption>🔍 Click to zoom - one wrong example, two scores, two branches, two very different sprints.</figcaption>
+    </figure>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>The two failure modes, and why they look identical<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Write the system as two components and the failures fall out cleanly.</p>
+        <ul>
+          <li><strong>Failure one: the scoring function is wrong.</strong> It gave the correct output a lower score than a wrong one. The search did its job perfectly and returned exactly the highest-scoring candidate, which happened to be wrong. Widening the search here makes things worse, because a wider search finds more high-scoring wrong answers.</li>
+          <li><strong>Failure two: the search is wrong.</strong> The scoring function would have preferred the correct output, and the search never brought it forward to be scored, or brought it forward and pruned it before the end. The model is fine. Every hour spent on training data here is wasted.</li>
+        </ul>
+        <p>From the outside both produce the same artefact: a confident wrong answer. That is why the test compares scores rather than outputs. The score of the correct answer is the piece of evidence that the output alone never carries.</p>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>The test, in its general form<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Chapter 45 gives the general form, and it is three steps.</p>
+        <ol>
+          <li>Take an example the system got wrong.</li>
+          <li>Take the correct output, the one a human would give, and score it with the system's own scoring function.</li>
+          <li>Compare that against the score the system assigned to its own output.</li>
+        </ol>
+        <p>If the correct output scores <strong>higher</strong>, the scoring function preferred the right answer and the search failed to surface it. The search is at fault. If the correct output scores <strong>lower</strong>, the search returned the true best-scoring candidate and the scoring function is what ranked the right answer down. The scoring function is at fault.</p>
+        <div class="prompt-box good">
+          <span class="label">★ Try it now</span>
+def verdict(correct_score, chosen_score):
+    """Chapter 45, in three lines."""
+    if correct_score &gt; chosen_score:
+        return "search"     # scoring liked the right answer, search missed it
+    return "scoring"        # search found the best score, and it was wrong
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>What the test does not require<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>This is the property that makes it worth running on a Monday morning rather than scheduling.</p>
+        <ul>
+          <li><strong>No understanding of the model.</strong> The scoring function is used as a black box that takes an input and a candidate and returns a number.</li>
+          <li><strong>No understanding of the search.</strong> You never inspect the beam, the pruning rule or the ordering. The search is judged entirely by what it failed to bring you.</li>
+          <li><strong>No retraining.</strong> Both scores come from the model you already have deployed.</li>
+          <li><strong>No new labelled data,</strong> beyond the correct outputs, which for a classification-shaped output space you already have in the dev set labels.</li>
+          <li><strong>No statistical machinery.</strong> Twenty examples give a tally, and a tally of fourteen to four is not a result that needs a confidence interval to act on.</li>
+        </ul>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 2 ============ -->
+  <section class="section" id="part-2">
+    <div class="section-kicker">
+      <span class="klabel">Part 2 · covers chapter 46 and what the verdict funds</span>
+      <h2>Why this saves a quarter</h2>
+      <span class="tag concept">8 min live</span>
+    </div>
+    <p class="lede">The verdict is not a diagnosis for its own sake. It is a budget allocation. The two branches fund different work, cost different amounts, and in most organisations are staffed by different people who are each convinced the problem is on the other side.</p>
+
+    <table class="clean">
+      <thead><tr><th>Verdict</th><th>What it means</th><th>What the sprint funds</th><th>Typical owner</th><th>Typical horizon</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Search at fault</strong></td><td>The correct output scores higher and was never surfaced</td><td>Beam width, candidate generation, reranking depth, inference-time compute</td><td>Systems and inference engineers</td><td>Days to weeks</td></tr>
+        <tr><td><strong>Scoring at fault</strong></td><td>The correct output scores lower than the wrong one</td><td>Training data, the objective, model capacity, the loss</td><td>Modelling and data people</td><td>Weeks to a quarter</td></tr>
+        <tr><td><strong>Near-tie</strong></td><td>The two scores sit within noise of each other</td><td>An objective that separates the two cases at all</td><td>Modelling, but a different job</td><td>Its own finding</td></tr>
+      </tbody>
+    </table>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>The same test outside supervised learning<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Chapter 46 runs the identical argument in a reinforcement learning setting, where the two components are a reward function and the learning algorithm that maximises it. An agent behaves badly; the question is whether the reward function scored the good behaviour below the bad behaviour, or whether the reward function was correct and the algorithm simply failed to find the good behaviour.</p>
+        <p>The procedure does not change. Take a trajectory the agent produced, take a trajectory a human would call correct, evaluate the reward function on both. Correct trajectory scores higher means the optimisation is at fault and you tune the algorithm. Correct trajectory scores lower means the reward function is at fault and no amount of better optimisation will help, because it will optimise harder toward the wrong thing.</p>
+        <div class="callout tip">
+          <p><strong>The pattern to carry.</strong> Any system built as "a thing that scores" plus "a thing that maximises the score" can be split by this test, whatever the two things are called in your stack: reward and policy, cost and planner, relevance model and retriever, likelihood and decoder.</p>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Lanternfish's version of the test<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>The species stage does not name one animal. For each frame it emits a ranked list of candidate species with a score each, and the pipeline reports the top of that list. That makes the shortlist step the search and the classifier head the scoring function, and the test becomes two concrete questions per frame.</p>
+        <ul>
+          <li><strong>Was the correct species in the candidate list at all?</strong> If not, score it directly with the classifier head anyway. Absence from the list is a property of the shortlist, not of the score.</li>
+          <li><strong>How did it score against the species the pipeline chose?</strong> Higher means the shortlist and the ranking failed to bring a species the model would have preferred. Lower means the model preferred the wrong animal, and no shortlist change rescues that.</li>
+        </ul>
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <p>On the twenty frames run tonight, deer scored above the chosen elk on fourteen of them. The species the field wanted was already preferred by the model and was being ranked out by a shortlist tuned for latency. That is a two-week change to candidate generation, not the eight-week specialist model the team had costed.</p>
+        </div>
+      </div>
+    </details>
+
+    <figure class="zoomable">
+      <svg viewBox="0 0 880 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Twenty misclassified frames split by verdict: fourteen where the search is at fault, four where the scoring function is at fault, and two near-ties. Three cards below describe the sprint each split would justify.">
+        <style>
+          .p8bT { font: 800 12px Inter, sans-serif; fill: #fff; }
+          .p8bW { font: 400 11px Inter, sans-serif; fill: #fff; }
+          .p8bH { font: 800 12px Inter, sans-serif; fill: #1C1917; }
+          .p8bB { font: 400 11px Inter, sans-serif; fill: #1C1917; }
+          .p8bM { font: 400 11px Inter, sans-serif; fill: #6B6259; }
+          .p8bN { font: 700 11px Inter, sans-serif; fill: #1C1917; }
+        </style>
+
+        <text class="p8bH" x="60" y="26">Twenty misclassified frames, one verdict each</text>
+
+        <rect x="60" y="48" width="532" height="56" rx="6" fill="#A16207"></rect>
+        <text class="p8bT" x="326" y="72" text-anchor="middle">14 examples</text>
+        <text class="p8bW" x="326" y="92" text-anchor="middle">search is at fault</text>
+
+        <rect x="592" y="48" width="152" height="56" fill="#FACC15"></rect>
+        <text class="p8bH" x="668" y="72" text-anchor="middle">4 examples</text>
+        <text class="p8bB" x="668" y="92" text-anchor="middle">scoring at fault</text>
+
+        <rect x="744" y="48" width="76" height="56" rx="6" fill="#FEF08A"></rect>
+        <text class="p8bH" x="782" y="72" text-anchor="middle">2</text>
+        <text class="p8bB" x="782" y="92" text-anchor="middle">near-tie</text>
+
+        <text class="p8bM" x="60" y="124">one block per frame, sorted by verdict</text>
+
+        <rect x="60" y="146" width="250" height="110" rx="10" fill="#FEFCE8" stroke="#D9D2C5"></rect>
+        <text class="p8bH" x="76" y="172">Search-heavy, like this one</text>
+        <text class="p8bB" x="76" y="196">The correct species was in the</text>
+        <text class="p8bB" x="76" y="214">list and outranked. Fund beam</text>
+        <text class="p8bB" x="76" y="232">width and candidates. A sprint</text>
+        <text class="p8bB" x="76" y="250">of two weeks, not a model.</text>
+
+        <rect x="326" y="146" width="250" height="110" rx="10" fill="#FEFCE8" stroke="#D9D2C5"></rect>
+        <text class="p8bH" x="342" y="172">If it were scoring-heavy</text>
+        <text class="p8bB" x="342" y="196">The correct species scored</text>
+        <text class="p8bB" x="342" y="214">below a wrong one. Fund the</text>
+        <text class="p8bB" x="342" y="232">model, the data, the objective.</text>
+        <text class="p8bB" x="342" y="250">That is a quarter of work.</text>
+
+        <rect x="592" y="146" width="228" height="110" rx="10" fill="#FEFCE8" stroke="#D9D2C5"></rect>
+        <text class="p8bH" x="608" y="172">The two near-ties</text>
+        <text class="p8bB" x="608" y="196">Scores sit within 0.01 of</text>
+        <text class="p8bB" x="608" y="214">each other. The function is</text>
+        <text class="p8bB" x="608" y="232">indifferent, not wrong.</text>
+        <text class="p8bB" x="608" y="250">Its own finding.</text>
+
+        <rect x="60" y="276" width="14" height="14" rx="3" fill="#60A5FA"></rect>
+        <text class="p8bN" x="84" y="288">A tally of 14 to 4 does not need a confidence interval to act on.</text>
+      </svg>
+      <figcaption>🔍 Click to zoom - the split across twenty examples, and the sprint each split would justify.</figcaption>
+    </figure>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>The honest limits of the test<span class="mini">4 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <ul>
+          <li><strong>You need a correct output that can be scored.</strong> For a species label that is free, it is in the dev set. For an open-ended output, a translation or a summary, somebody has to write the correct answer first, and the test is only as good as that reference. Budget the human time before promising the result.</li>
+          <li><strong>A tie is a finding, not a failure of the test.</strong> If the correct and chosen outputs score within noise of each other, the scoring function is not ranking the right answer down; it is failing to distinguish them at all. That funds a different piece of modelling work, an objective that separates the two cases, and it will not be found by widening a beam.</li>
+          <li><strong>The reference must be reachable in principle.</strong> If the correct output is something the system's output format cannot express, the test reports "scoring" and it is really a representation problem. Check the format before reading the verdict.</li>
+          <li><strong>The verdict is per example, not per system.</strong> A mixed tally is normal and useful. Fourteen to four says where the next sprint goes; it does not say the scoring function is perfect.</li>
+          <li><strong>Twenty examples is a tally, not an estimate.</strong> It is enough to choose a sprint. It is not enough to publish a percentage, and it should not be written down as one.</li>
+        </ul>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ DEMO ============ -->
+  <section class="section" id="demo-1">
+    <div class="section-kicker">
+      <span class="klabel">Build-along</span>
+      <h2>Run the test on twenty frames</h2>
+      <span class="tag demo">★ 20 min · everyone builds</span>
+    </div>
+    <p class="lede">Bring a system of yours that searches, and the last hundred outputs it got wrong. If you have nothing to hand, use the Lanternfish candidate tables: one row per frame per candidate species, with a rank and a score from the classifier head.</p>
+
+    <div class="steps">
+      <div class="step">
+        <p><strong>Pull twenty misclassified frames that came back with a ranked candidate list.</strong> Filter to the dev split so the examples are ones you are allowed to look at, and take them in a hash order rather than by date, so you do not accidentally sample one camera or one week.</p>
+      </div>
+      <div class="step">
+        <p><strong>Obtain the correct output and locate it in the list.</strong> The dev set label is the correct species. Record its rank if it appears and record its absence if it does not. Absence is common and is not yet a verdict.</p>
+      </div>
+      <div class="step">
+        <p><strong>Score both candidates with the same scoring function.</strong> The chosen species already has a score. The correct species has one too if it was in the list; if it was not, call the scoring function on it directly. Never compare a score from one function against a score from another, and never compare against a probability that has been renormalised over a different candidate set.</p>
+      </div>
+      <div class="step">
+        <p><strong>Tabulate the verdict per example.</strong> Correct scores higher means search. Correct scores lower means scoring. Within a small epsilon means near-tie, and write the epsilon down: on Lanternfish's head, 0.01 on a 0 to 1 score.</p>
+      </div>
+      <div class="step">
+        <p><strong>Count the split.</strong> Fourteen search, four scoring, two near-ties. Look at the two near-ties by hand before you file them; they are frequently the most interesting frames in the set.</p>
+      </div>
+      <div class="step">
+        <p><strong>Write which team the next sprint belongs to,</strong> in one sentence, with the count in it. "Fourteen of twenty dev errors are search failures, so the next two weeks are candidate generation." That sentence survives a planning meeting; "I think it is the shortlist" does not.</p>
+      </div>
+    </div>
+
+    <div class="prompt-box good">
+      <span class="label">★ Twenty dev errors, with both scores side by side</span>
+with errors as (
+  select f.frame_id, f.true_species, p.chosen_species, p.chosen_score
+  from cams.dev_frames f
+  join cams.predictions p using (frame_id)
+  where f.split = 'dev'
+    and p.chosen_species is distinct from f.true_species
+),
+listed as (
+  select e.frame_id, e.true_species, e.chosen_species, e.chosen_score,
+         c.candidate_species, c.score, c.rank
+  from errors e
+  join cams.candidates c using (frame_id)
+)
+select frame_id, true_species, chosen_species, chosen_score,
+       max(case when candidate_species = true_species then score end) as correct_score,
+       max(case when candidate_species = true_species then rank  end) as correct_rank,
+       count(*) as list_length
+from listed
+group by frame_id, true_species, chosen_species, chosen_score
+order by hash(frame_id)
+limit 20;
+-- correct_score null means the species never made the list, not that it scores badly
+    </div>
+
+    <div class="prompt-box good">
+      <span class="label">★ The verdict, and the tally that ends the argument</span>
+EPS = 0.01   # scores run 0 to 1 on this head; anything tighter is noise
+
+def verdict(row, score_fn):
+    """The test from chapter 45. Two scores in, one word out."""
+    correct = row["correct_score"]
+    if correct is None:                       # never emitted, so score it by hand
+        correct = score_fn(row["frame_id"], row["true_species"])
+    gap = correct - row["chosen_score"]
+    if abs(gap) &lt; EPS:
+        return "tie"                          # indifferent, which is its own finding
+    return "search" if gap &gt; 0 else "scoring"
+
+frames["verdict"] = frames.apply(verdict, axis=1, score_fn=classifier_head)
+counts = frames["verdict"].value_counts()
+print(counts)
+# search     14
+# scoring     4
+# tie         2
+
+owner = "search team" if counts.get("search", 0) &gt; counts.get("scoring", 0) else "modelling team"
+print(f"{counts.get('search', 0)} of {len(frames)} are search failures; next sprint: {owner}")
+    </div>
+
+    <div class="callout tip">
+      <p><strong>Run it before the planning meeting, not after.</strong> The test costs an afternoon and twenty labelled examples you already own. The sprint it redirects costs six weeks. Lanternfish ran it in the seventh week of a six-week search project.</p>
+    </div>
+  </section>
+
+  <!-- ============ HOMEWORK ============ -->
+  <section class="section" id="exercise">
+    <div class="section-kicker">
+      <span class="klabel">Homework</span>
+      <h2>Before session 9</h2>
+      <span class="tag exercise">30 min</span>
+    </div>
+    <ol>
+      <li>Decide whether any system you own actually searches. Write down its scoring function and its search procedure by name. If you cannot name both, there is no test to run and that is a useful answer.</li>
+      <li>Run the test on ten wrong outputs. Ten is enough to see whether the split is lopsided, and lopsided is the only reading you need.</li>
+      <li>Check what your team funded last quarter against the verdict you just computed. Note whether the money went to the branch the tally points at.</li>
+      <li>For any near-ties, write one sentence on what the objective would have to reward for the two outputs to separate. That sentence is the start of the next objective.</li>
+      <li>Sketch your production system as a sequence of stages, one box each, and mark which stage produces the output the user complains about. Session 9 starts from that sketch.</li>
+    </ol>
+  </section>
+
+  <!-- ============ QUIZ ============ -->
+  <section class="section" id="quiz">
+    <div class="section-kicker">
+      <span class="klabel">Check yourself</span>
+      <h2>Three questions</h2>
+    </div>
+
+    <div class="quiz-q" data-answer="1">
+      <p class="qtext">A frame is labelled deer and the pipeline said elk. The classifier head scores deer at 0.83 and elk at 0.71. Which component is at fault?</p>
+      <button class="qopt" type="button">A · The scoring function, because it produced a wrong output</button>
+      <button class="qopt" type="button">B · The search, because the correct answer scores higher and was never surfaced for the pipeline to choose</button>
+      <button class="qopt" type="button">C · Neither: a 0.12 gap is inside noise</button>
+      <p class="qwhy">Correct output scores higher means the scoring function already preferred the right answer, so the failure is that the search did not bring it forward. Fund beam width and candidate generation, not the model.</p>
+    </div>
+
+    <div class="quiz-q" data-answer="2">
+      <p class="qtext">A team plans to widen the beam because the system keeps returning confident wrong answers. The test says the correct output scores lower than the chosen one on eighteen of twenty examples. What happens if they widen the beam anyway?</p>
+      <button class="qopt" type="button">A · The errors drop, because a wider search always finds better candidates</button>
+      <button class="qopt" type="button">B · Nothing changes, because the beam width has no effect on scores</button>
+      <button class="qopt" type="button">C · It can get worse: a wider search finds more high-scoring candidates, and the scoring function is the thing ranking wrong answers highest</button>
+      <p class="qwhy">When the scoring function is at fault, a better search optimises harder toward the wrong answer. The work is the model, the data and the objective.</p>
+    </div>
+
+    <div class="quiz-q" data-answer="0">
+      <p class="qtext">On two frames the correct species and the chosen species score within 0.004 of each other. What should be recorded?</p>
+      <button class="qopt" type="button">A · A near-tie: the scoring function is indifferent between the two rather than wrong, which funds an objective that separates them</button>
+      <button class="qopt" type="button">B · A search failure, since the scores are effectively equal</button>
+      <button class="qopt" type="button">C · Nothing: ties are dropped from the tally</button>
+      <p class="qwhy">A tie says the function cannot tell the two outputs apart. That is a modelling job, but a different one from ranking the right answer down, and widening the search will not touch it.</p>
+    </div>
+
+    <p class="quiz-score"></p>
+  </section>
+
+  <!-- ============ COVERAGE ============ -->
+  <section class="section" id="official">
+    <div class="section-kicker">
+      <span class="klabel">Sources covered</span>
+      <h2>What tonight maps to</h2>
+    </div>
+    <div class="covered">
+      <div class="covered-row">
+        <span class="status pill solid">✓</span>
+        <span class="name">Machine Learning Yearning, chapter 44</span>
+        <span class="note">"The Optimization Verification test": the shape of system it applies to, and the two failure modes that look identical from the outside.</span>
+      </div>
+      <div class="covered-row">
+        <span class="status pill solid">✓</span>
+        <span class="name">Machine Learning Yearning, chapter 45</span>
+        <span class="note">The general form of the test, run on twenty Lanternfish frames with both scores computed from the deployed head.</span>
+      </div>
+      <div class="covered-row">
+        <span class="status pill solid">✓</span>
+        <span class="name">Machine Learning Yearning, chapter 46</span>
+        <span class="note">The same test in a reinforcement learning setting, with a reward function and a learning algorithm as the two components.</span>
+      </div>
+      <div class="covered-row">
+        <span class="status pill light">◐</span>
+        <span class="name">Machine Learning Yearning, chapters 53 to 57</span>
+        <span class="note">Error analysis by parts. Session 9 attributes error to a pipeline stage rather than to search versus scoring.</span>
+      </div>
+      <div class="covered-row">
+        <span class="status pill inkpill">·</span>
+        <span class="name">Beam search, decoding algorithms and search implementation</span>
+        <span class="note">Not covered by design. The verdict says which side to fund; the algorithms belong to an NLP or systems course.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ CHEAT SHEET ============ -->
+  <section class="cheat" id="cheatsheet">
+    <h3>Session 8 cheat sheet</h3>
+    <div class="grid-2">
+      <div class="cheat-item"><b>Only for systems that search</b><span>A scoring function plus a search over candidates. An exact argmax has no test to run.</span></div>
+      <div class="cheat-item"><b>Two failure modes, one symptom</b><span>Right answer ranked below a wrong one, or right answer never found. Both look like a confident wrong output.</span></div>
+      <div class="cheat-item"><b>The test in one line</b><span>Score the human's answer, score the system's, compare.</span></div>
+      <div class="cheat-item"><b>Higher means search</b><span>The scoring function preferred the right answer and the search missed it.</span></div>
+      <div class="cheat-item"><b>Lower means scoring</b><span>The search found the true best score, and the score was wrong.</span></div>
+      <div class="cheat-item"><b>Different teams, different clocks</b><span>Search work is days to weeks. Scoring work is weeks to a quarter.</span></div>
+      <div class="cheat-item"><b>A tie is a finding</b><span>The function is indifferent, not wrong. That funds a new objective, not a wider beam.</span></div>
+      <div class="cheat-item"><b>Twenty examples is enough</b><span>To choose a sprint. Not to publish a percentage.</span></div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="pagefoot">
+  <div class="wrap">
+    <p>Practitioner session 8 of 10 · learn-ml-strategy-with-phoebe · by Phoebe Fu</p>
+    <nav class="pagenav">
+      <a href="p7-different-distributions.html">← Practitioner session 7 · Training and testing on different distributions</a>
+      <a href="p9-error-analysis-by-parts.html">Practitioner session 9 · Error analysis by parts →</a>
+    </nav>
+  </div>
+</footer>
+
+<script src="../assets/app.js?v=1"></script>
+</body>
+</html>

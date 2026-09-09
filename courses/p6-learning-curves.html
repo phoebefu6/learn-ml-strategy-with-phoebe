@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- social:start -->
+<meta name="description" content="Practitioner session 6 of 10. Dev error and training error plotted against training set size, with the human-level line drawn across both. Three shapes, three readings, and the flat curve that means more data will not help within the budget you have rather than more data will never help.">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Learn with Phoebe">
+<meta property="og:title" content="Learning curves, read honestly - learn ml strategy with phoebe">
+<meta property="og:description" content="Practitioner session 6 of 10. Plot training error on the same axes, average several draws, and read the slope at the right edge.">
+<meta property="og:url" content="https://phoebefu6.github.io/learn-ml-strategy-with-phoebe/courses/p6-learning-curves.html">
+<meta property="og:image" content="https://phoebefu6.github.io/learn-ml-strategy-with-phoebe/assets/og-cover.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Learning curves, read honestly - learn ml strategy with phoebe">
+<meta name="twitter:description" content="A curve with one line is a guess. Dev error, training error and human-level on one chart is a diagnosis.">
+<meta name="twitter:image" content="https://phoebefu6.github.io/learn-ml-strategy-with-phoebe/assets/og-cover.png">
+<!-- social:end -->
+<title>Practitioner session 6 · Learning curves, read honestly - learn ml strategy with phoebe</title>
+<link rel="stylesheet" href="../assets/style.css?v=1">
+</head>
+<body>
+
+<div class="toolbar">
+  <div class="wrap">
+    <span class="crumb"><a href="../index.html">learn-ml-strategy-with-phoebe</a> / Practitioner session 6 of 10</span>
+    <button class="btn" id="toggle-all" type="button">Expand all</button>
+    <button class="btn primary" id="zoom-toggle" type="button">Projector zoom: off</button>
+  </div>
+</div>
+
+<header class="masthead">
+  <div class="wrap">
+    <div class="eyebrow">Learn ML Strategy with Phoebe · Practitioner session 6 of 10</div>
+    <h1>Learning curves, <span class="accent">read honestly</span></h1>
+    <p class="sub">Session 5 left three numbers on the board: training error 3, dev error 12, human-level 2, so avoidable bias 1 and variance 9. Those numbers are a snapshot at one training set size. A learning curve is the same numbers plotted against how much data the model saw, and it answers the question the snapshot cannot: would more data have helped? Tonight you plot one for Lanternfish, average the draws so the small end is not noise, and write the one-sentence reading that a sprint can be funded from.</p>
+    <div class="chip-row">
+      <span class="chip level">🟠 Advanced</span>
+      <span class="chip audience">Data scientists and ML engineers</span>
+      <span class="chip time">45 min</span>
+    </div>
+    <div class="agenda">
+      <span class="a1" style="flex:1">0-3 · Welcome</span>
+      <span class="a2" style="flex:5">3-20 · What a curve can and cannot tell you</span>
+      <span class="a3" style="flex:4">20-40 · Build-along: plot one</span>
+      <span class="a4" style="flex:1">40-45 · Q&amp;A</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ============ INTRO ============ -->
+  <section class="section" id="intro">
+    <div class="section-kicker">
+      <span class="klabel">Part 0</span>
+      <h2>The question a single error rate cannot answer</h2>
+    </div>
+    <p class="lede">"Should we buy more labelled camera frames?" is the most expensive question a wildlife-camera team asks, and 12 percent dev error does not answer it. A model with a variance problem gets better with data. A model with a bias problem does not, and the same 12 percent can be either. The curve is what separates them, and it costs an afternoon of retraining rather than a quarter of labelling.</p>
+
+    <div class="legend">
+      <span class="pill">Live = presented in the 45 minutes</span>
+      <span class="pill">Self-study = the full depth, after class</span>
+      <span class="pill">🔍 Every diagram zooms</span>
+    </div>
+
+    <div class="callout win">
+      <p><strong>★ What you walk out with tonight.</strong> One chart with three lines on it: dev error, training error, and human-level. The three shapes it can take and what each one licenses you to spend money on. The two mechanics that stop the small end of the curve from lying to you. And the sentence that keeps the reading honest: more data will not help <em>within the budget we have</em>, which is a different claim from more data will never help.</p>
+    </div>
+
+    <details class="card" open>
+      <summary><span class="mode live">Live</span>What the plot actually is<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Chapter 28 of <em>Machine Learning Yearning</em> is titled "Diagnosing bias and variance: Learning curves". The construction is simple enough to do in an afternoon. Take the training pool. Train on 10 percent of it, then 25, then 50, then all of it. After each run, score two things: the error on the training examples that run actually saw, and the error on the fixed dev set, which never changes. Plot both against training set size, on the same axes. Draw the human-level error rate as a horizontal line across the whole chart.</p>
+        <p>Three lines, one picture. The dev curve falls as data grows. The training curve rises as data grows, because a model finds it harder to fit 38,000 frames well than 3,800. The human-level line does not move, because a person's error rate has nothing to do with how much data your model saw. Where those three end up relative to each other is the diagnosis.</p>
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <p>Lanternfish's field team quoted 4 pounds per labelled frame. Doubling the camera-frame training pool from 38,000 to 76,000 is a 152,000 pound line item and about five months of a field crew's time. The curve that decides whether to spend it took one engineer a Thursday.</p>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>Why the training curve rises<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>New readers usually expect both curves to fall. Training error rises with training set size, and the reason is worth holding onto:</p>
+        <ul>
+          <li><strong>At 100 examples</strong> a model of any real capacity can nearly memorise the set. Training error is near zero and means nothing about the world.</li>
+          <li><strong>At 38,000 examples</strong> the same model has to find structure that generalises across all of them, and it will get some wrong. Training error climbs toward the error rate the model is actually capable of.</li>
+          <li><strong>The gap between the two curves</strong> is the variance. It starts wide, because memorising is easy and generalising is not, and it narrows as data grows.</li>
+          <li><strong>The height the training curve settles at</strong> is the bias. More data cannot push it below the error the model class can reach on this problem.</li>
+        </ul>
+        <p>So the two curves converge from opposite directions, and the level they converge toward is the thing worth predicting.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 1 ============ -->
+  <section class="section" id="part-1">
+    <div class="section-kicker">
+      <span class="klabel">Part 1 · covers chapters 28 to 32</span>
+      <h2>Diagnosing bias and variance: learning curves</h2>
+      <span class="tag concept">9 min live</span>
+    </div>
+    <p class="lede">There are three shapes worth recognising and each one funds a different sprint. What decides between them is not the height of the dev curve but two other things: whether it is still falling at the right edge, and where the training curve sits relative to human-level.</p>
+
+    <figure class="zoomable">
+      <svg viewBox="0 0 880 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Three learning curve shapes side by side. In the first the dev error is still falling at the largest training set size, so more data will help. In the second both dev and training error are flat and far above the human-level line, which is avoidable bias and more data will not help. In the third the dev error is flat and high while training error sits near zero, which is variance and more data probably will help.">
+        <style>
+          .p6aH { font: 800 12px Inter, sans-serif; fill: #1C1917; }
+          .p6aB { font: 400 11px Inter, sans-serif; fill: #1C1917; }
+          .p6aM { font: 400 9px Inter, sans-serif; fill: #6B6259; }
+          .p6aN { font: 700 11px Inter, sans-serif; fill: #1C1917; }
+          .p6aL { font: 400 11px Inter, sans-serif; fill: #6B6259; }
+        </style>
+
+        <rect x="14" y="44" width="272" height="228" rx="10" fill="#FEFCE8" stroke="#D9D2C5"></rect>
+        <rect x="14" y="44" width="272" height="32" rx="10" fill="#FEF08A"></rect>
+        <text class="p6aH" x="150" y="66" text-anchor="middle">Still falling at the edge</text>
+        <line x1="40" y1="88" x2="40" y2="196" stroke="#D9D2C5" stroke-width="1.5"></line>
+        <line x1="40" y1="196" x2="270" y2="196" stroke="#D9D2C5" stroke-width="1.5"></line>
+        <line x1="40" y1="180" x2="270" y2="180" stroke="#60A5FA" stroke-width="1.5" stroke-dasharray="5 4"></line>
+        <polyline points="46,100 94,126 154,146 210,158 268,166" fill="none" stroke="#713F12" stroke-width="2.5"></polyline>
+        <polyline points="46,176 134,174 268,172" fill="none" stroke="#A16207" stroke-width="2.5" stroke-dasharray="6 4"></polyline>
+        <text class="p6aM" x="40" y="210">training set size</text>
+        <text class="p6aB" x="30" y="228">Reading: more data will help.</text>
+        <text class="p6aB" x="30" y="244">Dev error is still dropping at</text>
+        <text class="p6aB" x="30" y="260">the largest size you tried.</text>
+
+        <rect x="304" y="44" width="272" height="228" rx="10" fill="#FEFCE8" stroke="#D9D2C5"></rect>
+        <rect x="304" y="44" width="272" height="32" rx="10" fill="#FACC15"></rect>
+        <text class="p6aH" x="440" y="66" text-anchor="middle">Flat, training error high</text>
+        <line x1="330" y1="88" x2="330" y2="196" stroke="#D9D2C5" stroke-width="1.5"></line>
+        <line x1="330" y1="196" x2="560" y2="196" stroke="#D9D2C5" stroke-width="1.5"></line>
+        <line x1="330" y1="180" x2="560" y2="180" stroke="#60A5FA" stroke-width="1.5" stroke-dasharray="5 4"></line>
+        <polyline points="336,108 444,104 558,104" fill="none" stroke="#713F12" stroke-width="2.5"></polyline>
+        <polyline points="336,142 444,138 558,138" fill="none" stroke="#A16207" stroke-width="2.5" stroke-dasharray="6 4"></polyline>
+        <text class="p6aM" x="330" y="210">training set size</text>
+        <text class="p6aB" x="320" y="228">Reading: avoidable bias.</text>
+        <text class="p6aB" x="320" y="244">Training error is high too, so</text>
+        <text class="p6aB" x="320" y="260">more data will not help.</text>
+
+        <rect x="594" y="44" width="272" height="228" rx="10" fill="#FEFCE8" stroke="#D9D2C5"></rect>
+        <rect x="594" y="44" width="272" height="32" rx="10" fill="#A16207"></rect>
+        <text class="p6aH" x="730" y="66" text-anchor="middle" fill="#fff">Flat, training near zero</text>
+        <line x1="620" y1="88" x2="620" y2="196" stroke="#D9D2C5" stroke-width="1.5"></line>
+        <line x1="620" y1="196" x2="850" y2="196" stroke="#D9D2C5" stroke-width="1.5"></line>
+        <line x1="620" y1="180" x2="850" y2="180" stroke="#60A5FA" stroke-width="1.5" stroke-dasharray="5 4"></line>
+        <polyline points="626,112 734,108 848,108" fill="none" stroke="#713F12" stroke-width="2.5"></polyline>
+        <polyline points="626,192 734,192 848,192" fill="none" stroke="#A16207" stroke-width="2.5" stroke-dasharray="6 4"></polyline>
+        <text class="p6aM" x="620" y="210">training set size</text>
+        <text class="p6aB" x="610" y="228">Reading: variance.</text>
+        <text class="p6aB" x="610" y="244">Training error near zero, dev</text>
+        <text class="p6aB" x="610" y="260">far above it. More data helps.</text>
+
+        <line x1="14" y1="292" x2="38" y2="292" stroke="#713F12" stroke-width="2.5"></line>
+        <text class="p6aL" x="44" y="296">dev error</text>
+        <line x1="130" y1="292" x2="154" y2="292" stroke="#A16207" stroke-width="2.5" stroke-dasharray="6 4"></line>
+        <text class="p6aL" x="160" y="296">training error</text>
+        <line x1="280" y1="292" x2="304" y2="292" stroke="#60A5FA" stroke-width="1.5" stroke-dasharray="5 4"></line>
+        <text class="p6aL" x="310" y="296">human-level, 2 percent</text>
+
+        <rect x="14" y="308" width="14" height="14" rx="3" fill="#60A5FA"></rect>
+        <text class="p6aN" x="38" y="320">Plot training error on the same axes. Without it a flat dev curve has two readings.</text>
+      </svg>
+      <figcaption>🔍 Click to zoom - three shapes, three readings, and the line that makes them legible.</figcaption>
+    </figure>
+
+    <table class="clean">
+      <thead><tr><th>Shape at the right edge</th><th>Training error</th><th>Reading</th><th>What it funds</th></tr></thead>
+      <tbody>
+        <tr><td>Dev error still falling</td><td>Anywhere</td><td>The pool is the limit</td><td>More labelled camera frames</td></tr>
+        <tr><td>Dev error flat and high</td><td>High, far above human-level</td><td>Avoidable bias</td><td>A bigger model, longer training, better features</td></tr>
+        <tr><td>Dev error flat and high</td><td>Near zero</td><td>Variance</td><td>More data, augmentation, regularisation</td></tr>
+      </tbody>
+    </table>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Still falling means the pool is the limit<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>If the dev curve is visibly still coming down between 50 percent and 100 percent of the training pool, the model has not yet extracted everything the data class has to give. Doubling the pool will move the number, and roughly by as much again as the last doubling did, which is what makes the slope worth writing down as a number rather than describing as "still dropping a bit".</p>
+        <p>The strong version of this reading is comparative. If the last doubling of data bought 1.4 points of dev error and the next doubling costs 152,000 pounds, that is a price per point, and it sits in the same spreadsheet as every other project with a ceiling and a cost. Session 3's points-per-week column is the same arithmetic wearing a different unit.</p>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Flat and above human-level, with high training error<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>When the dev curve has levelled and the training curve has levelled just below it, both far above the human-level line, the model is failing on examples it has already seen. No quantity of new examples fixes that. This is avoidable bias, and the honest response is the one from session 5: a model with more capacity, a longer training schedule, a better input representation, or a feature the current model has no way to see.</p>
+        <p>The trap is that this shape looks disciplined. Two smooth flat lines, a stable number, a team that has "converged". A converged model well above human-level has converged on the wrong thing.</p>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Flat with training error near zero<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>A training curve hugging the bottom of the chart while the dev curve sits ten points above it is variance, drawn rather than inferred. The model can fit what it has seen and cannot carry it across to what it has not. More data is the direct fix, and the curve tells you it will work because the gap has been narrowing over the range you plotted.</p>
+        <p>Read the slope before committing. A gap that is narrowing quickly says the next tranche of frames is well spent. A gap that has barely moved between 50 and 100 percent says the model is memorising faster than you can buy examples, and augmentation or regularisation is the cheaper route to the same place.</p>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>The mechanics from chapter 32<span class="mini">4 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Four practical rules, and skipping any one of them produces a chart that is worse than no chart because it looks authoritative:</p>
+        <ul>
+          <li><strong>Plot training error on the same axes.</strong> A dev-only curve cannot distinguish bias from variance, and those two readings fund opposite projects.</li>
+          <li><strong>Sample the smaller training sets randomly,</strong> not by taking the first N rows. A frame table ordered by camera or by capture date gives you a subset that is one forest in one season.</li>
+          <li><strong>Average several random draws at each size.</strong> Three is the working minimum at the small end. One draw at the small end is a coin flip presented as a data point.</li>
+          <li><strong>Keep the dev set fixed across every point on the curve.</strong> It is the one thing that must not vary, or the curve measures two changes at once.</li>
+        </ul>
+        <p>Training error at each point is scored on the subset that run actually saw, not on the whole pool. Scoring the small runs against the full training pool turns the training curve into a second dev curve and the diagnosis disappears.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 2 ============ -->
+  <section class="section" id="part-2">
+    <div class="section-kicker">
+      <span class="klabel">Part 2 · covers reading the curve without fooling yourself</span>
+      <h2>The honest reading, and the three ways a curve misleads</h2>
+      <span class="tag concept">8 min live</span>
+    </div>
+    <p class="lede">A learning curve is a chart that people quote from memory for a year afterwards, which makes the wording of the reading as important as the plot. Three failures account for nearly all of the bad quotes: noise at the small end, a flat stretch read as a global fact, and a chart with no human-level line on it.</p>
+
+    <figure class="zoomable">
+      <svg viewBox="0 0 880 320" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Dev error plotted against training set size with three random draws at each size. At 10 percent of the pool the three draws read 25, 22 and 14 percent and their average is 20.3. The draws tighten as the training size grows, reaching 12 percent on the full pool. A diamond marks the average at each size.">
+        <style>
+          .p6bH { font: 800 12px Inter, sans-serif; fill: #1C1917; }
+          .p6bB { font: 400 11px Inter, sans-serif; fill: #1C1917; }
+          .p6bM { font: 400 11px Inter, sans-serif; fill: #6B6259; }
+          .p6bN { font: 700 11px Inter, sans-serif; fill: #1C1917; }
+          .p6bV { font: 700 11px Inter, sans-serif; fill: #991B1B; }
+        </style>
+
+        <text class="p6bH" x="60" y="28">Dev error against training set size, three random draws each</text>
+        <line x1="60" y1="44" x2="60" y2="232" stroke="#D9D2C5" stroke-width="1.5"></line>
+        <line x1="60" y1="232" x2="600" y2="232" stroke="#D9D2C5" stroke-width="1.5"></line>
+        <line x1="60" y1="220" x2="600" y2="220" stroke="#60A5FA" stroke-width="1.5" stroke-dasharray="5 4"></line>
+        <text class="p6bM" x="32" y="56">30</text>
+        <text class="p6bM" x="32" y="116">20</text>
+        <text class="p6bM" x="32" y="164">12</text>
+        <text class="p6bM" x="44" y="236">0</text>
+
+        <polyline points="130,110 270,139 410,150 550,160" fill="none" stroke="#713F12" stroke-width="2.5"></polyline>
+
+        <circle cx="130" cy="82" r="4" fill="#A16207"></circle>
+        <circle cx="130" cy="100" r="4" fill="#A16207"></circle>
+        <circle cx="130" cy="148" r="4" fill="#A16207"></circle>
+        <path d="M130,104 L136,110 L130,116 L124,110 Z" fill="#713F12"></path>
+        <text class="p6bV" x="140" y="86">25</text>
+        <text class="p6bV" x="140" y="104">22</text>
+        <text class="p6bV" x="140" y="152">14</text>
+
+        <circle cx="270" cy="134" r="4" fill="#A16207"></circle>
+        <circle cx="270" cy="139" r="4" fill="#A16207"></circle>
+        <circle cx="270" cy="144" r="4" fill="#A16207"></circle>
+        <path d="M270,133 L276,139 L270,145 L264,139 Z" fill="#713F12"></path>
+
+        <circle cx="410" cy="147" r="4" fill="#A16207"></circle>
+        <circle cx="410" cy="150" r="4" fill="#A16207"></circle>
+        <circle cx="410" cy="153" r="4" fill="#A16207"></circle>
+        <path d="M410,144 L416,150 L410,156 L404,150 Z" fill="#713F12"></path>
+
+        <circle cx="550" cy="160" r="4" fill="#A16207"></circle>
+        <path d="M550,154 L556,160 L550,166 L544,160 Z" fill="#713F12"></path>
+        <text class="p6bB" x="560" y="164">12</text>
+
+        <text class="p6bM" x="130" y="250" text-anchor="middle">10%</text>
+        <text class="p6bM" x="270" y="250" text-anchor="middle">25%</text>
+        <text class="p6bM" x="410" y="250" text-anchor="middle">50%</text>
+        <text class="p6bM" x="550" y="250" text-anchor="middle">100% of the pool</text>
+
+        <rect x="640" y="44" width="226" height="200" rx="10" fill="#FEFCE8" stroke="#D9D2C5"></rect>
+        <text class="p6bH" x="656" y="70">One draw tells you nothing</text>
+        <text class="p6bB" x="656" y="96">At 10 percent of the pool the</text>
+        <text class="p6bB" x="656" y="114">three draws read 25, 22 and 14.</text>
+        <text class="p6bB" x="656" y="132">That 11-point spread is wider</text>
+        <text class="p6bB" x="656" y="150">than the 8 points the whole</text>
+        <text class="p6bB" x="656" y="168">curve has to tell you about.</text>
+        <text class="p6bM" x="656" y="196">Average the draws, or you</text>
+        <text class="p6bM" x="656" y="214">will read noise as a slope.</text>
+
+        <circle cx="66" cy="268" r="4" fill="#A16207"></circle>
+        <text class="p6bM" x="78" y="272">one random draw</text>
+        <path d="M200,262 L206,268 L200,274 L194,268 Z" fill="#713F12"></path>
+        <text class="p6bM" x="212" y="272">average of the three draws</text>
+        <line x1="400" y1="268" x2="424" y2="268" stroke="#60A5FA" stroke-width="1.5" stroke-dasharray="5 4"></line>
+        <text class="p6bM" x="430" y="272">human-level</text>
+
+        <rect x="60" y="288" width="14" height="14" rx="3" fill="#60A5FA"></rect>
+        <text class="p6bN" x="84" y="300">A single draw at 10 percent of the pool can read 25 or 14. Average three.</text>
+      </svg>
+      <figcaption>🔍 Click to zoom - the same training size, three draws, three answers, and the average that is worth plotting.</figcaption>
+    </figure>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>The noise problem at the small end<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>The left-hand points on a learning curve are the least reliable and the most visually influential, because they set the apparent steepness of everything to their right. A model trained on 10 percent of a pool is at the mercy of which 10 percent: one draw lands three good night cameras, the next lands a month of rain. Lanternfish's three draws at 10 percent came back at 25, 22 and 14 percent dev error. An 11-point spread, on a curve whose entire story from left to right is 8 points.</p>
+        <p>Averaging three draws is the working minimum and five is better at the smallest size. The cost is real, because it is three trainings instead of one at every point, but the small runs are also the cheap ones, so most of the extra compute buys you the part of the chart that most needs it.</p>
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <p>A Lanternfish engineer plotted a single draw per size and got a curve that was still visibly falling at the right edge. It went into a slide that asked for 152,000 pounds of labelling. The averaged version, run the following week, was flat from 50 percent onward. The difference was one unlucky draw at 50 percent, and it was worth five months of a field crew.</p>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>The flat-curve trap<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Here is the sentence teams say: "the curve is flat, so more data will not help". Here is the sentence the curve supports: "the curve is flat between 19,000 and 38,000 examples, so another 38,000 would not have helped much". Those are different claims. The plot can only speak about the range you plotted. A curve that has levelled over a doubling can still be falling over a tenfold increase, and plenty of them are.</p>
+        <p>The reason this matters is that the flat reading closes a door. Once "more data does not help" is in a deck, nobody proposes data again for a year, including the person who could have got 400,000 frames from a partner network for nothing. Write the range into the sentence and the door stays open at the right price.</p>
+        <div class="prompt-box bad">
+          <span class="label">✗ The claim the plot cannot support</span>
+More data will not help this model.
+        </div>
+        <div class="prompt-box good">
+          <span class="label">★ The claim the plot does support</span>
+Dev error is flat from 19,000 to 38,000 frames, so a further 38,000 buys
+under half a point. A tenfold increase is outside the range we measured.
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>The human-level line is what makes the chart legible<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>A dev error of 12 percent means nothing on its own. If a trained field biologist scores 2 percent on the same frames, 12 percent is a large gap and there is a lot of headroom. If a biologist scores 11 percent, because half the frames are a tail in the dark at forty metres, then 12 percent is close to the ceiling and the interesting question is no longer the model at all.</p>
+        <p>Drawing that line across the chart converts a curve into a diagnosis. It shows how much of the remaining error is even addressable, and it stops a flat curve at 12 percent from being read as failure when it is close to what the task allows. Lanternfish's human-level number is 2 percent, measured by having two biologists label 200 dev frames independently, which is a morning of work and the highest-value morning on the whole project.</p>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>The Lanternfish reading, line by line<span class="mini">4 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <ul>
+          <li><strong>Training error 3, dev error 12, human-level 2.</strong> The training curve sits one point above human-level and the dev curve sits nine points above the training curve.</li>
+          <li><strong>Avoidable bias 1.</strong> The training curve is nearly on the floor the task allows. There is almost nothing to win by making the model fit its own data better.</li>
+          <li><strong>Variance 9.</strong> The whole visible gap on the chart is between the two curves, which is the shape in the third panel above.</li>
+          <li><strong>So the diagnosis is variance,</strong> and more data is a live option rather than a reflex.</li>
+          <li><strong>The slope at the right edge decides which kind of fix.</strong> Steep, and more camera frames are the cheapest point of error on the table. Flat, and the money goes to occlusion augmentation or a regularisation pass instead, both of which attack the same variance without buying a single label.</li>
+        </ul>
+        <p>Note what the curve does not settle: whether the training pool and the dev set are even the same kind of image. Lanternfish trains on web photos as well as camera frames, and that turns part of what looks like variance into something else. Session 7 splits it.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ DEMO ============ -->
+  <section class="section" id="demo-1">
+    <div class="section-kicker">
+      <span class="klabel">Build-along</span>
+      <h2>Plot one for your own model</h2>
+      <span class="tag demo">★ 20 min · everyone builds</span>
+    </div>
+    <p class="lede">Bring a model that trains in under ten minutes, or subsample until it does, because you are about to train it twelve times. If you have nothing to hand, use the Lanternfish training pool: 38,000 labelled camera frames, a fixed dev set of 1,000, and 120 of those currently wrong.</p>
+
+    <div class="steps">
+      <div class="step">
+        <p><strong>Fix the dev set first and never touch it again.</strong> Every point on the curve is scored against the same 1,000 images. If the dev set moves, the chart is measuring two things and reading as one.</p>
+      </div>
+      <div class="step">
+        <p><strong>Draw training subsets at 10, 25, 50 and 100 percent, three random draws each.</strong> Random means hashed or seeded, not the first N rows. Ten trainings at the small sizes, two at full size, and the small ones are quick.</p>
+      </div>
+      <div class="step">
+        <p><strong>Score two errors per run.</strong> Training error on the subset that run actually saw, dev error on the fixed set. Store the fraction, the draw number and both errors as one row.</p>
+      </div>
+      <div class="step">
+        <p><strong>Average the draws at each size.</strong> Keep the spread as well as the mean, because a spread wider than a couple of points at any size is the chart telling you to add draws before you add conclusions.</p>
+      </div>
+      <div class="step">
+        <p><strong>Plot dev error, training error and the human-level line on one chart.</strong> Three lines, same axes, human-level flat across. Anything less is a chart that supports two contradictory readings.</p>
+      </div>
+      <div class="step">
+        <p><strong>Write the one-sentence reading, with the range in it.</strong> "Dev error falls from 20.3 to 12.0 between 10 and 100 percent of the pool, and from 13.7 to 12.0 over the last doubling." That sentence survives being quoted six months later.</p>
+      </div>
+      <div class="step">
+        <p><strong>Record the slope at the right edge as a number.</strong> Points of dev error per doubling of data. It goes in the same backlog table as every other project, next to its cost, and the next sprint can compare it without replotting anything.</p>
+      </div>
+    </div>
+
+    <div class="prompt-box good">
+      <span class="label">★ Try it now - draw the subsets in SQL</span>
+-- three seeded draws of each training fraction, from the labelled camera frames
+with pool as (
+  select frame_id, camera_id, species_label
+  from cams.training_frames
+  where labelled_at is not null
+),
+draws as (select unnest(array[1, 2, 3]) as draw),
+fracs as (select unnest(array[0.10, 0.25, 0.50, 1.00]) as frac)
+select d.draw, f.frac, p.frame_id, p.camera_id, p.species_label
+from pool p cross join draws d cross join fracs f
+where abs(hash(p.frame_id, d.draw)) % 1000 &lt; f.frac * 1000;
+-- check the camera mix of each draw before training: a subset that is three
+-- cameras is not a smaller version of the pool, it is a different pool
+    </div>
+
+    <div class="prompt-box good">
+      <span class="label">★ Try it now - twelve runs, two errors each, averaged</span>
+import numpy as np
+import pandas as pd
+from sklearn.metrics import accuracy_score
+
+FRACTIONS = [0.10, 0.25, 0.50, 1.00]
+DRAWS = [1, 2, 3]
+rows = []
+
+for frac in FRACTIONS:
+    for draw in DRAWS:
+        rng = np.random.default_rng(seed=1000 * draw + int(frac * 100))
+        n = int(frac * len(X_train))
+        idx = rng.choice(len(X_train), size=n, replace=False)
+        model = fit(X_train[idx], y_train[idx])       # your own training call
+        rows.append({
+            "frac": frac,
+            "draw": draw,
+            "n": n,
+            # training error is scored on the subset this run actually saw
+            "train_err": 1 - accuracy_score(y_train[idx], model.predict(X_train[idx])),
+            # dev error is scored on the fixed dev set, every single time
+            "dev_err": 1 - accuracy_score(y_dev, model.predict(X_dev)),
+        })
+
+runs = pd.DataFrame(rows)
+curve = runs.groupby("frac").agg(
+    n=("n", "max"),
+    train_err=("train_err", "mean"),
+    dev_err=("dev_err", "mean"),
+    dev_spread=("dev_err", lambda s: s.max() - s.min()),
+)
+print(curve.round(4))
+    </div>
+
+    <div class="prompt-box good">
+      <span class="label">★ Try it now - the slope at the right edge, as a number</span>
+last_two = curve.loc[[0.50, 1.00]]
+points = (last_two["dev_err"].iloc[0] - last_two["dev_err"].iloc[1]) * 100
+print(f"{points:.2f} points of dev error per doubling of the training pool")
+
+HUMAN_LEVEL = 0.02
+final = curve.loc[1.00]
+print(f"train {final.train_err:.1%}, dev {final.dev_err:.1%}, human {HUMAN_LEVEL:.1%}")
+print(f"avoidable bias {final.train_err - HUMAN_LEVEL:.1%}, "
+      f"variance {final.dev_err - final.train_err:.1%}")
+    </div>
+
+    <div class="callout tip">
+      <p><strong>Widest spread wins the extra draws.</strong> If the 10 percent point spans 11 points across three draws and the 100 percent point spans 0.3, add two more draws at 10 percent and none at 100. Averaging effort belongs where the noise is, not spread evenly for tidiness.</p>
+    </div>
+  </section>
+
+  <!-- ============ HOMEWORK ============ -->
+  <section class="section" id="exercise">
+    <div class="section-kicker">
+      <span class="klabel">Homework</span>
+      <h2>Before session 7</h2>
+      <span class="tag exercise">40 min</span>
+    </div>
+    <ol>
+      <li>Plot the curve for one model you own, three draws at each of four sizes, with training error and a human-level line on the same axes. Save the chart with the date in the filename.</li>
+      <li>Write the one-sentence reading with the range of training set sizes inside it. Then read your last data request and check whether it made a claim the plot would not have supported.</li>
+      <li>Record the slope at the right edge in points per doubling, and put it in your backlog table next to the cost of that doubling in money and weeks.</li>
+      <li>If you do not have a human-level number, get one: two people label 200 dev examples independently and you take the disagreement rate seriously. It is a morning, and every curve you plot afterwards is legible.</li>
+      <li>Note down what fraction of your training data comes from the same source as your dev set. Session 7 opens on exactly that number.</li>
+    </ol>
+  </section>
+
+  <!-- ============ QUIZ ============ -->
+  <section class="section" id="quiz">
+    <div class="section-kicker">
+      <span class="klabel">Check yourself</span>
+      <h2>Three questions</h2>
+    </div>
+
+    <div class="quiz-q" data-answer="1">
+      <p class="qtext">A curve has flat dev error at 12 percent, flat training error at 11 percent, and human-level at 2 percent. What does it say?</p>
+      <button class="qopt" type="button">A · Variance: the model cannot carry what it learned to new examples</button>
+      <button class="qopt" type="button">B · Avoidable bias: the model is failing on examples it has already seen, and more data will not fix that</button>
+      <button class="qopt" type="button">C · The model has converged, so the project is finished</button>
+      <p class="qwhy">Training error far above human-level means the model is wrong about data it was trained on. Capacity, training schedule or representation is the fix; new examples are not.</p>
+    </div>
+
+    <div class="quiz-q" data-answer="2">
+      <p class="qtext">Your dev curve is flat between 19,000 and 38,000 training examples. Which statement does the plot actually support?</p>
+      <button class="qopt" type="button">A · More data will not help this model</button>
+      <button class="qopt" type="button">B · The model has reached its theoretical limit</button>
+      <button class="qopt" type="button">C · Another 38,000 examples would buy very little, and anything beyond the range plotted is unmeasured</button>
+      <p class="qwhy">A curve speaks only about the range it covers. A flat stretch over one doubling can still be falling over a tenfold increase, so the honest sentence names the range and leaves the door open at the right price.</p>
+    </div>
+
+    <div class="quiz-q" data-answer="0">
+      <p class="qtext">Three random draws at 10 percent of the pool give dev errors of 25, 22 and 14 percent. What do you plot at that point?</p>
+      <button class="qopt" type="button">A · The average, 20.3, and you keep the 11-point spread so you know how little that point can be leaned on</button>
+      <button class="qopt" type="button">B · The best of the three, 14, since it shows what the model can do</button>
+      <button class="qopt" type="button">C · The first draw, because the others are duplicates of the same experiment</button>
+      <p class="qwhy">Small subsets are at the mercy of which examples they got. Plot the mean of several draws, keep the spread, and add draws wherever the spread is widest.</p>
+    </div>
+
+    <p class="quiz-score"></p>
+  </section>
+
+  <!-- ============ COVERAGE ============ -->
+  <section class="section" id="official">
+    <div class="section-kicker">
+      <span class="klabel">Sources covered</span>
+      <h2>What tonight maps to</h2>
+    </div>
+    <div class="covered">
+      <div class="covered-row">
+        <span class="status pill solid">✓</span>
+        <span class="name">Machine Learning Yearning, chapter 28</span>
+        <span class="note">"Diagnosing bias and variance: Learning curves". The three shapes, drawn and read, with human-level on the same axes.</span>
+      </div>
+      <div class="covered-row">
+        <span class="status pill solid">✓</span>
+        <span class="name">Machine Learning Yearning, chapters 29 to 31</span>
+        <span class="note">Reading a curve that is still falling against one that has levelled, and what each licenses you to spend on.</span>
+      </div>
+      <div class="covered-row">
+        <span class="status pill solid">✓</span>
+        <span class="name">Machine Learning Yearning, chapter 32</span>
+        <span class="note">The plotting mechanics: training error on the same axes, random subsets, several draws averaged at each size.</span>
+      </div>
+      <div class="covered-row">
+        <span class="status pill light">◐</span>
+        <span class="name">Machine Learning Yearning, chapters 20 to 27</span>
+        <span class="note">Bias and variance as three numbers is practitioner session 5. Tonight plots what that session diagnosed.</span>
+      </div>
+      <div class="covered-row">
+        <span class="status pill light">◐</span>
+        <span class="name">Machine Learning Yearning, chapter 33</span>
+        <span class="note">Why human-level performance is the yardstick at all: leader session 4. Tonight uses the number and draws the line.</span>
+      </div>
+      <div class="covered-row">
+        <span class="status pill light">◐</span>
+        <span class="name">Machine Learning Yearning, chapters 36 to 43</span>
+        <span class="note">When training data and dev data come from different distributions, part of the gap on this chart is not variance. Session 7.</span>
+      </div>
+      <div class="covered-row">
+        <span class="status pill inkpill">·</span>
+        <span class="name">Regularization, dropout, model capacity technique</span>
+        <span class="note">Not covered by design. The intro ML and deep learning courses own the techniques; the curve here says which family to reach for.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ CHEAT SHEET ============ -->
+  <section class="cheat" id="cheatsheet">
+    <h3>Session 6 cheat sheet</h3>
+    <div class="grid-2">
+      <div class="cheat-item"><b>Three lines, one chart</b><span>Dev error, training error, human-level. Two lines support two contradictory readings.</span></div>
+      <div class="cheat-item"><b>Still falling means buy data</b><span>The slope at the right edge is a price per point of error. Write it as a number.</span></div>
+      <div class="cheat-item"><b>Flat plus high training error</b><span>Avoidable bias. Capacity, schedule, features. New examples change nothing.</span></div>
+      <div class="cheat-item"><b>Flat plus training near zero</b><span>Variance. More data, augmentation, regularisation, in cost order.</span></div>
+      <div class="cheat-item"><b>Three draws minimum</b><span>25, 22 and 14 at the same size. One draw at the small end is a coin flip.</span></div>
+      <div class="cheat-item"><b>Name the range</b><span>"Flat from 19,000 to 38,000" keeps the door open. "More data will not help" closes it.</span></div>
+      <div class="cheat-item"><b>Human-level makes it legible</b><span>12 percent dev error means nothing until you know a person scores 2 and not 11.</span></div>
+      <div class="cheat-item"><b>Score training error on the subset</b><span>On what that run saw. Score it on the whole pool and the diagnosis vanishes.</span></div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="pagefoot">
+  <div class="wrap">
+    <p>Practitioner session 6 of 10 · learn-ml-strategy-with-phoebe · by Phoebe Fu</p>
+    <nav class="pagenav">
+      <a href="p5-bias-and-variance.html">← Practitioner session 5 · Bias and variance from three numbers</a>
+      <a href="p7-different-distributions.html">Practitioner session 7 · Training and testing on different distributions →</a>
+    </nav>
+  </div>
+</footer>
+
+<script src="../assets/app.js?v=1"></script>
+</body>
+</html>

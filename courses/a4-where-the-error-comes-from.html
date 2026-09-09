@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- social:start -->
+<meta name="description" content="Leader session 4 of 6. Three numbers, training error, dev error and human-level error, split a model's mistakes into unavoidable bias, avoidable bias and variance. Lanternfish's 12 percent is 2 plus 1 plus 9, and each diagnosis funds a different family of projects. The wrong diagnosis wastes the quarter.">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Learn with Phoebe">
+<meta property="og:title" content="Where the error comes from - learn ml strategy with phoebe">
+<meta property="og:description" content="Leader session 4 of 6. Three numbers, one diagnosis, and the project family it funds.">
+<meta property="og:url" content="https://phoebefu6.github.io/learn-ml-strategy-with-phoebe/courses/a4-where-the-error-comes-from.html">
+<meta property="og:image" content="https://phoebefu6.github.io/learn-ml-strategy-with-phoebe/assets/og-cover.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Where the error comes from - learn ml strategy with phoebe">
+<meta name="twitter:description" content="Train 3, dev 12, human-level 2. Unavoidable 2, avoidable bias 1, variance 9. Work on variance.">
+<meta name="twitter:image" content="https://phoebefu6.github.io/learn-ml-strategy-with-phoebe/assets/og-cover.png">
+<!-- social:end -->
+<title>Leader session 4 · Where the error comes from - learn ml strategy with phoebe</title>
+<link rel="stylesheet" href="../assets/style.css?v=1">
+</head>
+<body>
+
+<div class="toolbar">
+  <div class="wrap">
+    <span class="crumb"><a href="../index.html">learn-ml-strategy-with-phoebe</a> / Leader session 4 of 6</span>
+    <button class="btn" id="toggle-all" type="button">Expand all</button>
+    <button class="btn primary" id="zoom-toggle" type="button">Projector zoom: off</button>
+  </div>
+</div>
+
+<header class="masthead">
+  <div class="wrap">
+    <div class="eyebrow">Learn ML Strategy with Phoebe · Leader session 4 of 6</div>
+    <h1>Where the error <span class="accent">comes from</span></h1>
+    <p class="sub">Lanternfish's classifier is wrong on 12 percent of its dev set. That one number hides three: the part no model could remove, the part the model fails to learn from the data it has, and the part that comes from not generalising beyond what it saw. Three numbers a team already has, training error, dev error and a human's error on the same task, split the 12 into 2, 1 and 9. Each of those funds a different family of projects, and a team that funds the wrong family does excellent work for a quarter and moves nothing.</p>
+    <div class="chip-row">
+      <span class="chip level">🟡 Core</span>
+      <span class="chip audience">Data and product leaders</span>
+      <span class="chip time">45 min</span>
+    </div>
+    <div class="agenda">
+      <span class="a1" style="flex:1">0-3 · Welcome</span>
+      <span class="a2" style="flex:5">3-22 · Bias, variance, and the human yardstick</span>
+      <span class="a3" style="flex:4">22-40 · Build-along: three numbers, one diagnosis</span>
+      <span class="a4" style="flex:1">40-45 · Q&amp;A</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ============ INTRO ============ -->
+  <section class="section" id="intro">
+    <div class="section-kicker">
+      <span class="klabel">Part 0</span>
+      <h2>Where session 4 sits in the leader track</h2>
+    </div>
+    <p class="lede">Six sessions, 45 minutes each, no code, one decision: <strong>what to work on next</strong> for one classifier. Session 3 sorted the mistakes by cause and produced an order of projects. Tonight cuts the same error a different way, by source rather than by cause, and answers a question the spreadsheet cannot: whether the model needs to learn more from the data it has, or needs more data to learn from. Session 5 finds the weakest stage of a pipeline; session 6 is the memo that gets the team to act. The classifier throughout belongs to <strong>Lanternfish</strong>, a wildlife-camera startup whose model is wrong on 12 percent of its dev set.</p>
+
+    <div class="legend">
+      <span class="pill">Live = presented in the 45 minutes</span>
+      <span class="pill">Self-study = the full depth, after class</span>
+      <span class="pill">🔍 Every diagram zooms</span>
+    </div>
+
+    <div class="callout win">
+      <p><strong>★ What you walk out with tonight.</strong> A diagnosis from three numbers any team can produce by Friday: training error, dev error, and the best estimate of how well a person does the same task. The two subtractions that turn them into avoidable bias and variance. Which family of projects each diagnosis funds, so a sprint plan can be checked against the diagnosis in one glance. And the reason a leader should be suspicious of any change that moves two of the three numbers at once.</p>
+    </div>
+
+    <details class="card" open>
+      <summary><span class="mode live">Live</span>Why one error number is not enough to fund anything<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>"The model is 12 percent wrong" is a fact, and it is not a decision. Twelve percent because the model is too simple to fit the pattern is fixed one way; twelve percent because the model fits the training data beautifully and falls apart on anything new is fixed the opposite way; and some of the twelve is not the model's fault at all, because the frames are too dark for anyone to read. Three different problems, one number, and every proposal in the backlog silently assumes one of the three.</p>
+        <p>The split takes two subtractions and no new experiments. A team that does the arithmetic funds the source that is actually large. A team that skips it funds whichever source the loudest proposal assumed, and finds out in three months.</p>
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <p>Lanternfish's first quarter went on a bigger model with a longer training run, because a bigger model is what the team knew how to build. Training error fell from 3 percent to 2. Dev error stayed at 12. The gap the team had been paying for was never between the model and the data it saw; it was between the data it saw and the field.</p>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>The vocabulary for tonight<span class="mini">4 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <ul>
+          <li><strong>Training error</strong> - how often the model is wrong on the data it learned from. Lanternfish: 3 percent.</li>
+          <li><strong>Dev error</strong> - how often it is wrong on the dev set, data it did not learn from, drawn from the traffic the field will judge. Lanternfish: 12 percent.</li>
+          <li><strong>Human-level error</strong> - how often a competent person is wrong on the same task with the same inputs. Lanternfish's field biologists: 2 percent on the same frames.</li>
+          <li><strong>Optimal error rate</strong> - the error no model could get below, because some inputs do not carry the answer. Also called unavoidable bias. In practice estimated by human-level error.</li>
+          <li><strong>Avoidable bias</strong> - training error minus the optimal error rate. What the model fails to learn even from the data it has.</li>
+          <li><strong>Variance</strong> - dev error minus training error. What the model fails to carry over from the data it saw to the data it did not.</li>
+          <li><strong>Bias</strong>, loosely - the training error as a whole, unavoidable and avoidable together. Only the avoidable part is a target.</li>
+        </ul>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 1 ============ -->
+  <section class="section" id="part-1">
+    <div class="section-kicker">
+      <span class="klabel">Part 1 · covers chapters 20, 22 and 33</span>
+      <h2>Bias and variance: the two big sources of error</h2>
+      <span class="tag concept">10 min live</span>
+    </div>
+    <p class="lede">Chapter 20 of Machine Learning Yearning is titled "Bias and Variance: The two big sources of error", and the discipline treats them as a diagnosis rather than a piece of theory: two numbers that say where the error lives, computed from figures the team already has. Chapter 22 adds the third piece, the part of the error that no model can remove, and chapter 33 explains why a human doing the same task is the best available estimate of it.</p>
+
+    <figure class="zoomable">
+      <svg viewBox="0 0 880 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Lanternfish's 12 percent dev error as a stacked bar. Human-level error at 2 percent is a horizontal line; below it sits the unavoidable 2 percent. On the line sits avoidable bias of 1 percent, up to the training error of 3 percent, and above that variance of 9 percent up to the dev error of 12. A side panel shows the book's chapter 22 worked example: dev error 30, optimal 14, avoidable bias 1, variance as dev minus training.">
+        <style>
+          .a4aH { font: 800 12px Inter, sans-serif; fill: #1C1917; }
+          .a4aT { font: 800 12px Inter, sans-serif; fill: #fff; }
+          .a4aB { font: 400 11px Inter, sans-serif; fill: #1C1917; }
+          .a4aM { font: 400 11px Inter, sans-serif; fill: #6B6259; }
+          .a4aN { font: 700 11px Inter, sans-serif; fill: #1C1917; }
+          .a4aG { font: 800 11px Inter, sans-serif; fill: #713F12; }
+        </style>
+
+        <text class="a4aH" x="14" y="24">Lanternfish's 12 percent dev error, split into its three sources</text>
+
+        <line x1="110" y1="50" x2="110" y2="300" stroke="#D9D2C5" stroke-width="1.5"></line>
+        <line x1="104" y1="300" x2="420" y2="300" stroke="#D9D2C5" stroke-width="1.5"></line>
+        <text class="a4aM" x="96" y="304" text-anchor="end">0</text>
+        <text class="a4aM" x="96" y="64" text-anchor="end">12</text>
+
+        <rect x="120" y="260" width="130" height="40" fill="#FEF08A"></rect>
+        <text class="a4aN" x="185" y="284" text-anchor="middle">unavoidable 2</text>
+
+        <rect x="120" y="240" width="130" height="20" fill="#FACC15"></rect>
+        <text class="a4aN" x="185" y="254" text-anchor="middle">avoidable bias 1</text>
+
+        <rect x="120" y="60" width="130" height="180" fill="#A16207"></rect>
+        <text class="a4aT" x="185" y="150" text-anchor="middle">variance 9</text>
+        <text class="a4aB" x="185" y="168" text-anchor="middle" fill="#FEF08A">dev minus training</text>
+
+        <line x1="60" y1="260" x2="420" y2="260" stroke="#713F12" stroke-width="2" stroke-dasharray="6 4"></line>
+        <text class="a4aG" x="262" y="276">human-level 2 percent</text>
+        <text class="a4aM" x="262" y="290">the line the stack sits on</text>
+
+        <line x1="250" y1="240" x2="420" y2="240" stroke="#D9D2C5" stroke-width="1.5"></line>
+        <text class="a4aB" x="262" y="234">training error 3 percent</text>
+
+        <line x1="250" y1="60" x2="420" y2="60" stroke="#D9D2C5" stroke-width="1.5"></line>
+        <text class="a4aB" x="262" y="76">dev error 12 percent</text>
+
+        <rect x="480" y="44" width="386" height="256" rx="10" fill="#FEFCE8" stroke="#D9D2C5"></rect>
+        <text class="a4aH" x="496" y="70">The book's worked example, chapter 22</text>
+        <text class="a4aB" x="496" y="98">dev error: 30 percent</text>
+        <text class="a4aB" x="496" y="118">optimal error rate: 14 percent</text>
+        <text class="a4aM" x="496" y="134">the unavoidable bias</text>
+        <text class="a4aB" x="496" y="158">avoidable bias: 1 percent</text>
+        <text class="a4aM" x="496" y="174">training error minus the optimal error rate</text>
+        <text class="a4aB" x="496" y="198">variance: dev error minus training error</text>
+        <text class="a4aM" x="496" y="214">training error is 14 plus 1, so variance is 15</text>
+        <text class="a4aG" x="496" y="248">Lanternfish, same arithmetic:</text>
+        <text class="a4aG" x="496" y="266">12 = 2 unavoidable + 1 avoidable + 9 variance</text>
+        <text class="a4aG" x="496" y="284">work on variance</text>
+
+        <rect x="14" y="318" width="14" height="14" rx="3" fill="#60A5FA"></rect>
+        <text class="a4aN" x="38" y="330">The biggest of the three sources is the one to fund. Here it is variance, nine points against one.</text>
+      </svg>
+      <figcaption>🔍 Click to zoom - the 12 percent split three ways, with the book's own worked example beside it.</figcaption>
+    </figure>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>The decomposition, in the book's own example<span class="mini">4 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Chapter 22 works the arithmetic on a system with 30 percent dev error. Some of that error is structural: the inputs are so noisy that the best possible system would still be wrong 14 percent of the time. That 14 is the optimal error rate, also called "unavoidable bias", and no project on any backlog can touch it. The next slice is avoidable bias, 1 percent, "calculated as the difference between the training error and the optimal error rate": the model is wrong on its own training data 15 percent of the time, and 14 of that was unavoidable, so 1 point is the model's own failure to learn. The rest is variance, dev error minus training error, which is 30 minus 15: everything the model learned on its training data and failed to carry over.</p>
+        <p>The same three subtractions on Lanternfish: training error 3, dev error 12, human-level 2. Unavoidable bias 2. Avoidable bias 3 minus 2, which is 1. Variance 12 minus 3, which is 9. Nine points of variance against one of avoidable bias. The diagnosis is variance, and it took thirty seconds once the three numbers were on the table.</p>
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <p>Lanternfish had all three numbers for a year. Training error was on the dashboard, dev error was on the dashboard, and the field biologists' accuracy on the same frames had been measured once for a grant application. Nobody had subtracted. The quarter spent on a bigger model attacked the 1 and left the 9 alone.</p>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Why a human is the yardstick<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>The optimal error rate cannot be measured directly; nobody has the perfect model to read it off. Chapter 33 gives the practical substitute: on tasks people do well, human-level performance is the best available estimate of it. If field biologists are wrong 2 percent of the time on the same infrared frames, then roughly 2 percent of those frames do not carry enough information to answer, and a model that reaches 2 percent has reached the floor.</p>
+        <p>Human-level error does two jobs at once. It tells the team how much of the training error is avoidable, which is the first subtraction. And through that, it tells them which of the two sources is worth attacking: a model at 3 percent training error against a 2 percent human is nearly done learning from its data, so the 9 points of dev error above that cannot be a learning problem. Without the human number, 3 percent training error looks like room to improve, and a team will spend the quarter improving it.</p>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>Getting an honest human-level number<span class="mini">4 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <ul>
+          <li><strong>Same inputs the model sees.</strong> A biologist with the full video clip and a map of the camera site does better than one with the single frame the model gets. The yardstick has to be measured on the model's inputs, or it will read too low and make avoidable bias look larger than it is.</li>
+          <li><strong>Competent people, not average ones.</strong> The optimal error rate is a floor, so the estimate should come from whoever does the task best. A team of specialists agreeing beats one person guessing.</li>
+          <li><strong>A sample of the dev set, not a different set.</strong> Human-level error on daytime web photos says nothing about night infrared frames. Fifty to a hundred dev frames, scored by hand, is usually enough to place the number within a point.</li>
+          <li><strong>Write down the date.</strong> A human-level estimate from a grant application two years ago was measured on different cameras. It is a number, and it is not the yardstick.</li>
+          <li><strong>When people are bad at the task,</strong> a stock forecast, a click prediction, human-level error stops being a good proxy for the optimal error rate and the decomposition gets harder to read. Say so rather than pretending the number means what it means for species in a photo.</li>
+        </ul>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 2 ============ -->
+  <section class="section" id="part-2">
+    <div class="section-kicker">
+      <span class="klabel">Part 2 · covers what each diagnosis funds, and orthogonalization</span>
+      <h2>Each diagnosis funds a different project</h2>
+      <span class="tag concept">9 min live</span>
+    </div>
+    <p class="lede">The reason to split the error is that the two sources are fixed by different work, and the work for one does little for the other. A backlog is a list of projects, each of which assumes a diagnosis. Reading the backlog against the actual diagnosis is the leader's job, and it takes one glance once the families are known.</p>
+
+    <figure class="zoomable">
+      <svg viewBox="0 0 880 350" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Two doors side by side. The bias door opens onto the chapter 25 project family: bigger model, longer training, better features, with a ceiling of one point for Lanternfish; it is marked as the wasted quarter. The variance door opens onto the chapter 27 family: more data, regularisation, simpler model, with nine points of ceiling; it is marked as the door Lanternfish's numbers open.">
+        <style>
+          .a4bH { font: 800 12px Inter, sans-serif; fill: #1C1917; }
+          .a4bT { font: 800 12px Inter, sans-serif; fill: #fff; }
+          .a4bB { font: 400 11px Inter, sans-serif; fill: #1C1917; }
+          .a4bM { font: 400 11px Inter, sans-serif; fill: #6B6259; }
+          .a4bN { font: 700 11px Inter, sans-serif; fill: #1C1917; }
+          .a4bG { font: 800 11px Inter, sans-serif; fill: #713F12; }
+          .a4bR { font: 800 11px Inter, sans-serif; fill: #991B1B; }
+        </style>
+        <defs>
+          <marker id="a4bAr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#D9D2C5"></path></marker>
+        </defs>
+
+        <text class="a4bH" x="14" y="24">Two diagnoses, two doors, two different project families</text>
+
+        <rect x="40" y="50" width="110" height="170" rx="6" fill="#A16207" stroke="#991B1B" stroke-width="2.5"></rect>
+        <circle cx="134" cy="138" r="5" fill="#FACC15"></circle>
+        <text class="a4bT" x="95" y="120" text-anchor="middle">Bias door</text>
+        <text class="a4bB" x="95" y="140" text-anchor="middle" fill="#FEF08A">avoidable 1 pt</text>
+        <line x1="154" y1="135" x2="196" y2="135" stroke="#D9D2C5" stroke-width="1.5" marker-end="url(#a4bAr)"></line>
+        <rect x="200" y="50" width="220" height="170" rx="10" fill="#FEFCE8" stroke="#D9D2C5"></rect>
+        <text class="a4bH" x="216" y="76">Chapter 25 funds</text>
+        <text class="a4bB" x="216" y="104">a bigger model</text>
+        <text class="a4bB" x="216" y="128">longer training</text>
+        <text class="a4bB" x="216" y="152">better features</text>
+        <text class="a4bR" x="216" y="190">ceiling for Lanternfish: 1 point</text>
+        <text class="a4bR" x="230" y="248" text-anchor="middle">the wasted quarter: at most 1 point</text>
+
+        <rect x="460" y="50" width="110" height="170" rx="6" fill="#713F12"></rect>
+        <circle cx="554" cy="138" r="5" fill="#FACC15"></circle>
+        <text class="a4bT" x="515" y="120" text-anchor="middle">Variance door</text>
+        <text class="a4bB" x="515" y="140" text-anchor="middle" fill="#FEF08A">9 of the 12 pts</text>
+        <line x1="574" y1="135" x2="616" y2="135" stroke="#D9D2C5" stroke-width="1.5" marker-end="url(#a4bAr)"></line>
+        <rect x="620" y="50" width="240" height="170" rx="10" fill="#FEFCE8" stroke="#D9D2C5"></rect>
+        <text class="a4bH" x="636" y="76">Chapter 27 funds</text>
+        <text class="a4bB" x="636" y="104">more data</text>
+        <text class="a4bB" x="636" y="128">regularisation</text>
+        <text class="a4bB" x="636" y="152">a simpler model</text>
+        <text class="a4bG" x="636" y="190">ceiling for Lanternfish: 9 points</text>
+        <text class="a4bG" x="660" y="248" text-anchor="middle">the door Lanternfish's numbers open</text>
+
+        <text class="a4bM" x="40" y="288">Each family is a list of names here. The technique behind each name is its own subject.</text>
+
+        <rect x="40" y="318" width="14" height="14" rx="3" fill="#60A5FA"></rect>
+        <text class="a4bN" x="64" y="330">Wrong diagnosis, right execution, quarter gone. The three numbers choose the door before anyone picks a project.</text>
+      </svg>
+      <figcaption>🔍 Click to zoom - the two doors, what is behind each, and which one Lanternfish walked through first.</figcaption>
+    </figure>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>What a bias diagnosis funds, and what a variance diagnosis funds<span class="mini">4 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Chapter 25 lists the projects that reduce avoidable bias, and they are all ways of letting the model learn more from the data it already has: a bigger model, training for longer, better features. Chapter 27 lists the projects that reduce variance, and they are ways of stopping the model from learning the training data too specifically: more training data, regularisation, a simpler model. The two lists are close to opposites, and that is the point. A bigger model helps bias and can hurt variance; more data helps variance and does nothing for bias.</p>
+        <ul>
+          <li><strong>Bias diagnosis</strong>: the model is wrong even on what it trained on, by more than a person would be. Fund the chapter 25 family. Ceiling: the avoidable bias. For Lanternfish, 1 point.</li>
+          <li><strong>Variance diagnosis</strong>: the model is nearly as good as a person on its training data and much worse on new data. Fund the chapter 27 family. Ceiling: the variance. For Lanternfish, 9 points.</li>
+        </ul>
+        <p>The names are enough for the decision. Whether regularisation is done one way or another, what a "bigger model" means for a given architecture, is technique, and the intro machine learning and deep learning courses own it. The leader's question is only whether the sprint is drawing from the family the numbers point at.</p>
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <p>Lanternfish's quarter on the bigger model was a bias project against a variance diagnosis. It worked, in the sense that training error fell by a point. It could not have moved dev error by more than the single point of avoidable bias, and the sprint plan had promised five. The next quarter's plan, more night frames from the deployed cameras and a smaller model, was drawn from the other list, and it had nine points of room.</p>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>One knob per problem<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Andrew Ng's Structuring Machine Learning Projects course, week 1, gives the design principle behind the two lists a name: orthogonalization. This is course material, not a chapter of the book. The idea is that a well-run project has one knob per problem: a set of changes that move training error and leave variance alone, and a different set that move variance and leave training error alone. Then a change can be judged by the one number it was meant to move.</p>
+        <p>The practical consequence for a leader is a suspicion. A proposed change that moves two of the three numbers at once, training error down and dev error up, say, is a change nobody can reason about, because there is no way to say which effect was intended and whether the trade was worth it. Ask for changes that pull one knob, measure the one number, and keep or discard on that.</p>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>The honest limit of the three numbers<span class="mini">4 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <ul>
+          <li><strong>Dev error is only as good as the dev set.</strong> If the dev set is drawn from the wrong traffic, the variance number is the distance to the wrong place. Practitioner session 1 builds the set; a leader's check is one question: if the model were perfect on this dev set, would the field be satisfied?</li>
+          <li><strong>Human-level error is only as good as the measurement.</strong> Measured on different inputs, on an easier sample, or by average rather than competent people, it shifts the boundary between unavoidable and avoidable bias and can turn a variance diagnosis into a bias one.</li>
+          <li><strong>The decomposition says which source, not which cause.</strong> Nine points of variance does not say whether the fix is more night frames or fewer parameters. That is why session 3's spreadsheet comes first: the sheet says what the errors are, the three numbers say whether more learning or more data would remove them.</li>
+          <li><strong>A model can have both problems.</strong> Avoidable bias 4 and variance 5 is two doors to walk through, in order of size. The numbers still decide the order; they just do not let the team stop after one.</li>
+          <li><strong>The numbers move after every project.</strong> Recompute all three when the model changes. A variance project that worked will have shrunk the gap, and the next diagnosis may be different.</li>
+        </ul>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ DEMO ============ -->
+  <section class="section" id="demo-1">
+    <div class="section-kicker">
+      <span class="klabel">Build-along</span>
+      <h2>Three numbers, one diagnosis</h2>
+      <span class="tag demo">★ 18 min · everyone builds</span>
+    </div>
+    <p class="lede">Bring one model your team owns and whatever dashboard reports on it. If you have nothing to hand, use Lanternfish: training error 3, dev error 12, field biologists at 2 on the same frames. The exercise is two subtractions and one comparison with the sprint plan, and it should not take longer than the arithmetic.</p>
+
+    <div class="steps">
+      <div class="step">
+        <p><strong>Get three numbers for one model.</strong> Training error, dev error, and the best estimate of human-level error on the same task with the same inputs. If the third does not exist, the first finding of the session is that it should, and someone scores fifty dev examples by hand this week. Write the date next to each number.</p>
+      </div>
+      <div class="step">
+        <p><strong>Compute avoidable bias and variance.</strong> Avoidable bias is training error minus human-level error. Variance is dev error minus training error. Whatever is below the human-level line is unavoidable and comes off the table. For Lanternfish: 3 minus 2 is 1, 12 minus 3 is 9, and 2 is nobody's project.</p>
+      </div>
+      <div class="step">
+        <p><strong>Write which source is bigger and which family that funds.</strong> One sentence. "Variance 9 against avoidable bias 1: fund the more-data, regularisation, simpler-model family." The sentence is the diagnosis, and it goes at the top of the sprint plan.</p>
+      </div>
+      <div class="step">
+        <p><strong>Check whether the current sprint is attacking that source or the other one.</strong> Read each project in the plan and mark it bias-family or variance-family from its own description. Count how many are on the side the numbers point at. A plan with most of its weeks on the smaller source is the quarter about to be wasted, and it is visible before it starts.</p>
+      </div>
+    </div>
+
+    <div class="prompt-box good">
+      <span class="label">★ The three-number diagnosis, as the header of the sprint plan</span>
+Lanternfish species classifier - diagnosis, dev set of 1,000 night and day frames
+
+training error        3 percent   (last full run)
+dev error            12 percent   (same run, dev set)
+human-level error     2 percent   (two field biologists, 80 dev frames, same single frame the model sees)
+
+unavoidable bias      2           below the human line, nobody's project
+avoidable bias        1           training minus human-level
+variance              9           dev minus training
+
+diagnosis: variance, nine to one
+fund: more data from the deployed cameras, regularisation, a simpler model  (chapter 27 family)
+do not fund this quarter: bigger model, longer training, better features    (chapter 25 family, 1 point of room)
+
+current sprint: 3 projects, 11 weeks, all bias-family  -&gt;  mark for discussion before planning closes
+    </div>
+
+    <div class="callout tip">
+      <p><strong>The diagnosis does not pick the project; it rules out half the backlog.</strong> Nine points of variance says the fix is on the more-data side of the list, and session 3's spreadsheet says which data: night frames, of which the training set has too few. Both instruments together choose the project. Either alone chooses a direction.</p>
+    </div>
+  </section>
+
+  <!-- ============ HOMEWORK ============ -->
+  <section class="section" id="exercise">
+    <div class="section-kicker">
+      <span class="klabel">Homework</span>
+      <h2>Before session 5</h2>
+      <span class="tag exercise">30 min</span>
+    </div>
+    <ol>
+      <li>For one model your team owns, get the three numbers on one page with the date each was measured. If the human-level number is missing or older than the current dev set, arrange for fifty dev examples to be scored by a competent person this week.</li>
+      <li>Do the two subtractions and write the one-sentence diagnosis. Put it at the top of the next sprint plan where the sponsor will read it.</li>
+      <li>Label every project in the current plan bias-family or variance-family from its own description. Count the weeks on each side and compare with the diagnosis.</li>
+      <li>Find the last change the team shipped that moved both training error and dev error. Write down which effect was intended, and whether anyone could say at the time.</li>
+    </ol>
+  </section>
+
+  <!-- ============ QUIZ ============ -->
+  <section class="section" id="quiz">
+    <div class="section-kicker">
+      <span class="klabel">Check yourself</span>
+      <h2>Three questions</h2>
+    </div>
+
+    <div class="quiz-q" data-answer="2">
+      <p class="qtext">Training error 3 percent, dev error 12 percent, field biologists 2 percent on the same frames. Where does most of the error come from?</p>
+      <button class="qopt" type="button">A · Unavoidable bias: 3 percent is already close to the floor</button>
+      <button class="qopt" type="button">B · Avoidable bias: the model should get to 2 percent on its training data first</button>
+      <button class="qopt" type="button">C · Variance: 9 of the 12 points are the gap between training and dev error</button>
+      <p class="qwhy">Unavoidable 2, avoidable bias 3 minus 2 is 1, variance 12 minus 3 is 9. The biggest source is variance by nine to one, and that is the one to fund.</p>
+    </div>
+
+    <div class="quiz-q" data-answer="0">
+      <p class="qtext">The diagnosis is avoidable bias. Which family of projects does that fund?</p>
+      <button class="qopt" type="button">A · A bigger model, longer training, better features: ways of learning more from the data the model has</button>
+      <button class="qopt" type="button">B · More data, regularisation, a simpler model: ways of generalising better to data the model has not seen</button>
+      <button class="qopt" type="button">C · Neither; bias cannot be reduced once the model is trained</button>
+      <p class="qwhy">Chapter 25's list is for avoidable bias; chapter 27's is for variance. They are close to opposites, which is why the diagnosis has to come before the project.</p>
+    </div>
+
+    <div class="quiz-q" data-answer="1">
+      <p class="qtext">A proposed change moves training error down two points and dev error up one. What should a leader ask for?</p>
+      <button class="qopt" type="button">A · Ship it: training error improved</button>
+      <button class="qopt" type="button">B · A change that pulls one knob and moves one number, because a change that moves two at once cannot be reasoned about</button>
+      <button class="qopt" type="button">C · A larger dev set, since the dev number must be noise</button>
+      <p class="qwhy">Orthogonalization, from Ng's Structuring Machine Learning Projects course: one knob per problem. A change that moves bias and variance together leaves no way to say which effect was intended or whether the trade was worth it.</p>
+    </div>
+
+    <p class="quiz-score"></p>
+  </section>
+
+  <!-- ============ COVERAGE ============ -->
+  <section class="section" id="official">
+    <div class="section-kicker">
+      <span class="klabel">Sources covered</span>
+      <h2>What tonight maps to</h2>
+    </div>
+    <div class="covered">
+      <div class="covered-row">
+        <span class="status pill solid">✓</span>
+        <span class="name">Machine Learning Yearning, chapters 20 to 22</span>
+        <span class="note">Bias and variance as the two big sources of error; comparing to the optimal error rate, with the chapter 22 worked example quoted: optimal 14, avoidable bias 1, variance as dev minus training.</span>
+      </div>
+      <div class="covered-row">
+        <span class="status pill solid">✓</span>
+        <span class="name">Machine Learning Yearning, chapter 33</span>
+        <span class="note">Why human-level performance is the yardstick: the best available estimate of the optimal error rate, and the number that says which source to attack.</span>
+      </div>
+      <div class="covered-row">
+        <span class="status pill solid">✓</span>
+        <span class="name">Structuring Machine Learning Projects, week 1</span>
+        <span class="note">Orthogonalization, one knob per problem. Course material from deeplearning.ai, not a chapter of the book.</span>
+      </div>
+      <div class="covered-row">
+        <span class="status pill light">◐</span>
+        <span class="name">Machine Learning Yearning, chapters 25 and 27</span>
+        <span class="note">The two project families named as lists: bigger model, longer training, better features; more data, regularisation, simpler model. The technique behind each name belongs to the intro ML and deep learning courses.</span>
+      </div>
+      <div class="covered-row">
+        <span class="status pill light">◐</span>
+        <span class="name">Machine Learning Yearning, chapter 28</span>
+        <span class="note">Learning curves as the second way to read bias and variance. Practitioner session 6.</span>
+      </div>
+      <div class="covered-row">
+        <span class="status pill inkpill">·</span>
+        <span class="name">Regularisation, dropout, model capacity</span>
+        <span class="note">Not covered by design. The intro ML course owns the techniques; the decision here is only which family to fund.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ CHEAT SHEET ============ -->
+  <section class="cheat" id="cheatsheet">
+    <h3>Session 4 cheat sheet</h3>
+    <div class="grid-2">
+      <div class="cheat-item"><b>Three numbers</b><span>Training error, dev error, human-level error on the same inputs. Same date, same task.</span></div>
+      <div class="cheat-item"><b>Two subtractions</b><span>Avoidable bias = training minus human-level. Variance = dev minus training. Below the human line is nobody's project.</span></div>
+      <div class="cheat-item"><b>Lanternfish: 2 + 1 + 9</b><span>Unavoidable 2, avoidable bias 1, variance 9. Work on variance.</span></div>
+      <div class="cheat-item"><b>The book's example: 30</b><span>Optimal 14, avoidable bias 1, variance dev minus training. Chapter 22.</span></div>
+      <div class="cheat-item"><b>Bias funds</b><span>Bigger model, longer training, better features. Chapter 25. Ceiling: the avoidable bias.</span></div>
+      <div class="cheat-item"><b>Variance funds</b><span>More data, regularisation, simpler model. Chapter 27. Ceiling: the variance.</span></div>
+      <div class="cheat-item"><b>One knob per problem</b><span>Orthogonalization, from the course not the book. A change that moves two numbers cannot be reasoned about.</span></div>
+      <div class="cheat-item"><b>Only as good as the inputs</b><span>A wrong dev set or a stale human-level number moves the diagnosis. Sessions 1 and 3 came first for a reason.</span></div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="pagefoot">
+  <div class="wrap">
+    <p>Leader session 4 of 6 · learn-ml-strategy-with-phoebe · by Phoebe Fu</p>
+    <nav class="pagenav">
+      <a href="a3-look-at-100-mistakes.html">← Leader session 3 · Look at 100 mistakes</a>
+      <a href="a5-the-pipeline-hides-its-weakest-part.html">Leader session 5 · The pipeline that hides its weakest part →</a>
+    </nav>
+  </div>
+</footer>
+
+<script src="../assets/app.js?v=1"></script>
+</body>
+</html>

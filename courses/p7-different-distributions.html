@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- social:start -->
+<meta name="description" content="Practitioner session 7 of 10. Lanternfish trains on 200,000 web photos plus 38,000 camera frames and is judged on camera frames only. A training-dev set carved from the training pool turns one unreadable gap of 9 points into 3 points of variance and 6 points of data mismatch.">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Learn with Phoebe">
+<meta property="og:title" content="Training and testing on different distributions - learn ml strategy with phoebe">
+<meta property="og:description" content="Practitioner session 7 of 10. Four sets, four numbers, three gaps. Variance, data mismatch and dev overfit stop being the same argument.">
+<meta property="og:url" content="https://phoebefu6.github.io/learn-ml-strategy-with-phoebe/courses/p7-different-distributions.html">
+<meta property="og:image" content="https://phoebefu6.github.io/learn-ml-strategy-with-phoebe/assets/og-cover.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Training and testing on different distributions - learn ml strategy with phoebe">
+<meta name="twitter:description" content="Did the model fail to generalise, or did it never see this kind of image? One held-out set answers it.">
+<meta name="twitter:image" content="https://phoebefu6.github.io/learn-ml-strategy-with-phoebe/assets/og-cover.png">
+<!-- social:end -->
+<title>Practitioner session 7 · Training and testing on different distributions - learn ml strategy with phoebe</title>
+<link rel="stylesheet" href="../assets/style.css?v=1">
+</head>
+<body>
+
+<div class="toolbar">
+  <div class="wrap">
+    <span class="crumb"><a href="../index.html">learn-ml-strategy-with-phoebe</a> / Practitioner session 7 of 10</span>
+    <button class="btn" id="toggle-all" type="button">Expand all</button>
+    <button class="btn primary" id="zoom-toggle" type="button">Projector zoom: off</button>
+  </div>
+</div>
+
+<header class="masthead">
+  <div class="wrap">
+    <div class="eyebrow">Learn ML Strategy with Phoebe · Practitioner session 7 of 10</div>
+    <h1>Training and testing on <span class="accent">different distributions</span></h1>
+    <p class="sub">Session 1 fixed the dev and test sets to camera frames only, because camera frames are what the field judges. The training set never took that vow: it holds 200,000 web photos alongside 38,000 labelled camera frames, and throwing the web photos away would cost more than it saves. That choice is usually right and it breaks one reading. When dev error is worse than training error you can no longer tell whether the model failed to generalise or simply never saw a night infrared frame. Tonight you carve a fourth set that separates the two.</p>
+    <div class="chip-row">
+      <span class="chip level">🟠 Advanced</span>
+      <span class="chip audience">Data scientists and ML engineers</span>
+      <span class="chip time">45 min</span>
+    </div>
+    <div class="agenda">
+      <span class="a1" style="flex:1">0-3 · Welcome</span>
+      <span class="a2" style="flex:5">3-20 · When it is right, and the fourth set</span>
+      <span class="a3" style="flex:4">20-40 · Build-along: separate variance from mismatch</span>
+      <span class="a4" style="flex:1">40-45 · Q&amp;A</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ============ INTRO ============ -->
+  <section class="section" id="intro">
+    <div class="section-kicker">
+      <span class="klabel">Part 0</span>
+      <h2>The nine points that were never one thing</h2>
+    </div>
+    <p class="lede">Training error 3, dev error 12, and session 5 called the nine-point gap variance. That reading assumed the two sets were the same kind of image. They are not: the training pool is mostly daytime web photos and the dev set is camera frames from the deployed cameras. Some of the nine points are a model that failed to generalise. The rest are a model that was never shown the problem. They fund completely different work.</p>
+
+    <div class="legend">
+      <span class="pill">Live = presented in the 45 minutes</span>
+      <span class="pill">Self-study = the full depth, after class</span>
+      <span class="pill">🔍 Every diagram zooms</span>
+    </div>
+
+    <div class="callout win">
+      <p><strong>★ What you walk out with tonight.</strong> The test for whether mixing distributions is the right call at all, rather than a habit. A training-dev set carved from the training pool, held out and never trained on, which turns four sets into four numbers. The three gaps between those numbers and what each one names. And the limit that keeps synthesis honest: a model that loves your simulated night frames may still fail on real ones.</p>
+    </div>
+
+    <details class="card" open>
+      <summary><span class="mode live">Live</span>Why the gap became unreadable<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>The bias and variance arithmetic from session 5 rests on a quiet assumption: the training set and the dev set are drawn from the same distribution, so the only thing that changes between them is whether the model has seen the examples. Break that assumption and the dev minus training gap stops being a single quantity. It becomes a sum of two, and the sum is all you can see.</p>
+        <p>The two components pull in opposite directions when it comes to work. Variance says the model overfits, so buy more of the same kind of data, augment, or regularise. Mismatch says the model is fine on what it was shown and was shown the wrong thing, so change the input distribution. Running the variance playbook against a mismatch problem is the most common expensive mistake in this part of the discipline, and it is invisible without a fourth set.</p>
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <p>Lanternfish spent six weeks on dropout, weight decay and heavier augmentation to close a nine-point gap that the team had labelled variance. Dev error moved from 12.4 to 12.0. When they finally carved a training-dev set, three of the nine points were variance and six were mismatch. Six weeks of correct technique aimed at a third of the problem.</p>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>The four sets, in one place<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <ul>
+          <li><strong>Training set</strong> - web photos plus camera frames, the mixed pool. The model learns from this and only this.</li>
+          <li><strong>Training-dev set</strong> - carved from the same mixed pool, in the same proportions, held out and never trained on. Same distribution as training, unseen like dev.</li>
+          <li><strong>Dev set</strong> - 1,000 camera frames, the target distribution. Tuned and chosen on.</li>
+          <li><strong>Test set</strong> - camera frames from the same pool as the dev set, reported once.</li>
+        </ul>
+        <p>The training-dev set is the only one of the four that has no job in the field. It exists purely as an instrument: it holds the distribution constant while the seen-versus-unseen thing changes, so the difference it exposes can only be one of the two.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 1 ============ -->
+  <section class="section" id="part-1">
+    <div class="section-kicker">
+      <span class="klabel">Part 1 · covers chapters 36 to 39</span>
+      <h2>When you should train and test on different distributions</h2>
+      <span class="tag concept">9 min live</span>
+    </div>
+    <p class="lede">Chapter 36 of <em>Machine Learning Yearning</em> is titled "When you should train and test on different distributions", and the word that carries it is "should". Mixing is not a compromise you apologise for. It is often the right engineering call, and there is a test for when it is not.</p>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>The Lanternfish arithmetic for keeping the web photos<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Lanternfish has 200,000 labelled web photos, free, already in hand, daytime and sharp. It has 38,000 labelled camera frames, at 4 pounds each and about five months of field-crew time per 38,000. Keeping the distributions identical means training on 38,000 examples instead of 238,000, and throwing away six times the data to preserve a property that matters for measurement, not for learning.</p>
+        <p>That trade is almost always the wrong way round. Dev and test have to be camera frames because they define what doing well means. The training set has no such duty: its only job is to teach a model to recognise a deer. A deer in a daytime web photo is still a deer, and the low-level structure the model learns from 200,000 of them transfers to a night frame far better than nothing does.</p>
+        <div class="callout tip">
+          <p><strong>The asymmetry, restated.</strong> Training data is chosen to teach. Dev and test data are chosen to measure. Optimising a training set for measurement properties is how a team ends up with a well-measured model that nobody trained properly.</p>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Whether to include inconsistent data at all<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Chapter 38 asks the question in the other direction: given data that does not match your target, should it be in the training set at all? The test is whether the extra data teaches something the target distribution shares.</p>
+        <ul>
+          <li><strong>Web photos of deer, elk and foxes.</strong> Shared: what the animals look like, how bodies occlude, how many legs point which way. Include them.</li>
+          <li><strong>Satellite imagery of forests.</strong> Shared: nothing the classifier needs. Adding it spends capacity on a mapping the target never asks for. Leave it out.</li>
+          <li><strong>Web photos with a different label taxonomy.</strong> Shared content, incompatible labels. Fix the taxonomy first or the data teaches the model to be confidently wrong.</li>
+          <li><strong>Frames from a discontinued camera model.</strong> Shared: night infrared texture, framing, motion blur. Include, and expect it to be the most valuable non-target data you own.</li>
+        </ul>
+        <p>Two things reduce the risk of a wrong call here. Weight the target-distribution examples more heavily than the off-distribution ones, so the model is pulled toward the thing it is judged on. And run the four numbers below before and after adding a source, because the training-dev set will show you what the new data did to generalisation and what it did to mismatch, separately.</p>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>What mixing costs you, precisely<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>One thing, and it is a measurement thing rather than a modelling one. With a single distribution, dev error minus training error has exactly one meaning. With two, it has two, superimposed:</p>
+        <ul>
+          <li><strong>The model did not generalise.</strong> It fits examples it saw better than examples it did not, regardless of what kind they are. This is variance in the ordinary sense.</li>
+          <li><strong>The model never saw this kind of image.</strong> It generalises perfectly well within the world it was trained on, and the dev set is a different world. This is data mismatch.</li>
+        </ul>
+        <p>Nothing in the two numbers separates them, and teams argue about which it is for months. The cost of mixing is one confounded reading, and the fix is one more held-out set rather than a smaller training pool.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 2 ============ -->
+  <section class="section" id="part-2">
+    <div class="section-kicker">
+      <span class="klabel">Part 2 · covers chapters 40 to 43</span>
+      <h2>The training-dev set separates the two</h2>
+      <span class="tag concept">9 min live</span>
+    </div>
+    <p class="lede">Hold out a slice of the training pool, in the same proportions as the pool, and never train on it. It is unseen like the dev set and it is web-photos-plus-camera-frames like the training set. Comparing against it holds one variable still at a time, and four numbers fall out where two used to be.</p>
+
+    <figure class="zoomable">
+      <svg viewBox="0 0 880 320" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Four sets in a row. Training and training-dev are drawn from the mixed pool of web photos plus camera frames; dev and test are drawn from camera frames only. The gap between training and training-dev is variance, the gap between training-dev and dev is data mismatch, and the gap between dev and test is dev overfit.">
+        <style>
+          .p7aT { font: 800 12px Inter, sans-serif; fill: #fff; }
+          .p7aH { font: 800 12px Inter, sans-serif; fill: #1C1917; }
+          .p7aB { font: 400 11px Inter, sans-serif; fill: #1C1917; }
+          .p7aM { font: 400 11px Inter, sans-serif; fill: #6B6259; }
+          .p7aN { font: 700 11px Inter, sans-serif; fill: #1C1917; }
+          .p7aK { font: 800 12px Inter, sans-serif; fill: #713F12; }
+        </style>
+
+        <rect x="14" y="40" width="416" height="34" rx="8" fill="#FACC15"></rect>
+        <text class="p7aH" x="222" y="62" text-anchor="middle">Mixed pool: web photos plus camera frames</text>
+        <rect x="454" y="40" width="412" height="34" rx="8" fill="#A16207"></rect>
+        <text class="p7aT" x="660" y="62" text-anchor="middle">Camera frames only, the target distribution</text>
+
+        <line x1="112" y1="74" x2="112" y2="92" stroke="#D9D2C5" stroke-width="1.5"></line>
+        <line x1="332" y1="74" x2="332" y2="92" stroke="#D9D2C5" stroke-width="1.5"></line>
+        <line x1="552" y1="74" x2="552" y2="92" stroke="#D9D2C5" stroke-width="1.5"></line>
+        <line x1="770" y1="74" x2="770" y2="92" stroke="#D9D2C5" stroke-width="1.5"></line>
+
+        <rect x="14" y="92" width="196" height="76" rx="9" fill="#FEF08A"></rect>
+        <text class="p7aH" x="112" y="122" text-anchor="middle">Training</text>
+        <text class="p7aB" x="112" y="142" text-anchor="middle">the model learns here</text>
+
+        <rect x="234" y="92" width="196" height="76" rx="9" fill="#FEF08A"></rect>
+        <text class="p7aH" x="332" y="122" text-anchor="middle">Training-dev</text>
+        <text class="p7aB" x="332" y="142" text-anchor="middle">held out, never trained</text>
+
+        <rect x="454" y="92" width="196" height="76" rx="9" fill="#FEFCE8" stroke="#A16207" stroke-width="2"></rect>
+        <text class="p7aH" x="552" y="122" text-anchor="middle">Dev</text>
+        <text class="p7aB" x="552" y="142" text-anchor="middle">tuned and chosen on</text>
+
+        <rect x="674" y="92" width="192" height="76" rx="9" fill="#FEFCE8" stroke="#A16207" stroke-width="2"></rect>
+        <text class="p7aH" x="770" y="122" text-anchor="middle">Test</text>
+        <text class="p7aB" x="770" y="142" text-anchor="middle">reported once</text>
+
+        <path d="M112,178 L112,190 L332,190 L332,178" fill="none" stroke="#713F12" stroke-width="1.5"></path>
+        <path d="M332,178 L332,190 L552,190 L552,178" fill="none" stroke="#713F12" stroke-width="1.5"></path>
+        <path d="M552,178 L552,190 L770,190 L770,178" fill="none" stroke="#713F12" stroke-width="1.5"></path>
+
+        <text class="p7aK" x="222" y="210" text-anchor="middle">variance</text>
+        <text class="p7aK" x="442" y="210" text-anchor="middle">data mismatch</text>
+        <text class="p7aK" x="661" y="210" text-anchor="middle">dev overfit</text>
+
+        <text class="p7aM" x="222" y="228" text-anchor="middle">training to training-dev</text>
+        <text class="p7aM" x="442" y="228" text-anchor="middle">training-dev to dev</text>
+        <text class="p7aM" x="661" y="228" text-anchor="middle">dev to test</text>
+
+        <text class="p7aB" x="222" y="248" text-anchor="middle">seen versus unseen</text>
+        <text class="p7aB" x="442" y="248" text-anchor="middle">one world versus another</text>
+        <text class="p7aB" x="661" y="248" text-anchor="middle">too many choices on dev</text>
+
+        <rect x="14" y="278" width="14" height="14" rx="3" fill="#60A5FA"></rect>
+        <text class="p7aN" x="38" y="290">Each gap changes exactly one thing, so each gap can only mean one thing.</text>
+      </svg>
+      <figcaption>🔍 Click to zoom - four sets, two source pools, three gaps that each name one failure.</figcaption>
+    </figure>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Carving it, and the one rule that makes it work<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Take the mixed training pool and hold out a random slice before training. Two thousand examples is plenty for Lanternfish; the training-dev set only has to be big enough to measure a gap of a few points, and session 1's arithmetic applies unchanged.</p>
+        <p>The rule that makes it an instrument rather than decoration: it must have the same composition as the training set. Lanternfish's pool is 84 percent web photos and 16 percent camera frames, so the training-dev set must be too. A training-dev set accidentally enriched with camera frames drags the mismatch gap into the variance gap, and you get a confident number for the wrong split.</p>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Reading the four numbers<span class="mini">4 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Four errors, three differences, and each difference isolates a single change:</p>
+        <ul>
+          <li><strong>Human-level to training error</strong> is avoidable bias. Same as session 5, unchanged by any of this.</li>
+          <li><strong>Training to training-dev</strong> is variance. Same distribution on both sides, so the only thing that changed is whether the model saw the examples.</li>
+          <li><strong>Training-dev to dev</strong> is data mismatch. Both unseen, so the only thing that changed is which distribution the examples came from.</li>
+          <li><strong>Dev to test</strong> is dev overfit. Same distribution, both unseen by the model, so the only thing that changed is how many decisions you made while looking at the first one.</li>
+        </ul>
+        <p>Lanternfish's four numbers are 3, 6, 12 and 12. Variance is 3, mismatch is 6, dev overfit is 0. The nine points session 5 attributed to variance were two thirds mismatch, and the six weeks of regularisation were aimed at the smaller third.</p>
+      </div>
+    </details>
+
+    <figure class="zoomable">
+      <svg viewBox="0 0 880 330" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A step chart of the four Lanternfish error numbers: training 3 percent, training-dev 6 percent, dev 12 percent and test 12 percent, with the human-level line at 2 percent. The training to training-dev step of 3 points is variance, the training-dev to dev step of 6 points is data mismatch, and the dev to test step of zero means no dev overfit.">
+        <style>
+          .p7bH { font: 800 12px Inter, sans-serif; fill: #1C1917; }
+          .p7bB { font: 400 11px Inter, sans-serif; fill: #1C1917; }
+          .p7bM { font: 400 10px Inter, sans-serif; fill: #6B6259; }
+          .p7bN { font: 700 11px Inter, sans-serif; fill: #1C1917; }
+          .p7bK { font: 800 11px Inter, sans-serif; fill: #713F12; }
+          .p7bV { font: 800 12px Inter, sans-serif; fill: #1C1917; }
+        </style>
+
+        <text class="p7bH" x="40" y="28">Lanternfish, four error rates on one scale</text>
+        <line x1="40" y1="250" x2="680" y2="250" stroke="#D9D2C5" stroke-width="1.5"></line>
+        <line x1="40" y1="60" x2="40" y2="250" stroke="#D9D2C5" stroke-width="1.5"></line>
+        <line x1="40" y1="223" x2="680" y2="223" stroke="#60A5FA" stroke-width="1.5" stroke-dasharray="5 4"></line>
+        <text class="p7bM" x="36" y="92" text-anchor="end">12%</text>
+        <text class="p7bM" x="36" y="227" text-anchor="end">2%</text>
+        <text class="p7bM" x="36" y="254" text-anchor="end">0</text>
+
+        <rect x="60" y="210" width="100" height="40" rx="4" fill="#FEF08A"></rect>
+        <text class="p7bV" x="110" y="202" text-anchor="middle">3</text>
+        <rect x="230" y="169" width="100" height="81" rx="4" fill="#FACC15"></rect>
+        <text class="p7bV" x="280" y="161" text-anchor="middle">6</text>
+        <rect x="400" y="88" width="100" height="162" rx="4" fill="#A16207"></rect>
+        <text class="p7bV" x="450" y="80" text-anchor="middle">12</text>
+        <rect x="570" y="88" width="100" height="162" rx="4" fill="#713F12"></rect>
+        <text class="p7bV" x="620" y="80" text-anchor="middle">12</text>
+
+        <line x1="195" y1="210" x2="195" y2="169" stroke="#713F12" stroke-width="1.5"></line>
+        <line x1="188" y1="210" x2="202" y2="210" stroke="#713F12" stroke-width="1.5"></line>
+        <line x1="188" y1="169" x2="202" y2="169" stroke="#713F12" stroke-width="1.5"></line>
+        <text class="p7bK" x="166" y="158">variance 3</text>
+
+        <line x1="365" y1="169" x2="365" y2="88" stroke="#713F12" stroke-width="1.5"></line>
+        <line x1="358" y1="169" x2="372" y2="169" stroke="#713F12" stroke-width="1.5"></line>
+        <line x1="358" y1="88" x2="372" y2="88" stroke="#713F12" stroke-width="1.5"></line>
+        <text class="p7bK" x="336" y="78">data mismatch 6</text>
+
+        <line x1="500" y1="88" x2="570" y2="88" stroke="#713F12" stroke-width="1.5" stroke-dasharray="4 4"></line>
+        <text class="p7bK" x="506" y="78">dev overfit 0</text>
+
+        <text class="p7bB" x="110" y="268" text-anchor="middle">Training</text>
+        <text class="p7bB" x="280" y="268" text-anchor="middle">Training-dev</text>
+        <text class="p7bB" x="450" y="268" text-anchor="middle">Dev</text>
+        <text class="p7bB" x="620" y="268" text-anchor="middle">Test</text>
+        <text class="p7bM" x="110" y="284" text-anchor="middle">mixed pool, seen</text>
+        <text class="p7bM" x="280" y="284" text-anchor="middle">mixed pool, unseen</text>
+        <text class="p7bM" x="450" y="284" text-anchor="middle">camera only</text>
+        <text class="p7bM" x="620" y="284" text-anchor="middle">camera only</text>
+
+        <rect x="690" y="60" width="176" height="190" rx="10" fill="#FEFCE8" stroke="#D9D2C5"></rect>
+        <text class="p7bH" x="704" y="84">What each gap says</text>
+        <text class="p7bB" x="704" y="108">3: variance, it did</text>
+        <text class="p7bB" x="704" y="126">not generalise</text>
+        <text class="p7bB" x="704" y="150">6: mismatch, it never</text>
+        <text class="p7bB" x="704" y="168">saw a night frame</text>
+        <text class="p7bB" x="704" y="192">0: dev was not</text>
+        <text class="p7bB" x="704" y="210">overfit, yet</text>
+        <text class="p7bM" x="704" y="234">3 + 6 = the 9 points</text>
+
+        <rect x="40" y="300" width="14" height="14" rx="3" fill="#60A5FA"></rect>
+        <text class="p7bN" x="64" y="312">Session 5 called all nine points variance. Two thirds of them were mismatch.</text>
+        <line x1="580" y1="308" x2="604" y2="308" stroke="#60A5FA" stroke-width="1.5" stroke-dasharray="5 4"></line>
+        <text class="p7bM" x="610" y="312">human-level, 2 percent</text>
+      </svg>
+      <figcaption>🔍 Click to zoom - the same nine points, split into the two things that fund different work.</figcaption>
+    </figure>
+
+    <table class="clean">
+      <thead><tr><th>Comparison</th><th>What is held still</th><th>What changes</th><th>Lanternfish</th><th>Name</th></tr></thead>
+      <tbody>
+        <tr><td>Human-level to training</td><td>Nothing about data</td><td>Model versus person</td><td>1 point</td><td>Avoidable bias</td></tr>
+        <tr><td>Training to training-dev</td><td>Distribution</td><td>Seen versus unseen</td><td>3 points</td><td>Variance</td></tr>
+        <tr><td>Training-dev to dev</td><td>Unseen by the model</td><td>Distribution</td><td>6 points</td><td>Data mismatch</td></tr>
+        <tr><td>Dev to test</td><td>Distribution and unseen</td><td>Decisions made on it</td><td>0 points</td><td>Dev overfit</td></tr>
+      </tbody>
+    </table>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Addressing data mismatch<span class="mini">4 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Chapter 42 is titled "Addressing data mismatch" and its first instruction is not a technique. Look at examples from both sides and work out what actually differs. Not what you assume differs. Lanternfish's team expected the answer to be "night", and it partly was, but the bigger differences were motion blur from a triggered shutter and animals cropped by the frame edge, neither of which appears in a curated web photo.</p>
+        <p>Once you know what differs, there are two families of fix and they cost very different amounts:</p>
+        <ul>
+          <li><strong>Make the training data more like the target.</strong> Synthesise the difference: convert web photos to infrared-like greyscale, add the sensor's noise profile, apply the motion blur the trigger produces, crop animals at the frame edge. Cheap, fast, and applies to all 200,000 photos at once.</li>
+          <li><strong>Collect more target data.</strong> More labelled camera frames, which is 4 pounds each and five months of field crew per 38,000. Expensive, slow, and unarguably the real distribution.</li>
+        </ul>
+        <p>Do them in that order and measure between. Synthesis often takes a six-point mismatch to two, at which point the collection project is competing against a much smaller ceiling and may not be worth funding at all.</p>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>The honest limit of synthesis<span class="mini">4 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Artificial synthesis has a failure mode that looks exactly like success. Your synthesiser produces one narrow slice of the space of night frames, the model learns that slice thoroughly, the training-dev-to-dev gap closes, and the field number does not move. The model overfit your synthesis process, not the target distribution.</p>
+        <ul>
+          <li><strong>The tell.</strong> A mismatch gap that closes far faster than the field error does. If synthesis takes mismatch from 6 to 1 and the deployed accuracy is unchanged, you synthesised something the cameras do not produce.</li>
+          <li><strong>A person cannot audit this by eye.</strong> Simulated night frames that look convincing to a human can be trivially separable to a model, which is exactly what lets it overfit them.</li>
+          <li><strong>Vary the synthesis parameters widely,</strong> and randomise them per example rather than fixing one noise level and one blur radius across 200,000 photos.</li>
+          <li><strong>Keep some real target data out of the synthesis loop entirely,</strong> so there is always a number that synthesis cannot have flattered.</li>
+          <li><strong>Report the field number next to the mismatch gap.</strong> Two numbers that move together is a fix; one that moves alone is a story about your synthesiser.</li>
+        </ul>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ DEMO ============ -->
+  <section class="section" id="demo-1">
+    <div class="section-kicker">
+      <span class="klabel">Build-along</span>
+      <h2>Separate variance from mismatch on your own model</h2>
+      <span class="tag demo">★ 20 min · everyone builds</span>
+    </div>
+    <p class="lede">Bring a model whose training data is not purely production traffic, which is most of them. If you have nothing to hand, use the Lanternfish pool: 200,000 web photos, 38,000 labelled camera frames, a 1,000-frame dev set with 120 wrong, and a 1,000-frame test set drawn from the same camera pool.</p>
+
+    <div class="steps">
+      <div class="step">
+        <p><strong>Carve the training-dev set before you train anything.</strong> Two thousand rows, drawn at random from the whole mixed pool, in the same source proportions as the pool. Write the split to a table so every future run uses the same one.</p>
+      </div>
+      <div class="step">
+        <p><strong>Verify the composition matches.</strong> Source mix, day-versus-night share, species mix. If the training-dev set is 20 percent camera frames and the pool is 16 percent, redraw. An enriched training-dev set moves mismatch into variance silently.</p>
+      </div>
+      <div class="step">
+        <p><strong>Train on the training split only,</strong> and produce four errors: training, training-dev, dev, test. Score training error on the training split itself, not on the pool including the held-out slice.</p>
+      </div>
+      <div class="step">
+        <p><strong>Compute the three gaps and name the dominant one.</strong> Training to training-dev is variance, training-dev to dev is mismatch, dev to test is dev overfit. Whichever is largest is the one the next sprint is about.</p>
+      </div>
+      <div class="step">
+        <p><strong>Pull ten examples from each side of the mismatch.</strong> Ten training-dev examples the model got right and ten dev examples it got wrong, side by side on one screen. Write down what actually differs, in plain words, before anybody proposes a fix.</p>
+      </div>
+      <div class="step">
+        <p><strong>Propose one synthesis step and one collection step, each with a cost.</strong> "Infrared greyscale plus sensor noise on all 200,000 web photos, two days of engineering" against "another 10,000 labelled camera frames, 40,000 pounds and six weeks". Both go in the backlog table with a ceiling, exactly like every other project.</p>
+      </div>
+      <div class="step">
+        <p><strong>Re-run the four numbers after the synthesis step.</strong> Mismatch is the number that should move. If variance moves instead, the synthesis changed the training distribution in a way you did not intend.</p>
+      </div>
+    </div>
+
+    <div class="prompt-box good">
+      <span class="label">★ Try it now - carve the training-dev set and check its composition</span>
+-- hold out 2,000 rows of the MIXED pool, never trained on, same source mix
+with pool as (
+  select example_id, source, species_label,
+         row_number() over (order by hash(example_id)) as rn
+  from ml.training_pool          -- 200,000 web photos + 38,000 camera frames
+)
+select example_id, source, species_label,
+       case when rn &lt;= 2000 then 'training-dev' else 'training' end as split
+from pool;
+
+-- the check that makes it an instrument: the two splits must look the same
+select split,
+       count(*) as n,
+       round(100.0 * sum(case when source = 'web' then 1 else 0 end) / count(*), 1)
+         as pct_web,
+       round(100.0 * sum(case when source = 'camera' then 1 else 0 end) / count(*), 1)
+         as pct_camera
+from ml.training_splits
+group by split;
+-- pct_web should read about 84 in both rows. A gap here becomes a gap in your gaps.
+    </div>
+
+    <div class="prompt-box good">
+      <span class="label">★ Try it now - four numbers, three gaps, one name</span>
+from sklearn.metrics import accuracy_score
+
+HUMAN_LEVEL = 0.02
+model = fit(X_train, y_train)          # training split only; training-dev is held out
+
+def err(X, y):
+    return 1 - accuracy_score(y, model.predict(X))
+
+train_err     = err(X_train, y_train)          # 0.03 for Lanternfish
+train_dev_err = err(X_traindev, y_traindev)    # 0.06
+dev_err       = err(X_dev, y_dev)              # 0.12
+test_err      = err(X_test, y_test)            # 0.12
+
+avoidable_bias = train_err - HUMAN_LEVEL
+variance       = train_dev_err - train_err
+mismatch       = dev_err - train_dev_err
+dev_overfit    = test_err - dev_err
+
+for name, gap in [("avoidable bias", avoidable_bias), ("variance", variance),
+                  ("data mismatch", mismatch), ("dev overfit", dev_overfit)]:
+    print(f"{name:16s} {gap:6.1%}")
+
+ranked = max([("variance", variance), ("data mismatch", mismatch)], key=lambda p: p[1])
+print("dominant gap:", ranked[0], f"({ranked[1]:.1%})")
+    </div>
+
+    <div class="prompt-box good">
+      <span class="label">★ Try it now - ten from each side, before proposing anything</span>
+-- what the model handles in its own world, and fails on in the target world
+(select 'training-dev, correct' as side, example_id, source, is_night, blur_score
+ from ml.scored where split = 'training-dev' and correct
+ order by hash(example_id) limit 10)
+union all
+(select 'dev, wrong' as side, example_id, source, is_night, blur_score
+ from ml.scored where split = 'dev' and not correct
+ order by hash(example_id) limit 10);
+-- open the images. Write one sentence per difference you can actually see.
+-- Lanternfish's list: infrared greyscale, trigger motion blur, animals cropped
+-- by the frame edge, and a far wider range of distances than any web photo.
+    </div>
+
+    <div class="callout tip">
+      <p><strong>Look at the images before the histogram.</strong> A distribution comparison over the columns you already have can only find differences you already thought to record. The three most valuable differences on the Lanternfish list had no column, and twenty minutes of looking is what put them there.</p>
+    </div>
+  </section>
+
+  <!-- ============ HOMEWORK ============ -->
+  <section class="section" id="exercise">
+    <div class="section-kicker">
+      <span class="klabel">Homework</span>
+      <h2>Before session 8</h2>
+      <span class="tag exercise">40 min</span>
+    </div>
+    <ol>
+      <li>Work out what share of your training data comes from the same source as your dev set. If it is under half, the gap you have been calling variance is mostly something else.</li>
+      <li>Carve a training-dev set from your training pool and verify its composition matches. Persist the split so it is the same one next month.</li>
+      <li>Produce the four numbers and the three gaps. Put them in the same place your team already reads the training and dev numbers, so the split becomes the default reading rather than an investigation.</li>
+      <li>Look at ten examples from each side of your largest gap and write down what differs, in plain words, with no fix attached.</li>
+      <li>Cost one synthesis step and one collection step against that difference. Take the cheaper one to whoever approves the sprint, with the mismatch gap it is aimed at written next to it.</li>
+    </ol>
+  </section>
+
+  <!-- ============ QUIZ ============ -->
+  <section class="section" id="quiz">
+    <div class="section-kicker">
+      <span class="klabel">Check yourself</span>
+      <h2>Three questions</h2>
+    </div>
+
+    <div class="quiz-q" data-answer="1">
+      <p class="qtext">Training error 3, training-dev error 6, dev error 12. Which gap is data mismatch, and how much of it is there?</p>
+      <button class="qopt" type="button">A · Training to training-dev, 3 points, because the training-dev set is unseen</button>
+      <button class="qopt" type="button">B · Training-dev to dev, 6 points, because both are unseen by the model and the only thing that changed is which distribution they came from</button>
+      <button class="qopt" type="button">C · Training to dev, 9 points, because that is the whole generalisation gap</button>
+      <p class="qwhy">Each gap changes exactly one variable. Training to training-dev holds distribution still and changes seen versus unseen, so it is variance. Training-dev to dev holds unseen still and changes distribution, so it is mismatch.</p>
+    </div>
+
+    <div class="quiz-q" data-answer="0">
+      <p class="qtext">Lanternfish has 200,000 free web photos and 38,000 camera frames at 4 pounds each. Why not train on camera frames only, so every set matches?</p>
+      <button class="qopt" type="button">A · Because training data is chosen to teach and dev data is chosen to measure, so discarding six times the training data to gain a measurement property is the wrong trade</button>
+      <button class="qopt" type="button">B · Because a model always performs better with more data of any kind whatsoever</button>
+      <button class="qopt" type="button">C · Because the dev set would then be too small to detect an improvement</button>
+      <p class="qwhy">Dev and test have to be camera frames because they define doing well. The training set has no such duty. The measurement problem the mix creates is fixed with one more held-out set, not with a smaller training pool.</p>
+    </div>
+
+    <div class="quiz-q" data-answer="2">
+      <p class="qtext">Synthesised night frames take the mismatch gap from 6 points to 1, and the deployed accuracy does not move. What happened?</p>
+      <button class="qopt" type="button">A · The dev set is too small to show the improvement</button>
+      <button class="qopt" type="button">B · The improvement is real and will appear in the field after the next release</button>
+      <button class="qopt" type="button">C · The model overfit the synthesis process: it learned the narrow slice of night frames the synthesiser produces, which the cameras do not actually produce</button>
+      <p class="qwhy">Simulated frames that look convincing to a person can be trivially separable to a model. Vary the synthesis parameters per example, keep some real target data out of the loop, and always report the field number next to the mismatch gap.</p>
+    </div>
+
+    <p class="quiz-score"></p>
+  </section>
+
+  <!-- ============ COVERAGE ============ -->
+  <section class="section" id="official">
+    <div class="section-kicker">
+      <span class="klabel">Sources covered</span>
+      <h2>What tonight maps to</h2>
+    </div>
+    <div class="covered">
+      <div class="covered-row">
+        <span class="status pill solid">✓</span>
+        <span class="name">Machine Learning Yearning, chapter 36</span>
+        <span class="note">"When you should train and test on different distributions". The Lanternfish arithmetic for keeping 200,000 web photos while dev and test stay camera-only.</span>
+      </div>
+      <div class="covered-row">
+        <span class="status pill solid">✓</span>
+        <span class="name">Machine Learning Yearning, chapters 37 to 39</span>
+        <span class="note">Whether to include inconsistent data at all, and the test: does the extra data teach something the target distribution shares.</span>
+      </div>
+      <div class="covered-row">
+        <span class="status pill solid">✓</span>
+        <span class="name">Machine Learning Yearning, chapters 40 to 41</span>
+        <span class="note">The training-dev set carved from the training distribution, the four numbers, and the three gaps read one variable at a time.</span>
+      </div>
+      <div class="covered-row">
+        <span class="status pill solid">✓</span>
+        <span class="name">Machine Learning Yearning, chapters 42 to 43</span>
+        <span class="note">"Addressing data mismatch": look at examples from both sides first, then make the training data more like the target or collect more of the target. Plus the limit of artificial synthesis.</span>
+      </div>
+      <div class="covered-row">
+        <span class="status pill light">◐</span>
+        <span class="name">Machine Learning Yearning, chapters 5 to 7</span>
+        <span class="note">Dev and test drawn from the traffic you will be judged on is practitioner session 1. Tonight is what the training set is allowed to do instead.</span>
+      </div>
+      <div class="covered-row">
+        <span class="status pill light">◐</span>
+        <span class="name">Machine Learning Yearning, chapters 20 to 32</span>
+        <span class="note">Bias, variance and learning curves are sessions 5 and 6. Tonight splits the variance number those sessions produced.</span>
+      </div>
+      <div class="covered-row">
+        <span class="status pill inkpill">·</span>
+        <span class="name">Augmentation and synthesis technique</span>
+        <span class="note">Not covered by design. The choice of what to synthesise is here; how to implement a noise model belongs to the deep learning course.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ CHEAT SHEET ============ -->
+  <section class="cheat" id="cheatsheet">
+    <h3>Session 7 cheat sheet</h3>
+    <div class="grid-2">
+      <div class="cheat-item"><b>Training teaches, dev measures</b><span>Training data may come from anywhere useful. Dev and test define doing well.</span></div>
+      <div class="cheat-item"><b>Include it if it shares something</b><span>Web photos of deer share what a deer looks like. Satellite imagery shares nothing.</span></div>
+      <div class="cheat-item"><b>Carve a training-dev set</b><span>From the training pool, same proportions, held out, never trained on.</span></div>
+      <div class="cheat-item"><b>Training to training-dev</b><span>Distribution held still, seen changes. That gap is variance.</span></div>
+      <div class="cheat-item"><b>Training-dev to dev</b><span>Unseen held still, distribution changes. That gap is data mismatch.</span></div>
+      <div class="cheat-item"><b>Dev to test</b><span>Everything held still except how many choices you made. That gap is dev overfit.</span></div>
+      <div class="cheat-item"><b>3 and 6, not 9</b><span>Two thirds of the Lanternfish gap was mismatch. Regularisation was aimed at the third.</span></div>
+      <div class="cheat-item"><b>Synthesis can be overfit</b><span>Mismatch closing while the field number stands still is a story about your synthesiser.</span></div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="pagefoot">
+  <div class="wrap">
+    <p>Practitioner session 7 of 10 · learn-ml-strategy-with-phoebe · by Phoebe Fu</p>
+    <nav class="pagenav">
+      <a href="p6-learning-curves.html">← Practitioner session 6 · Learning curves, read honestly</a>
+      <a href="p8-optimization-verification.html">Practitioner session 8 · The Optimization Verification test →</a>
+    </nav>
+  </div>
+</footer>
+
+<script src="../assets/app.js?v=1"></script>
+</body>
+</html>
